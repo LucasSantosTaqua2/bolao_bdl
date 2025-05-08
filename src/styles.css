@@ -1,1 +1,20 @@
-/* You can add global styles to this file, and also import other style files */
+body {
+    min-height: 100vh;
+    margin: 0;
+    z-index: 0;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-image: url(../public/img/background.png);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.5; /* ajuste aqui */
+    z-index: -1;
+}

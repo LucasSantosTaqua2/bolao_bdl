@@ -1,0 +1,30 @@
+:host{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#logo{
+    background-color: red;
+    min-width: 100px;
+    height: 100px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.content {
+    align-items: center;
+    background-color: wheat;
+}
+
+.logo {
+    width: 150px;
+    height: 150px;
+    background-image: url(../../../assets/img/logo_bdl.png);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
