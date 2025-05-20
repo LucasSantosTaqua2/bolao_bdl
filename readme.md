@@ -34,11 +34,9 @@ Siga estes passos para colocar o backend da API em funcionamento na sua máquina
 Primeiro, clone o repositório para a sua máquina (se você ainda não o fez):
 
 \`\`\`bash
-git clone https://github.com/seu_usuario/bolao-api.git
+git clone [https://github.com/seu_usuario/bolao-api.git](https://github.com/LucasSantosTaqua2/bolao_bdl)
 cd bolao-api
 \`\`\`
-
-*(Substitua `https://github.com/seu_usuario/bolao-api.git` pela URL real do seu repositório.)*
 
 ### 2. Configurar o Ambiente Virtual
 
