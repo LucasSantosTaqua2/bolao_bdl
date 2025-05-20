@@ -25,37 +25,6 @@ Este backend fornece as funcionalidades essenciais para o seu bolão do Brasilei
 
 ---
 
-## Estrutura do Projeto
-
-\`\`\`
-bolao-api/
-├── app/
-│   ├── main.py                    # Ponto de entrada da aplicação FastAPI
-│   ├── core/                      # Configurações e segurança
-│   │   ├── config.py              # Variáveis de ambiente e configurações
-│   │   ├── database.py            # Configuração do DB (SQLite)
-│   │   └── security.py            # Funções de hashing de senha e JWT
-│   ├── crud/                      # Operações CRUD para o DB
-│   │   └── user.py                # Funções CRUD para usuários
-│   ├── models/                    # Modelos de dados do DB (SQLModel)
-│   │   └── user.py                # Modelo de usuário
-│   ├── schemas/                   # Schemas Pydantic para entrada/saída da API
-│   │   └── user.py                # Schemas de usuário
-│   ├── api/                       # Rotas da API
-│   │   ├── api_v1/
-│   │   │   └── endpoints/
-│   │   │       └── users.py       # Endpoints de usuário (registro, login, perfil)
-│   │   └── main.py
-│   └── dependencies.py            # Funções de dependência (ex: sessão do DB)
-│
-├── .env                           # Variáveis de ambiente (ignorado pelo Git)
-├── .gitignore                     # Arquivos e pastas a serem ignorados pelo Git
-├── requirements.txt               # Dependências do Python
-└── README.md                      # Este arquivo
-\`\`\`
-
----
-
 ## Como Configurar e Rodar o Projeto
 
 Siga estes passos para colocar o backend da API em funcionamento na sua máquina local:
