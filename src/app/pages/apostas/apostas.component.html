@@ -1,0 +1,55 @@
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Realizar Apostas</h2>
+  
+    <div *ngIf="message" class="alert alert-info text-center" role="alert">
+      {{ message }}
+    </div>
+  
+    <div class="table-responsive">
+      <form (ngSubmit)="onSubmitAllBets(betsForm)" #betsForm="ngForm"> <table class="table table-striped table-bordered align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th scope="col" class="text-center">Data/Hora</th>
+              <th scope="col" class="text-center">Mandante</th>
+              <th scope="col" class="text-center">Placar</th>
+              <th scope="col" class="text-center"></th> <th scope="col" class="text-center">Placar</th>
+              <th scope="col" class="text-center">Visitante</th>
+              </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let game of games"> <td class="text-center">{{ game.dateTime | date:'dd/MM HH:mm' }}</td>
+              <td class="text-end fw-bold">{{ game.homeTeam }}</td>
+              <td>
+                <input
+                  type="number"
+                  class="form-control form-control-sm text-center"
+                  [(ngModel)]="game.homeScore"
+                  name="homeScore_{{ game.id }}"
+                  required
+                  min="0"
+                  #homeScoreField="ngModel"
+                />
+              </td>
+              <td class="text-center fw-bold">X</td>
+              <td>
+                <input
+                  type="number"
+                  class="form-control form-control-sm text-center"
+                  [(ngModel)]="game.awayScore"
+                  name="awayScore_{{ game.id }}"
+                  required
+                  min="0"
+                  #awayScoreField="ngModel"
+                />
+              </td>
+              <td class="text-start fw-bold">{{ game.awayTeam }}</td>
+              </tr>
+          </tbody>
+        </table>
+  
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-dark btn-lg" [disabled]="betsForm.invalid">Registrar Todas as Apostas</button>
+        </div>
+      </form>
+    </div>
+  </div>
