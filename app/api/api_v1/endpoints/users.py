@@ -1,4 +1,5 @@
-from typing import Annotated, List # <--- Importe List
+# app/api/api_v1/endpoints/users.py
+from typing import Annotated, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -14,10 +15,9 @@ from app.crud.user import (
     get_user_by_id,
     update_user_profile,
     update_user_password,
-    get_users_ranking # <--- Importe a nova função para o ranking
+    get_users_ranking
 )
-from app.models.user import User # Importe o modelo User
-# Importe os schemas
+from app.models.user import User, UserRole
 from app.schemas.user import UserCreate, UserRead, UserUpdate, UserPasswordUpdate
 
 from fastapi.security import OAuth2PasswordBearer
@@ -36,10 +36,6 @@ async def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)],
     db: Session = Depends(get_session)
 ) -> User:
-    """
-    Verifica o token JWT e retorna o objeto do usuário logado.
-    Lança HTTPException 401 se o token for inválido ou ausente.
-    """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Não foi possível validar as credenciais",
@@ -57,6 +53,19 @@ async def get_current_user(
     if user is None:
         raise credentials_exception
     return user
+
+# --------------------------------------------------
+# NOVA DEPENDÊNCIA: Para Superusuários (Admin)
+# --------------------------------------------------
+async def get_current_active_admin(
+    current_user: Annotated[User, Depends(get_current_user)]
+) -> User:
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Acesso não autorizado. Apenas administradores podem acessar este recurso."
+        )
+    return current_user
 
 # --------------------------------------------------
 # Endpoint de Registro de Usuário
@@ -162,12 +171,33 @@ async def change_my_password(
     return {"message": "Senha alterada com sucesso."}
 
 # --------------------------------------------------
-# NOVO ENDPOINT: Ranking de Usuários
+# ENDPOINT: Ranking de Usuários
 # --------------------------------------------------
-@router.get("/ranking", response_model=List[UserRead]) # Retorna uma lista de UserRead
+@router.get("/ranking", response_model=List[UserRead])
 async def read_users_ranking(
-    current_user: Annotated[User, Depends(get_current_user)], # <--- ESTE VEM PRIMEIRO AGORA
-    db: Session = Depends(get_session) # <--- ESTE VEM DEPOIS (com valor padrão)
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Session = Depends(get_session)
 ):
+    """
+    Retorna a classificação de todos os usuários, ordenada por pontos.
+    Esta rota requer um token JWT válido.
+    """
     ranking_users = get_users_ranking(db)
     return ranking_users
+
+# --------------------------------------------------
+# ENDPOINT: ADMINISTRAÇÃO DE USUÁRIOS
+# (Exige que o usuário seja um administrador)
+# --------------------------------------------------
+@router.get("/admin/users", response_model=List[UserRead])
+async def read_all_users(
+    current_user: Annotated[User, Depends(get_current_active_admin)], # <--- ESTE VEM PRIMEIRO
+    db: Session = Depends(get_session) # <--- ESTE VEM DEPOIS
+):
+    """
+    Retorna uma lista de todos os usuários no sistema (apenas para administradores).
+    """
+    from sqlmodel import select # Reafirma a importação localmente
+
+    users = db.exec(select(User)).all()
+    return users
