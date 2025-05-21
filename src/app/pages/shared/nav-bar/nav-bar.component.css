@@ -1,253 +1,235 @@
 /* src/app/nav-bar/nav-bar.component.css */
 
-/* Estilos Globais de Links (para .nav-item) */
-.nav-links .nav-item,
-.navbar-action-right .nav-item {
+/* Estilos Globais para a.nav-item */
+a.nav-item {
     text-decoration: none;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-size: 18pt;
+    font-size: 18pt; /* Default for desktop */
     font-weight: 600;
-    color: white; /* Cor padrão para links */
+    color: white;
     position: relative;
     transition: color 0.3s ease, transform 0.3s ease;
-    display: flex; /* Todos os links serão flex, o *ngIf controla se eles aparecem */
+    display: flex;
     align-items: center;
     padding: 5px 0;
     white-space: nowrap;
-}
-
-.nav-links .nav-item::after,
-.navbar-action-right .nav-item::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: -5px;
-    width: 0%;
-    height: 3px;
-    background-color: gold;
-    transition: width 0.3s ease;
-}
-
-.nav-links .nav-item:hover,
-.nav-links a.nav-item:focus,
-.navbar-action-right .nav-item:hover,
-.navbar-action-right a.nav-item:focus {
-    color: gold;
-    transform: scale(1.05);
-}
-
-.nav-links .nav-item i,
-.navbar-action-right .nav-item i {
+    cursor: pointer;
+  }
+  
+  a.nav-item i {
     font-size: 1.2em;
     margin-right: 8px;
-}
-
-/* Estilos Específicos do Logout Link */
-.logout-link {
-    color: #ff6b6b; /* Cor VERMELHA para o botão Sair */
-}
-
-.logout-link:hover {
-    color: #ff3333; /* Cor mais escura no hover */
+  }
+  
+  /* Underline effect for desktop links */
+  @media (min-width: 769px) {
+    .desktop-center-content a.nav-item::after,
+    .desktop-right-actions a.nav-item::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -5px;
+      width: 0%;
+      height: 3px;
+      background-color: gold; /* Default underline color */
+      transition: width 0.3s ease;
+    }
+  
+    .desktop-center-content a.nav-item:hover,
+    .desktop-center-content a.nav-item:focus,
+    .desktop-right-actions a.nav-item:hover,
+    .desktop-right-actions a.nav-item:focus {
+      color: gold;
+      transform: scale(1.05);
+    }
+  
+    .desktop-center-content a.nav-item:hover::after,
+    .desktop-center-content a.nav-item:focus::after,
+    .desktop-right-actions a.nav-item:hover::after,
+    .desktop-right-actions a.nav-item:focus::after {
+      width: 100%;
+    }
+  }
+  
+  /* Estilos Específicos do Logout Link */
+  a.nav-item.logout-link {
+    color: #ff6b6b !important; /* Cor VERMELHA para o botão Sair */
+  }
+  
+  a.nav-item.logout-link:hover,
+  a.nav-item.logout-link:focus {
+    color: #ff3333 !important; /* Cor mais escura no hover */
     transform: scale(1.05);
-}
-
-
-/* ---------------------------------------------------- */
-/* Estilos para Desktop (maior que 768px) */
-@media (min-width: 769px) { /* Usar min-width para desktop first */
+  }
+  
+  /* Logout link underline color on desktop */
+  @media (min-width: 769px) {
+    .desktop-right-actions a.nav-item.logout-link::after {
+      background-color: #ff3333; /* Red underline for logout */
+    }
+  }
+  
+  
+  /* ---------------------------------------------------- */
+  /* Estilos para Desktop (maior que 768px) */
+  @media (min-width: 769px) {
     .nav-bar {
-        background-color: black;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 20px;
-        position: relative;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        min-height: 60px;
-        width: 100%;
+      background-color: black;
+      display: flex;
+      align-items: center;
+      justify-content: space-between; /* Key for positioning left, center, right groups */
+      padding: 10px 20px;
+      position: relative;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      min-height: 60px;
+      width: 100%;
     }
-
+  
     .navbar-header-left {
-        display: flex;
-        align-items: center;
-        flex-grow: 1;
-        flex-basis: 0;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0; /* Prevent shrinking */
+      margin-right: 20px; /* Spacing from center content */
     }
-
+  
+    .menu-icon { display: none; } /* Hide mobile menu icon on desktop */
+  
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      padding: 0;
+    }
+    .navbar-logo {
+      height: 40px;
+      width: auto;
+      transition: transform 0.3s ease;
+    }
+    .navbar-logo:hover { transform: scale(1.05); }
+  
+    .desktop-center-content {
+      display: flex;
+      align-items: center;
+      justify-content: center; /* Center its children (the links) */
+      flex-grow: 1; /* Allow this section to take up available central space */
+      gap: 45px; /* Adjust gap between links */
+    }
+  
+    .desktop-right-actions {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0; /* Prevent shrinking */
+      margin-left: 20px; /* Spacing from center content */
+    }
+  
+    /* Hide mobile menu container on desktop */
+    .nav-links-mobile {
+      display: none;
+    }
+  }
+  
+  /* ---------------------------------------------------- */
+  /* Estilos para Mobile (telas menores ou iguais a 768px) */
+  @media (max-width: 768px) {
+    .nav-bar {
+      justify-content: space-between;
+      padding: 15px;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1030;
+      background-color: black;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+    }
+  
+    .navbar-header-left {
+      display: flex;
+      align-items: center;
+    }
+  
     .menu-icon {
-        display: none; /* Escondido no desktop */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 30px;
+      height: 20px;
+      cursor: pointer;
+      z-index: 1031; /* Ensures it's above other navbar elements and the slide-out menu */
+      position: relative;
+      min-width: 30px;
+      min-height: 20px;
+      margin-right: 15px;
     }
-
-    .navbar-brand {
-        display: flex;
-        align-items: center;
-        height: 100%;
-        padding: 0;
-        margin-right: 20px;
-    }
-
-    .navbar-logo {
-        height: 40px;
-        width: auto;
-        transition: transform 0.3s ease;
-    }
-
-    .navbar-logo:hover {
-        transform: scale(1.05);
-    }
-
-    /* Grupo Central de Links (Nav-links) - Desktop */
-    .nav-links {
-        display: flex; /* É flex no desktop */
-        gap: 60px;
-        align-items: center;
-        transition: all 0.4s ease;
-        margin-left: auto;
-        margin-right: auto;
-        flex-grow: 1;
-        flex-basis: 0;
-        justify-content: center;
-    }
-
-    /* Grupo Direito: Links de Ação (Login/Sair) */
-    .navbar-action-right {
-        display: flex; /* É flex no desktop */
-        align-items: center;
-        gap: 20px;
-        flex-grow: 1;
-        flex-basis: 0;
-        justify-content: flex-end;
-    }
-
-    /* Visibilidade de links INDIVIDUAIS no DESKTOP */
-    .mobile-menu-link {
-        display: none; /* Links de mobile escondidos no desktop */
-    }
-}
-
-
-/* ---------------------------------------------------- */
-/* Estilos para Mobile (telas menores ou iguais a 768px) */
-@media (max-width: 768px) {
-    .nav-bar {
-        justify-content: space-between;
-        padding: 15px;
-        position: fixed;
-        width: 100%;
-        top: 0;
-        left: 0;
-        z-index: 1030;
-        background-color: black;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-    }
-
-    .navbar-header-left {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        flex-grow: 0;
-        flex-basis: auto;
-    }
-
-    .menu-icon { /* Exibe o ícone do menu (hambúrguer/X) em mobile */
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        width: 30px;
-        height: 20px;
-        cursor: pointer;
-        z-index: 1031;
-        position: relative;
-        min-width: 30px;
-        min-height: 20px;
-        margin-right: 20px;
-    }
-
     .menu-icon .bar {
-        height: 4px;
-        width: 100%;
-        background-color: white;
-        border-radius: 2px;
-        transition: all 0.3s ease;
+      height: 4px;
+      width: 100%;
+      background-color: white;
+      border-radius: 2px;
+      transition: all 0.3s ease;
     }
-
-    .menu-icon.open .bar-top {
-        transform: translateY(8px) rotate(45deg);
-    }
-    .menu-icon.open .bar-middle {
-        opacity: 0;
-    }
-    .menu-icon.open .bar-bottom {
-        transform: translateY(-8px) rotate(-45deg);
-    }
-
+    .menu-icon.open .bar-top { transform: translateY(8px) rotate(45deg); }
+    .menu-icon.open .bar-middle { opacity: 0; }
+    .menu-icon.open .bar-bottom { transform: translateY(-8px) rotate(-45deg); }
+  
     .navbar-brand {
-        order: 2;
-        margin-left: auto;
-        margin-right: 0;
-        display: flex;
-        align-items: center;
-        height: auto;
+      margin-left: auto; /* Pushes brand to the right of the menu icon */
+      margin-right: 0;
+      display: flex;
+      align-items: center;
     }
-
-    .navbar-logo {
-        height: 45px;
+    .navbar-logo { height: 40px; }
+  
+    /* Mobile Menu container */
+    .nav-links-mobile {
+      position: fixed;
+      top: 0;
+      left: -100%; /* Initially hidden off-screen */
+      width: 100%;
+      height: 100vh;
+      background-color: #333;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 25px;
+      padding-top: 70px; /* Space for the fixed navbar, adjust if navbar height changes */
+      z-index: 1000; /* Below navbar (1030) so navbar remains visible, above page content */
+      transition: left 0.3s ease-in-out;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
     }
-
-    /* Grupo Central: O menu lateral em mobile */
-    .nav-links {
-        position: fixed;
-        top: 0;
-        left: -100%; /* Esconde o menu fora da tela inicial */
-        width: 100%;
-        height: 100vh;
-        background-color: #333;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 30px;
-        padding-top: 0;
-        z-index: 1020;
-        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
-
-        display: flex; /* SEMPRE flex no mobile, para ser o menu lateral */
+  
+    .nav-links-mobile.active {
+      left: 0; /* Slides in from the left */
     }
-
-    .nav-links.active {
-        left: 0;
+  
+    .nav-links-mobile a.nav-item {
+      font-size: 18pt;
+      color: white;
+      padding: 12px 20px;
+      width: 80%;
+      justify-content: center;
+      border-radius: 5px;
     }
-
-    .nav-links a.nav-item { /* Estilos dos links dentro do menu lateral */
-        font-size: 20pt;
-        color: white;
-        padding: 15px 20px;
-        width: 80%;
-        justify-content: center;
+    .nav-links-mobile a.nav-item::after { display: none; } /* No underline animation in mobile menu */
+  
+    .nav-links-mobile a.nav-item:hover,
+    .nav-links-mobile a.nav-item:focus {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: scale(1.02);
+      color: gold; /* Consistent hover color */
     }
-
-    .nav-links a.nav-item::after {
-        bottom: 0;
+     .nav-links-mobile a.nav-item.logout-link:hover,
+     .nav-links-mobile a.nav-item.logout-link:focus {
+      color: #ff3333 !important; /* Hover red for logout on mobile */
+      background-color: rgba(255, 107, 107, 0.1); /* Optional: slight red glow for logout hover */
     }
-
-    .nav-links a.nav-item:hover,
-    .nav-links a.nav-item:focus {
-        background-color: rgba(255, 255, 255, 0.1);
-        transform: scale(1.02);
+  
+    /* Hide desktop specific containers on mobile */
+    .desktop-center-content,
+    .desktop-right-actions {
+      display: none;
     }
-
-    .navbar-action-right {
-        display: none; /* Esconde a seção da direita no mobile */
-    }
-
-    /* Visibilidade de links INDIVIDUAIS no MOBILE */
-    .desktop-main-link {
-        display: none; /* Links desktop escondidos no mobile */
-    }
-    .desktop-action-link {
-        display: none; /* Links desktop escondidos no mobile */
-    }
-    .mobile-menu-link {
-        display: flex; /* Links mobile visíveis no mobile */
-    }
-}
+  }

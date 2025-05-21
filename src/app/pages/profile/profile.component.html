@@ -6,11 +6,11 @@
     <h3 class="text-center mb-5 text-primary fw-bold">Meu Perfil</h3>
 
     <div
-      *ngIf="apiMessage"
+      *ngIf="profileApiMessage"
       class="alert mb-4 text-center animate__animated animate__fadeIn"
-      [ngClass]="{ 'alert-success': isSuccess, 'alert-danger': !isSuccess }"
+      [ngClass]="{ 'alert-success': isProfileSuccess, 'alert-danger': !isProfileSuccess }"
     >
-      {{ apiMessage }}
+      {{ profileApiMessage }}
     </div>
 
     <div *ngIf="userProfile" class="mb-5 p-4 bg-light rounded-lg border">
@@ -25,11 +25,11 @@
       </div>
       <div class="row g-2 align-items-center mb-2">
         <div class="col-sm-5 text-sm-end text-muted">Data de Cadastro:</div>
-        <div class="col-sm-7 text-muted">{{ userProfile.created_at | date : 'dd/MM/yyyy HH:mm' }}</div>
+        <div class="col-sm-7 text-muted">{{ userProfile.created_at | date : 'dd/MM/yyyy HH:mm' : 'America/Sao_Paulo' }}</div>
       </div>
       <div class="row g-2 align-items-center mb-2">
         <div class="col-sm-5 text-sm-end text-muted">Última Alteração:</div>
-        <div class="col-sm-7 text-muted">{{ userProfile.updated_at | date : 'dd/MM/yyyy HH:mm' }}</div>
+        <div class="col-sm-7 text-muted">{{ userProfile.updated_at | date : 'dd/MM/yyyy HH:mm' : 'America/Sao_Paulo' }}</div>
       </div>
       <div class="text-center mt-5">
         <button class="btn btn-outline-primary btn-lg px-4" (click)="toggleEditMode()">
@@ -84,8 +84,14 @@
 
     <div class="mt-5 p-4 border rounded-lg bg-light animate__animated animate__fadeInUp">
       <h5 class="mb-4 text-secondary border-bottom pb-2">Alterar Senha</h5>
-      <form (ngSubmit)="onChangePassword()" #changePasswordForm="ngForm">
-        <div class="mb-4">
+      <div
+        *ngIf="passwordApiMessage"
+        class="alert mb-4 text-center animate__animated animate__fadeIn"
+        [ngClass]="{ 'alert-success': isPasswordSuccess, 'alert-danger': !isPasswordSuccess }"
+      >
+        {{ passwordApiMessage }}
+      </div>
+      <form (ngSubmit)="onChangePassword()" #changePasswordForm="ngForm"> <div class="mb-4">
           <label for="currentPassword" class="form-label fw-bold">Senha Atual</label>
           <div class="input-group input-group-lg">
             <input

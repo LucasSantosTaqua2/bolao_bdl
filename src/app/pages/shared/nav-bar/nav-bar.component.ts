@@ -30,13 +30,11 @@ export class NavBarComponent implements OnInit, OnDestroy {
   isMobile: boolean;
   private _mobileQueryListener: () => void;
 
-  @ViewChild('navLinksRef') navLinksElement!: ElementRef;
+  @ViewChild('navLinksMobileRef') navLinksMobileElement!: ElementRef; // Updated ViewChild name if needed, though not directly manipulated in this version
   isMenuOpen: boolean = false;
 
-
-  mainNavLinks: NavLink[] = [];
-  actionNavLinks: NavLink[] = [];
-
+  // mainNavLinks: NavLink[] = []; // Unused by the current HTML logic
+  // actionNavLinks: NavLink[] = []; // Unused by the current HTML logic
 
   constructor(
     private authService: AuthService,
@@ -50,7 +48,10 @@ export class NavBarComponent implements OnInit, OnDestroy {
     this.isMobile = mobileQuery.matches;
     this._mobileQueryListener = () => {
       this.isMobile = mobileQuery.matches;
-      this.updateNavLinks();
+      // this.updateNavLinks(); // This call isn't strictly necessary if HTML drives link visibility
+      if (!this.isMobile && this.isMenuOpen) { // Close mobile menu if resizing to desktop
+        this.isMenuOpen = false;
+      }
     };
     mobileQuery.addEventListener('change', this._mobileQueryListener);
   }
@@ -58,47 +59,34 @@ export class NavBarComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions.add(
       this.isLoggedIn$.subscribe(loggedIn => {
-        this.updateNavLinks();
+        // this.updateNavLinks(); // This call isn't strictly necessary
+        if (!loggedIn && this.isMenuOpen && this.isMobile) { // If user logs out while mobile menu is open
+            this.isMenuOpen = false; // Close it
+        }
       })
     );
-    this.updateNavLinks();
+    // this.updateNavLinks(); // Initial call isn't strictly necessary
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    // Ensure to use the same query object for removing the listener
     this.mediaMatcher.matchMedia('(max-width: 768px)').removeEventListener('change', this._mobileQueryListener);
   }
 
-  private updateNavLinks(): void {
-    const commonLinks: NavLink[] = [
-      { path: '/home', label: 'Página Inicial', icon: 'bi-house-fill' },
-      { path: '/ranking', label: 'Classificação', icon: 'bi-trophy-fill' },
-      { path: '/profile', label: 'Perfil', icon: 'bi-person-fill' }
-    ];
-
-    if (this.isLoggedIn$.value) {
-        this.mainNavLinks = commonLinks;
-        this.actionNavLinks = [{ label: 'Sair', icon: 'bi-box-arrow-right', action: () => this.onLogout(), isLogout: true }];
-    } else {
-        this.mainNavLinks = []; // Sem links principais no centro do desktop quando deslogado
-        this.actionNavLinks = [
-            { path: '/login', label: 'Entrar', icon: 'bi-box-arrow-in-right' },
-            { path: '/register', label: 'Registre-se', icon: 'bi-person-plus-fill' }
-        ];
-    }
-  }
+  // private updateNavLinks(): void { ... } // This method is not used by the HTML for rendering links.
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
-    const menuIcon = document.querySelector('.menu-icon');
-    menuIcon?.classList.toggle('open', this.isMenuOpen);
+    // The .open class on .menu-icon is now handled by [class.open]="isMenuOpen" in the HTML.
   }
 
   onLogout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
-    this.isMenuOpen = false;
-    const menuIcon = document.querySelector('.menu-icon');
-    menuIcon?.classList.remove('open');
+    if (this.isMobile) { // Only explicitly manage menu for mobile context
+        this.isMenuOpen = false;
+    }
+    // The .open class on .menu-icon will update automatically due to isMenuOpen change.
   }
 }
