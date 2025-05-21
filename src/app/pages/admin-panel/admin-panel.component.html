@@ -1,49 +1,158 @@
 <div class="container py-5">
-    <div class="card p-4 shadow-lg border-0 rounded-lg animate__animated animate__fadeIn">
-      <h3 class="text-center mb-5 text-primary fw-bold">Painel de Administração</h3>
-  
-      <div *ngIf="isLoading" class="text-center my-4">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Carregando...</span>
-        </div>
-        <p class="mt-2">Carregando dados dos usuários...</p>
+  <div class="card p-4 shadow-lg border-0 rounded-lg animate__animated animate__fadeIn">
+    <h3 class="text-center mb-5 text-primary fw-bold">Painel de Administração</h3>
+
+    <div *ngIf="isLoading" class="text-center my-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Carregando...</span>
       </div>
-  
-      <div *ngIf="errorMessage" class="alert alert-danger text-center my-4">
-        {{ errorMessage }}
-      </div>
-  
-      <div *ngIf="!isLoading && !errorMessage && allUsers.length > 0" class="table-responsive">
-        <h5 class="mb-3 border-bottom pb-2 text-secondary">Gerenciar Usuários</h5>
-        <table class="table table-striped table-bordered align-middle text-center bg-white rounded">
-          <thead class="table-dark">
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Usuário</th>
-              <th scope="col">Pontos</th>
-              <th scope="col">Role</th>
-              <th scope="col">Cadastro</th>
-              <th scope="col">Última Alteração</th>
-              </tr>
-          </thead>
-          <tbody class="fw-semibold">
-            <tr *ngFor="let user of allUsers">
-              <td>{{ user.id }}</td>
-              <td>{{ user.username }}</td>
-              <td>{{ user.points }}</td>
-              <td>{{ user.role | titlecase }}</td> <td>{{ user.created_at | date:'dd/MM/yyyy HH:mm':'America/Sao_Paulo' }}</td>
-              <td>{{ user.updated_at | date:'dd/MM/yyyy HH:mm':'America/Sao_Paulo' }}</td>
-              </tr>
-          </tbody>
-        </table>
-      </div>
-  
-      <div *ngIf="!isLoading && !errorMessage && allUsers.length === 0" class="alert alert-info text-center my-4">
-        Nenhum usuário encontrado.
-      </div>
-  
-      <hr class="my-5 border-secondary">
-      <h5 class="text-center text-muted">Outras ferramentas de administração virão aqui...</h5>
-  
+      <p class="mt-2">Carregando dados dos usuários...</p>
     </div>
+
+    <div *ngIf="errorMessage" class="alert alert-danger text-center my-4">
+      {{ errorMessage }}
+    </div>
+
+    <div class="mb-5 p-4 border rounded-lg bg-light animate__animated animate__fadeInUp">
+      <h5 class="mb-4 text-secondary border-bottom pb-2">Inserir Jogos por Rodada (Excel)</h5>
+      
+      <div *ngIf="uploadMessage" class="alert mb-3" [ngClass]="{'alert-success': isUploadSuccess, 'alert-danger': !isUploadSuccess}">
+        {{ uploadMessage }}
+      </div>
+
+      <div class="mb-3">
+        <label for="roundSelect" class="form-label fw-bold">Selecione a Rodada</label>
+        <select
+          id="roundSelect"
+          class="form-select form-select-lg"
+          [(ngModel)]="selectedRound"
+          name="selectedRound"
+        >
+          <option *ngFor="let round of rounds" [value]="round">Rodada {{ round }}</option>
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label for="excelFile" class="form-label fw-bold">Carregar Planilha Excel (.xlsx)</label>
+        <input
+          type="file"
+          id="excelFile"
+          class="form-control form-control-lg"
+          accept=".xlsx"
+          (change)="onFileSelected($event)"
+        />
+        <div class="form-text mt-2">
+          A planilha deve ter as colunas: "mandante", "visitante", "data_hora".
+          A primeira linha será ignorada como cabeçalho.
+        </div>
+      </div>
+
+      <div class="text-center">
+        <button class="btn btn-primary btn-lg px-4" (click)="onUploadGames()" [disabled]="!selectedFile">
+          <i class="bi bi-upload me-2"></i> Enviar Jogos da Rodada
+        </button>
+      </div>
+    </div>
+
+
+    <hr class="my-5 border-secondary">
+
+    <div class="mb-5 p-4 border rounded-lg bg-light animate__animated animate__fadeInUp">
+        <h5 class="mb-4 text-secondary border-bottom pb-2">Excluir Jogos por Rodada</h5>
+        <div *ngIf="deleteRoundMessage" class="alert mb-3" [ngClass]="{'alert-success': isDeleteRoundSuccess, 'alert-danger': !isDeleteRoundSuccess}">
+            {{ deleteRoundMessage }}
+        </div>
+        <div class="mb-3">
+            <label for="deleteRoundSelect" class="form-label fw-bold">Selecione a Rodada para Excluir</label>
+            <select
+                id="deleteRoundSelect"
+                class="form-select form-select-lg"
+                [(ngModel)]="deleteRoundNumber"
+                name="deleteRoundNumber"
+            >
+                <option *ngFor="let round of rounds" [value]="round">Rodada {{ round }}</option>
+            </select>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-danger btn-lg px-4" (click)="onDeleteRoundGames()">
+                <i class="bi bi-trash-fill me-2"></i> Excluir Todos da Rodada
+            </button>
+        </div>
+    </div>
+
+
+    <hr class="my-5 border-secondary">
+
+    <div *ngIf="!isLoading && !errorMessage && allUsers.length > 0" class="table-responsive mb-5">
+      <h5 class="mb-3 border-bottom pb-2 text-secondary">Gerenciar Usuários</h5>
+      <table class="table table-striped table-bordered align-middle text-center bg-white rounded">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Usuário</th>
+            <th scope="col">Pontos</th>
+            <th scope="col">Role</th>
+            <th scope="col">Cadastro</th>
+            <th scope="col">Última Alteração</th>
+          </tr>
+        </thead>
+        <tbody class="fw-semibold">
+          <tr *ngFor="let user of allUsers">
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.points }}</td>
+            <td>{{ user.role | titlecase }}</td>
+            <td>{{ user.created_at | date:'dd/MM/yyyy HH:mm':'America/Sao_Paulo' }}</td>
+            <td>{{ user.updated_at | date:'dd/MM/yyyy HH:mm':'America/Sao_Paulo' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="!isLoading && !errorMessage && allUsers.length === 0" class="alert alert-info text-center my-4">
+      Nenhum usuário encontrado.
+    </div>
+
+    <hr class="my-5 border-secondary">
+
+    <div *ngIf="!isLoading && !errorMessage && allGames.length > 0" class="table-responsive">
+      <h5 class="mb-3 border-bottom pb-2 text-secondary">Todos os Jogos Cadastrados</h5>
+      <table class="table table-striped table-bordered align-middle text-center bg-white rounded">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Rodada</th>
+            <th scope="col">Mandante</th>
+            <th scope="col">Visitante</th>
+            <th scope="col">Data/Hora</th>
+            <th scope="col">Placar</th>
+            <th scope="col">Status</th>
+            <th scope="col">Ações</th> </tr>
+        </thead>
+        <tbody class="fw-semibold">
+          <tr *ngFor="let game of allGames">
+            <td>{{ game.id }}</td>
+            <td>{{ game.round_number }}</td>
+            <td>{{ game.home_team }}</td>
+            <td>{{ game.away_team }}</td>
+            <td>{{ game.game_datetime | date:'dd/MM/yyyy HH:mm':'America/Sao_Paulo' }}</td>
+            <td>{{ game.home_score || '-' }} x {{ game.away_score || '-' }}</td>
+            <td>{{ game.status | titlecase }}</td>
+            <td>
+              <button class="btn btn-danger btn-sm" (click)="onDeleteGame(game.id)">
+                <i class="bi bi-trash-fill"></i> </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="!isLoading && !errorMessage && allGames.length === 0" class="alert alert-info text-center my-4">
+      Nenhum jogo cadastrado ainda.
+    </div>
+
+    <hr class="my-5 border-secondary">
+    <h5 class="text-center text-muted">Outras ferramentas de administração virão aqui...</h5>
+
   </div>
+</div>
