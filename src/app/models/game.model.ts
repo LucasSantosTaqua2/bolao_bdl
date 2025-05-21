@@ -21,8 +21,8 @@ export enum GameStatus {
   
   // Interface para GameUpdateResult (o que o admin envia para atualizar placar)
   export interface GameUpdateResult {
-    home_score?: number;
-    away_score?: number;
+    home_score?: number | null; // Agora pode ser number OU null
+    away_score?: number | null; // Agora pode ser number OU null
     status?: GameStatus;
   }
   

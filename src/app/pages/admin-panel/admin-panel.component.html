@@ -14,7 +14,7 @@
     </div>
 
     <div class="mb-5 p-4 border rounded-lg bg-light animate__animated animate__fadeInUp">
-      <h5 class="mb-4 text-secondary border-bottom pb-2">Inserir Jogos por Rodada (Excel)</h5>
+      <h5 class="mb-4 text-secondary border-bottom pb-2">1. Inserir Novos Jogos por Rodada (Excel)</h5>
       
       <div *ngIf="uploadMessage" class="alert mb-3" [ngClass]="{'alert-success': isUploadSuccess, 'alert-danger': !isUploadSuccess}">
         {{ uploadMessage }}
@@ -58,7 +58,137 @@
     <hr class="my-5 border-secondary">
 
     <div class="mb-5 p-4 border rounded-lg bg-light animate__animated animate__fadeInUp">
-        <h5 class="mb-4 text-secondary border-bottom pb-2">Excluir Jogos por Rodada</h5>
+        <h5 class="mb-4 text-secondary border-bottom pb-2">2. Registrar Resultados dos Jogos (Manual)</h5>
+        
+        <div *ngIf="isLoadingGamesToScore" class="text-center my-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Carregando jogos...</span>
+          </div>
+          <p class="mt-2">Carregando jogos para resultados...</p>
+        </div>
+
+        <div *ngIf="scoreMessage" class="alert mb-3" [ngClass]="{'alert-success': isScoreSuccess, 'alert-danger': !isScoreSuccess}">
+            {{ scoreMessage }}
+        </div>
+
+        <div class="mb-3">
+            <label for="resultRoundSelect" class="form-label fw-bold">Selecione a Rodada</label>
+            <select
+                id="resultRoundSelect"
+                class="form-select form-select-lg"
+                [(ngModel)]="selectedResultRound"
+                name="selectedResultRound"
+                (change)="onResultRoundChange()"
+            >
+                <option *ngFor="let round of rounds" [value]="round">Rodada {{ round }}</option>
+            </select>
+        </div>
+
+        <div *ngIf="!isLoadingGamesToScore && gamesToScore.length > 0" class="table-responsive mt-4">
+            <table class="table table-striped table-bordered align-middle text-center bg-white rounded">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">Data/Hora</th>
+                        <th scope="col">Mandante</th>
+                        <th scope="col">Placar Mandante</th>
+                        <th scope="col"></th> <th scope="col">Placar Visitante</th>
+                        <th scope="col">Visitante</th>
+                    </tr>
+                </thead>
+                <tbody class="fw-semibold">
+                    <tr *ngFor="let game of gamesToScore; let i = index">
+                        <td>{{ game.game_datetime | date:'dd/MM HH:mm':'America/Sao_Paulo' }}</td>
+                        <td class="text-end fw-bold">{{ game.home_team }}</td>
+                        <td>
+                            <input
+                                type="number"
+                                class="form-control form-control-sm text-center"
+                                [(ngModel)]="game.home_score"
+                                name="homeScore_{{ game.id }}"
+                                min="0"
+                            />
+                        </td>
+                        <td class="text-center fw-bold">X</td>
+                        <td>
+                            <input
+                                type="number"
+                                class="form-control form-control-sm text-center"
+                                [(ngModel)]="game.away_score"
+                                name="awayScore_{{ game.id }}"
+                                min="0"
+                            />
+                        </td>
+                        <td class="text-start fw-bold">{{ game.away_team }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="text-center mt-4">
+                <button class="btn btn-success btn-lg px-4" (click)="onSubmitGameScores()">
+                    <i class="bi bi-check-circle-fill me-2"></i> Registrar Resultados
+                </button>
+            </div>
+        </div>
+
+        <div *ngIf="!isLoadingGamesToScore && gamesToScore.length === 0 && !scoreMessage" class="alert alert-info text-center mt-4">
+            Nenhum jogo agendado nesta rodada para registrar resultados.
+        </div>
+    </div>
+
+    <hr class="my-5 border-secondary">
+
+    <div class="mb-5 p-4 border rounded-lg bg-light animate__animated animate__fadeInUp">
+        <h5 class="mb-4 text-secondary border-bottom pb-2">3. Gerar e Enviar Planilha de Resultados (Excel)</h5>
+        
+        <div *ngIf="resultsUploadMessage" class="alert mb-3" [ngClass]="{'alert-success': isResultsUploadSuccess, 'alert-danger': !isResultsUploadSuccess}">
+            {{ resultsUploadMessage }}
+        </div>
+
+        <div class="mb-3">
+            <label for="downloadRoundSelect" class="form-label fw-bold">Rodada para Gerar Planilha de Resultados</label>
+            <select
+                id="downloadRoundSelect"
+                class="form-select form-select-lg"
+                [(ngModel)]="downloadRoundNumber"
+                name="downloadRoundNumber"
+            >
+                <option *ngFor="let round of rounds" [value]="round">Rodada {{ round }}</option>
+            </select>
+        </div>
+
+        <div class="text-center mb-4">
+            <button class="btn btn-info btn-lg px-4" (click)="onDownloadResultsTemplate()">
+                <i class="bi bi-download me-2"></i> Baixar Modelo de Resultados
+            </button>
+            <div class="form-text mt-2">
+                Baixe o Excel, preencha os placares e use a próxima seção para enviar.
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label for="resultsExcelFile" class="form-label fw-bold">Carregar Planilha de Resultados Preenchida</label>
+            <input
+                type="file"
+                id="resultsExcelFile"
+                class="form-control form-control-lg"
+                accept=".xlsx"
+                (change)="onResultsFileSelected($event)"
+            />
+            <div class="form-text mt-2">
+                Faça o upload do Excel com os placares preenchidos.
+            </div>
+        </div>
+
+        <div class="text-center">
+            <button class="btn btn-success btn-lg px-4" (click)="onUploadResults()" [disabled]="!resultsFile">
+                <i class="bi bi-upload me-2"></i> Enviar Resultados da Planilha
+            </button>
+        </div>
+    </div>
+
+    <hr class="my-5 border-secondary">
+
+    <div class="mb-5 p-4 border rounded-lg bg-light animate__animated animate__fadeInUp">
+        <h5 class="mb-4 text-secondary border-bottom pb-2">4. Excluir Jogos por Rodada</h5>
         <div *ngIf="deleteRoundMessage" class="alert mb-3" [ngClass]="{'alert-success': isDeleteRoundSuccess, 'alert-danger': !isDeleteRoundSuccess}">
             {{ deleteRoundMessage }}
         </div>
@@ -84,7 +214,7 @@
     <hr class="my-5 border-secondary">
 
     <div *ngIf="!isLoading && !errorMessage && allUsers.length > 0" class="table-responsive mb-5">
-      <h5 class="mb-3 border-bottom pb-2 text-secondary">Gerenciar Usuários</h5>
+      <h5 class="mb-3 border-bottom pb-2 text-secondary">5. Gerenciar Usuários</h5>
       <table class="table table-striped table-bordered align-middle text-center bg-white rounded">
         <thead class="table-dark">
           <tr>
@@ -116,7 +246,7 @@
     <hr class="my-5 border-secondary">
 
     <div *ngIf="!isLoading && !errorMessage && allGames.length > 0" class="table-responsive">
-      <h5 class="mb-3 border-bottom pb-2 text-secondary">Todos os Jogos Cadastrados</h5>
+      <h5 class="mb-3 border-bottom pb-2 text-secondary">6. Todos os Jogos Cadastrados</h5>
       <table class="table table-striped table-bordered align-middle text-center bg-white rounded">
         <thead class="table-dark">
           <tr>
@@ -127,7 +257,8 @@
             <th scope="col">Data/Hora</th>
             <th scope="col">Placar</th>
             <th scope="col">Status</th>
-            <th scope="col">Ações</th> </tr>
+            <th scope="col">Ações</th>
+          </tr>
         </thead>
         <tbody class="fw-semibold">
           <tr *ngFor="let game of allGames">
@@ -140,7 +271,8 @@
             <td>{{ game.status | titlecase }}</td>
             <td>
               <button class="btn btn-danger btn-sm" (click)="onDeleteGame(game.id)">
-                <i class="bi bi-trash-fill"></i> </button>
+                <i class="bi bi-trash-fill"></i>
+              </button>
             </td>
           </tr>
         </tbody>
