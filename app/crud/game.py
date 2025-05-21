@@ -1,9 +1,8 @@
 # app/crud/game.py
 from typing import List, Optional
-# CORREÇÃO AQUI: Adicione 'delete' na importação de sqlmodel
-from sqlmodel import Session, select, desc, delete 
-from app.models.game import Game, GameStatus # Importe GameStatus também (vamos definir no models/game.py)
-from app.schemas.game import GameCreate, GameUpdateResult # Importe os schemas
+from sqlmodel import Session, select, desc, delete
+from app.models.game import Game, GameStatus
+from app.schemas.game import GameCreate, GameUpdateResult
 
 def create_game(game_create: GameCreate, db: Session) -> Game:
     """
@@ -52,10 +51,6 @@ def get_all_games(db: Session) -> List[Game]:
     statement = select(Game).order_by(Game.round_number, Game.game_datetime)
     return db.exec(statement).all()
 
-# ----------------------------------------------------
-# NOVAS FUNÇÕES CRUD PARA EXCLUSÃO
-# ----------------------------------------------------
-
 def delete_game_by_id(game_id: int, db: Session) -> bool:
     """
     Deleta um jogo específico pelo seu ID.
@@ -73,7 +68,6 @@ def delete_games_by_round(round_number: int, db: Session) -> int:
     Deleta todos os jogos de uma rodada específica.
     Retorna o número de jogos deletados.
     """
-    # Usa a função 'delete' importada de sqlmodel
     statement = delete(Game).where(Game.round_number == round_number)
     
     result = db.exec(statement)

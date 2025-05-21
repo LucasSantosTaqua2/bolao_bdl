@@ -2,7 +2,7 @@
 from typing import Optional
 from datetime import datetime
 from sqlmodel import Field, SQLModel
-import enum # Importe enum
+import enum
 
 # Enum para o status do jogo
 class GameStatus(str, enum.Enum):
@@ -10,7 +10,6 @@ class GameStatus(str, enum.Enum):
     FINISHED = "finished"    # Finalizado
     POSTPONED = "postponed"  # Adiado
     CANCELED = "canceled"    # Cancelado
-    # Adicione outros status conforme a necessidade
 
 class Game(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -21,9 +20,7 @@ class Game(SQLModel, table=True):
 
     home_score: Optional[int] = Field(default=None, ge=0)
     away_score: Optional[int] = Field(default=None, ge=0)
-
-    # Use o Enum para o campo status
-    status: GameStatus = Field(default=GameStatus.SCHEDULED, nullable=False) # <--- Usando o Enum
+    status: GameStatus = Field(default=GameStatus.SCHEDULED, nullable=False)
 
     created_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)
     updated_at: datetime = Field(default_factory=datetime.utcnow, nullable=False)

@@ -2,7 +2,7 @@
 from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel, Field
-from app.models.game import GameStatus # <--- Importe GameStatus
+from app.models.game import GameStatus
 
 # Schema Base: Campos comuns para criação e leitura (sem ID)
 class GameBase(BaseModel):
@@ -17,16 +17,18 @@ class GameCreate(GameBase):
 
 # Schema para Atualização de Resultado de Jogo:
 class GameUpdateResult(BaseModel):
+    # home_score e away_score devem ser opcionais no JSON de entrada,
+    # mas se presentes, devem ser int.
     home_score: Optional[int] = Field(default=None, ge=0)
     away_score: Optional[int] = Field(default=None, ge=0)
-    status: Optional[GameStatus] = GameStatus.FINISHED # <--- Usando GameStatus
+    status: Optional[GameStatus] = GameStatus.FINISHED
 
 # Schema para Leitura de Jogo:
 class GameRead(GameBase):
     id: int
     home_score: Optional[int] = None
     away_score: Optional[int] = None
-    status: GameStatus # <--- Usando GameStatus
+    status: GameStatus
     created_at: datetime
     updated_at: datetime
 
