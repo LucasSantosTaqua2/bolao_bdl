@@ -4,4 +4,4 @@ sqlmodel
 aiosqlite
 python-jose[cryptography] 
 passlib[bcrypt]
-
+openpyxl

@@ -1,4 +1,3 @@
-# app/api/api_v1/endpoints/users.py
 from typing import Annotated, List
 
 from fastapi import APIRouter, Depends, HTTPException, status

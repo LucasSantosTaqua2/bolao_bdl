@@ -1,10 +1,13 @@
+# app/api/api_v1/api.py
 from fastapi import APIRouter
 
-from app.api.api_v1.endpoints import users # <--- Importe o router de usuários
+# Importe os routers diretamente dos arquivos .py
+from app.api.api_v1.endpoints.users import router as users_router # <--- Importamos como users_router
+from app.api.api_v1.endpoints.games import router as games_router
+
 
 api_router = APIRouter()
 
-api_router.include_router(users.router, prefix="/users", tags=["users"])
-# Adicione outros routers aqui conforme você os criar (ex: games, bets)
-# api_router.include_router(games.router, prefix="/games", tags=["games"])
-# api_router.include_router(bets.router, prefix="/bets", tags=["bets"])
+# CORREÇÃO AQUI: Use users_router, não users.router
+api_router.include_router(users_router, prefix="/users", tags=["users"])
+api_router.include_router(games_router, prefix="/games", tags=["games"])
