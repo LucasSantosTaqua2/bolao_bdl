@@ -1,39 +1,23 @@
-.nav-bar {
-    background-color: black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    position: relative;
-}
+/* src/app/nav-bar/nav-bar.component.css */
 
-/* Links da navbar */
-.nav-links {
-    display: flex;
-    gap: 60px; /* Espaçamento entre os itens */
-    align-items: center;
-    transition: all 0.4s ease;
-}
-
-.nav-links a {
+/* Estilos Globais de Links (para .nav-item) */
+.nav-links .nav-item,
+.navbar-action-right .nav-item {
     text-decoration: none;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-size: 18pt;
     font-weight: 600;
-    color: white;
-}
-
-.nav-links a {
-    text-decoration: none;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-size: 18pt;
-    font-weight: 600;
-    color: white;
+    color: white; /* Cor padrão para links */
     position: relative;
     transition: color 0.3s ease, transform 0.3s ease;
+    display: flex; /* Todos os links serão flex, o *ngIf controla se eles aparecem */
+    align-items: center;
+    padding: 5px 0;
+    white-space: nowrap;
 }
 
-.nav-links a::after {
+.nav-links .nav-item::after,
+.navbar-action-right .nav-item::after {
     content: '';
     position: absolute;
     left: 0;
@@ -44,95 +28,226 @@
     transition: width 0.3s ease;
 }
 
-/* Efeito ao passar o mouse (ou ao tocar) */
-.nav-links a:hover,
-.nav-links a:focus {
+.nav-links .nav-item:hover,
+.nav-links a.nav-item:focus,
+.navbar-action-right .nav-item:hover,
+.navbar-action-right a.nav-item:focus {
     color: gold;
-    transform: scale(1.05); /* Leve aumento */
+    transform: scale(1.05);
 }
 
-.nav-links a:hover::after,
-.nav-links a:focus::after {
-    width: 100%; /* Sublinhar com animação */
+.nav-links .nav-item i,
+.navbar-action-right .nav-item i {
+    font-size: 1.2em;
+    margin-right: 8px;
+}
+
+/* Estilos Específicos do Logout Link */
+.logout-link {
+    color: #ff6b6b; /* Cor VERMELHA para o botão Sair */
+}
+
+.logout-link:hover {
+    color: #ff3333; /* Cor mais escura no hover */
+    transform: scale(1.05);
 }
 
 
-.menu-icon {
-    display: none; /* Escondido por padrão (desktop) */
-    cursor: pointer;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 30px;
-    height: 20px;
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 100;
-}
-
-.bar {
-    height: 4px;
-    width: 100%;
-    background-color: white;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-}
-
-.close-icon {
-    display: none;
-    font-size: 30px;
-    color: white;
-    cursor: pointer;
-    position: absolute;
-    left: 15px;
-    top: 15px;
-}
-
-/* Responsivo: telas até 768px */
-@media (max-width: 768px) {
+/* ---------------------------------------------------- */
+/* Estilos para Desktop (maior que 768px) */
+@media (min-width: 769px) { /* Usar min-width para desktop first */
     .nav-bar {
-        justify-content: flex-start;
+        background-color: black;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 20px;
+        position: relative;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        min-height: 60px;
+        width: 100%;
+    }
+
+    .navbar-header-left {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+        flex-basis: 0;
     }
 
     .menu-icon {
-        display: flex;
+        display: none; /* Escondido no desktop */
     }
 
+    .navbar-brand {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 0;
+        margin-right: 20px;
+    }
+
+    .navbar-logo {
+        height: 40px;
+        width: auto;
+        transition: transform 0.3s ease;
+    }
+
+    .navbar-logo:hover {
+        transform: scale(1.05);
+    }
+
+    /* Grupo Central de Links (Nav-links) - Desktop */
     .nav-links {
-        position: absolute;
-        top: 100%;
-        left: 0;
+        display: flex; /* É flex no desktop */
+        gap: 60px;
+        align-items: center;
+        transition: all 0.4s ease;
+        margin-left: auto;
+        margin-right: auto;
+        flex-grow: 1;
+        flex-basis: 0;
+        justify-content: center;
+    }
+
+    /* Grupo Direito: Links de Ação (Login/Sair) */
+    .navbar-action-right {
+        display: flex; /* É flex no desktop */
+        align-items: center;
+        gap: 20px;
+        flex-grow: 1;
+        flex-basis: 0;
+        justify-content: flex-end;
+    }
+
+    /* Visibilidade de links INDIVIDUAIS no DESKTOP */
+    .mobile-menu-link {
+        display: none; /* Links de mobile escondidos no desktop */
+    }
+}
+
+
+/* ---------------------------------------------------- */
+/* Estilos para Mobile (telas menores ou iguais a 768px) */
+@media (max-width: 768px) {
+    .nav-bar {
+        justify-content: space-between;
+        padding: 15px;
+        position: fixed;
         width: 100%;
-        flex-direction: column;
+        top: 0;
+        left: 0;
+        z-index: 1030;
         background-color: black;
-        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .navbar-header-left {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        flex-grow: 0;
+        flex-basis: auto;
+    }
+
+    .menu-icon { /* Exibe o ícone do menu (hambúrguer/X) em mobile */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 30px;
+        height: 20px;
+        cursor: pointer;
+        z-index: 1031;
+        position: relative;
+        min-width: 30px;
+        min-height: 20px;
+        margin-right: 20px;
+    }
+
+    .menu-icon .bar {
+        height: 4px;
+        width: 100%;
+        background-color: white;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+    }
+
+    .menu-icon.open .bar-top {
+        transform: translateY(8px) rotate(45deg);
+    }
+    .menu-icon.open .bar-middle {
         opacity: 0;
-        visibility: hidden;
-        transform: translateY(-10px);
+    }
+    .menu-icon.open .bar-bottom {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+    .navbar-brand {
+        order: 2;
+        margin-left: auto;
+        margin-right: 0;
+        display: flex;
+        align-items: center;
+        height: auto;
+    }
+
+    .navbar-logo {
+        height: 45px;
+    }
+
+    /* Grupo Central: O menu lateral em mobile */
+    .nav-links {
+        position: fixed;
+        top: 0;
+        left: -100%; /* Esconde o menu fora da tela inicial */
+        width: 100%;
+        height: 100vh;
+        background-color: #333;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+        padding-top: 0;
+        z-index: 1020;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+
+        display: flex; /* SEMPRE flex no mobile, para ser o menu lateral */
     }
 
     .nav-links.active {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
+        left: 0;
     }
 
-    .nav-links a {
-        margin: 10px 0;
+    .nav-links a.nav-item { /* Estilos dos links dentro do menu lateral */
+        font-size: 20pt;
+        color: white;
+        padding: 15px 20px;
+        width: 80%;
+        justify-content: center;
     }
 
-    .close-icon {
-        display: block;
+    .nav-links a.nav-item::after {
+        bottom: 0;
     }
-}
 
-/* Animação do ícone hamburguer para "X" */
-.menu-icon.open .bar:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
-}
-.menu-icon.open .bar:nth-child(2) {
-    opacity: 0;
-}
-.menu-icon.open .bar:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
+    .nav-links a.nav-item:hover,
+    .nav-links a.nav-item:focus {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: scale(1.02);
+    }
+
+    .navbar-action-right {
+        display: none; /* Esconde a seção da direita no mobile */
+    }
+
+    /* Visibilidade de links INDIVIDUAIS no MOBILE */
+    .desktop-main-link {
+        display: none; /* Links desktop escondidos no mobile */
+    }
+    .desktop-action-link {
+        display: none; /* Links desktop escondidos no mobile */
+    }
+    .mobile-menu-link {
+        display: flex; /* Links mobile visíveis no mobile */
+    }
 }

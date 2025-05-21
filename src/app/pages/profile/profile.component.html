@@ -1,0 +1,205 @@
+<div class="container d-flex justify-content-center align-items-center min-vh-100 py-5">
+  <div
+    class="card p-4 shadow-lg border-0 rounded-lg animate__animated animate__fadeIn"
+    style="width: 100%; max-width: 600px"
+  >
+    <h3 class="text-center mb-5 text-primary fw-bold">Meu Perfil</h3>
+
+    <div
+      *ngIf="apiMessage"
+      class="alert mb-4 text-center animate__animated animate__fadeIn"
+      [ngClass]="{ 'alert-success': isSuccess, 'alert-danger': !isSuccess }"
+    >
+      {{ apiMessage }}
+    </div>
+
+    <div *ngIf="userProfile" class="mb-5 p-4 bg-light rounded-lg border">
+      <h5 class="mb-4 text-secondary border-bottom pb-2">Detalhes da Conta</h5>
+      <div class="row g-2 align-items-center mb-2">
+        <div class="col-sm-5 text-sm-end fw-bold">Usuário:</div>
+        <div class="col-sm-7 fs-5">{{ userProfile.username }}</div>
+      </div>
+      <div class="row g-2 align-items-center mb-2">
+        <div class="col-sm-5 text-sm-end fw-bold">Pontos:</div>
+        <div class="col-sm-7 fs-5">{{ userProfile.points }}</div>
+      </div>
+      <div class="row g-2 align-items-center mb-2">
+        <div class="col-sm-5 text-sm-end text-muted">Data de Cadastro:</div>
+        <div class="col-sm-7 text-muted">{{ userProfile.created_at | date : 'dd/MM/yyyy HH:mm' }}</div>
+      </div>
+      <div class="row g-2 align-items-center mb-2">
+        <div class="col-sm-5 text-sm-end text-muted">Última Alteração:</div>
+        <div class="col-sm-7 text-muted">{{ userProfile.updated_at | date : 'dd/MM/yyyy HH:mm' }}</div>
+      </div>
+      <div class="text-center mt-5">
+        <button class="btn btn-outline-primary btn-lg px-4" (click)="toggleEditMode()">
+          <i class="bi bi-pencil-square me-2"></i> Alterar Nome de Usuário
+        </button>
+      </div>
+    </div>
+
+    <div
+      *ngIf="editMode"
+      class="mt-5 p-4 border rounded-lg bg-light animate__animated animate__fadeInUp"
+    >
+      <h5 class="mb-4 text-secondary border-bottom pb-2">Alterar Nome de Usuário</h5>
+      <form (ngSubmit)="onUpdateProfile()" #updateProfileForm="ngForm">
+        <div class="mb-4">
+          <label for="newUsername" class="form-label fw-bold">Novo Nome de Usuário</label>
+          <input
+            type="text"
+            id="newUsername"
+            class="form-control form-control-lg"
+            [(ngModel)]="newUsername"
+            name="newUsername"
+            required
+            #newUsernameField="ngModel"
+            placeholder="Digite o novo nome de usuário"
+          />
+          <div
+            *ngIf="newUsernameField.invalid && (newUsernameField.dirty || newUsernameField.touched)"
+            class="text-danger mt-1"
+          >
+            <div *ngIf="newUsernameField.errors?.['required']">
+              Novo nome de usuário é obrigatório.
+            </div>
+          </div>
+        </div>
+        <div class="d-grid gap-3 d-md-flex justify-content-md-end">
+          <button
+            type="submit"
+            class="btn btn-success btn-lg px-4"
+            [disabled]="!updateProfileForm.valid"
+          >
+            <i class="bi bi-check-circle-fill me-2"></i> Salvar
+          </button>
+          <button type="button" class="btn btn-secondary btn-lg px-4" (click)="toggleEditMode()">
+            <i class="bi bi-x-circle-fill me-2"></i> Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <hr class="my-5 border-secondary" />
+
+    <div class="mt-5 p-4 border rounded-lg bg-light animate__animated animate__fadeInUp">
+      <h5 class="mb-4 text-secondary border-bottom pb-2">Alterar Senha</h5>
+      <form (ngSubmit)="onChangePassword()" #changePasswordForm="ngForm">
+        <div class="mb-4">
+          <label for="currentPassword" class="form-label fw-bold">Senha Atual</label>
+          <div class="input-group input-group-lg">
+            <input
+              [type]="currentPasswordFieldType"
+              id="currentPassword"
+              class="form-control"
+              [(ngModel)]="currentPassword"
+              name="currentPassword"
+              required
+              #currentPasswordField="ngModel"
+              placeholder="Digite sua senha atual"
+            />
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              (click)="togglePasswordVisibility('current')"
+              title="Mostrar/Esconder senha atual"
+            >
+              <i
+                class="bi"
+                [ngClass]="{ 'bi-eye-fill': !showCurrentPassword, 'bi-eye-slash-fill': showCurrentPassword }"
+              ></i>
+            </button>
+          </div>
+          <div
+            *ngIf="currentPasswordField.invalid && (currentPasswordField.dirty || currentPasswordField.touched)"
+            class="text-danger mt-1"
+          >
+            <div *ngIf="currentPasswordField.errors?.['required']">Senha atual é obrigatória.</div>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label for="newPassword" class="form-label fw-bold">Nova Senha</label>
+          <div class="input-group input-group-lg">
+            <input
+              [type]="newPasswordFieldType"
+              id="newPassword"
+              class="form-control"
+              [(ngModel)]="newPassword"
+              name="newPassword"
+              required
+              #newPasswordField="ngModel"
+              placeholder="Digite sua nova senha"
+              appPasswordComplexity
+            />
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              (click)="togglePasswordVisibility('new')"
+              title="Mostrar/Esconder nova senha"
+            >
+              <i
+                class="bi"
+                [ngClass]="{ 'bi-eye-fill': !showNewPassword, 'bi-eye-slash-fill': showNewPassword }"
+              ></i>
+            </button>
+          </div>
+          <div
+            *ngIf="newPasswordField.invalid && (newPasswordField.dirty || newPasswordField.touched)"
+            class="text-danger mt-1"
+          >
+            <div *ngIf="newPasswordField.errors?.['required']">Nova senha é obrigatória.</div>
+            <div *ngIf="newPasswordField.errors?.['minlength']">Mínimo de 8 caracteres.</div>
+            <div *ngIf="newPasswordField.errors?.['hasUppercase']">Pelo menos uma letra maiúscula.</div>
+            <div *ngIf="newPasswordField.errors?.['hasSpecialCharacter']">
+              Pelo menos um caracter especial.
+            </div>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label for="confirmNewPassword" class="form-label fw-bold">Confirmar Nova Senha</label>
+          <div class="input-group input-group-lg">
+            <input
+              [type]="confirmNewPasswordFieldType"
+              id="confirmNewPassword"
+              class="form-control"
+              [(ngModel)]="confirmNewPassword"
+              name="confirmNewPassword"
+              required
+              #confirmNewPasswordField="ngModel"
+              placeholder="Confirme sua nova senha"
+              [appPasswordMatch]="'newPassword'"
+            />
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              (click)="togglePasswordVisibility('confirmNew')"
+              title="Mostrar/Esconder confirmação da nova senha"
+            >
+              <i
+                class="bi"
+                [ngClass]="{
+                  'bi-eye-fill': !showConfirmNewPassword,
+                  'bi-eye-slash-fill': showConfirmNewPassword
+                }"
+              ></i>
+            </button>
+          </div>
+          <div
+            *ngIf="confirmNewPasswordField.invalid && (confirmNewPasswordField.dirty || confirmNewPasswordField.touched)"
+            class="text-danger mt-1"
+          >
+            <div *ngIf="confirmNewPasswordField.errors?.['required']">
+              Confirmação da nova senha é obrigatória.
+            </div>
+            <div *ngIf="confirmNewPasswordField.errors?.['passwordMismatch']">
+              As novas senhas não coincidem.
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-warning btn-lg w-100">
+          <i class="bi bi-key-fill me-2"></i> Alterar Senha
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

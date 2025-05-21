@@ -5,8 +5,8 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { PasswordComplexityDirective } from '../../directives/password-complexity.directive';
 import { PasswordMatchDirective } from '../../directives/password-match.directive';
 import { Router, RouterLink } from '@angular/router'; // <--- Importe Router para navegação
-import { AuthService } from '../../services/services/auth.service';
- // <--- Importe o AuthService
+import { AuthService } from '../../services/auth.service';
+
 
 @Component({
   selector: 'app-register',

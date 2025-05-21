@@ -1,16 +1,11 @@
-:host{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100vh;
-}
-
 .content {
     align-items: center;
     background-color: wheat;
-    padding: 20px;
     border-radius: 8px;
+    padding: 20px; /* Adicionado um padding interno para o conteúdo do card */
+    max-width: 800px; /* Opcional: limitar a largura do conteúdo para melhor leitura */
+    margin-left: auto; /* Centraliza o card na página */
+    margin-right: auto;
 }
 
 .logo {

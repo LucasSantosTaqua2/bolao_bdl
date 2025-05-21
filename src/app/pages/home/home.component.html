@@ -1,16 +1,24 @@
-<div class="container vh-100 d-flex justify-content-center align-items-center">
+<div class="container py-5">
   <div class="content text-center p-4 bg-white shadow rounded">
-      <div class="logo"></div> 
-      
-      <h1>Bem-Vindo ao Bolão Balde de Lixo !</h1>
-      <p>
-        Prepare-se para mais uma temporada de emoção, rivalidade e muita resenha com os amigos! Este é o nosso bolão do Brasileirão — 100% gratuito e feito só pela zoeira e paixão pelo futebol. Aqui, o que vale é a diversão, os palpites certeiros e a zoação com os amigos.
-      </p>
-      <p>
-        <strong>Como funciona?</strong><br>
-        A cada rodada do Brasileirão, você poderá apostar nos resultados das partidas.<br>
-        Cada palpite correto vale 1 ponto na classificação.<br>
-        As apostas se encerram 1 hora antes do início da rodada, então fique ligado no calendário!
-      </p>
+    <div class="logo"></div>
+
+    <h1>
+      <ng-container *ngIf="username; else defaultWelcome">
+        Olá, {{ username }}!
+      </ng-container>
+      <ng-template #defaultWelcome>
+        Bem-Vindo ao Bolão Balde de Lixo !
+      </ng-template>
+    </h1>
+
+    <p>
+      Prepare-se para mais uma temporada de emoção, rivalidade e muita resenha com os amigos! Este é o nosso bolão do Brasileirão — 100% gratuito e feito só pela zoeira e paixão pelo futebol. Aqui, o que vale é a diversão, os palpites certeiros e a zoação com os amigos.
+    </p>
+    <p>
+      <strong>Como funciona?</strong><br>
+      A cada rodada do Brasileirão, você poderá apostar nos resultados das partidas.<br>
+      Cada palpite correto vale 1 ponto na classificação.<br>
+      As apostas se encerram 1 hora antes do início da rodada, então fique ligado no calendário!
+    </p>
   </div>
 </div>

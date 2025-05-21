@@ -1,7 +1,26 @@
-body {
-    min-height: 100vh;
-    margin: 0;
-    z-index: 0;
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow-x: hidden; /* Evita rolagem horizontal indesejada */
+}
+
+/* Estilo para o componente raiz, app-root, que engloba tudo */
+app-root {
+  display: flex; /* Para que seus filhos (navbar e main-content) se comportem bem */
+  flex-direction: column; /* Coloca os filhos em coluna */
+  min-height: 100vh; /* Faz com que o app-root ocupe a altura mínima da viewport */
+}
+
+/* Estilo para empurrar o conteúdo abaixo da navbar fixa */
+.main-content-wrapper {
+  padding-top: 80px;
+  min-height: calc(100vh - 80px); 
+  flex-grow: 1; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: transparent; 
 }
 
 body::before {
