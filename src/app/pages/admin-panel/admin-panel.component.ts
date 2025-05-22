@@ -2,9 +2,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthService, UserProfile } from '../../services/auth.service';
+import { AuthService} from '../../services/auth.service';
+import { UserProfile } from '../../models/user.model';
 import { GameService } from '../../services/game.service';
-import { GameRead, GameStatus, GameUpdateResult } from '../../models/game.model';
+// <<< MUDANÇA AQUI: Importar GameRead e GameStatus do game.model.ts
+import { GameRead, GameStatus } from '../../models/game.model';
+
 
 @Component({
   selector: 'app-admin-panel',
@@ -30,21 +33,14 @@ export class AdminPanelComponent implements OnInit {
   deleteRoundMessage: string | null = null;
   isDeleteRoundSuccess: boolean = false;
 
-  // Propriedades para Registrar Resultados (Manual)
-  selectedResultRound: number = 1;
-  gamesToScore: GameRead[] = [];
-  scoreMessage: string | null = null;
-  isScoreSuccess: boolean = false;
-  isLoadingGamesToScore: boolean = false;
-
   // Propriedades para Gerar/Enviar Planilha de Resultados (Excel)
   downloadRoundNumber: number = 1;
   resultsFile: File | null = null;
   resultsUploadMessage: string | null = null;
   isResultsUploadSuccess: boolean = false;
 
-
   rounds: number[] = Array.from({ length: 38 }, (_, i) => i + 1); // Array de 1 a 38 para selects de rodada
+  roundsWithGames: number[] = []; // Array de rodadas que possuem jogos
 
   constructor(
     private authService: AuthService,
@@ -54,15 +50,19 @@ export class AdminPanelComponent implements OnInit {
   ngOnInit(): void {
     this.loadAllUsers();
     this.loadAllGames();
-    this.loadGamesToScore(); // Carrega os jogos da rodada padrão para inserir resultados
   }
 
   // --- FUNÇÃO AUXILIAR PARA PARSEAR DATAS COMO UTC ---
-  private parseDateAsUTC(dateString: string): string {
+  // Esta função não é mais necessária aqui para game_datetime, pois o GameService já faz.
+  // Mantenha-a APENAS se as datas em UserProfile (created_at, updated_at)
+  // precisarem ser convertidas de string para Date e depois para string ISO para exibição.
+  // Se seu pipe 'date' no HTML consegue formatar a string diretamente, você pode removê-la.
+  private parseUserDateString(dateString: string): string {
     const utcString = dateString.endsWith('Z') ? dateString : dateString + 'Z';
     const dateObject = new Date(utcString);
     return dateObject.toISOString(); // Retorna a string ISO formatada com 'Z'
   }
+
 
   // Métodos de Carregamento de Dados Iniciais
   loadAllUsers(): void {
@@ -71,12 +71,7 @@ export class AdminPanelComponent implements OnInit {
 
     this.authService.getAllUsersForAdmin().subscribe({
       next: (users) => {
-        // Ajusta o fuso horário das datas dos usuários
-        this.allUsers = users.sort((a, b) => a.id - b.id).map(user => ({
-          ...user,
-          created_at: this.parseDateAsUTC(user.created_at), // <--- AGORA parseDateAsUTC EXISTE
-          updated_at: this.parseDateAsUTC(user.updated_at)  // <--- AGORA parseDateAsUTC EXISTE
-        }));
+        this.allUsers = users.sort((a, b) => a.id - b.id);
         this.isLoading = false;
         console.log('Todos os usuários (Admin):', this.allUsers);
       },
@@ -100,11 +95,13 @@ export class AdminPanelComponent implements OnInit {
     }
     this.gameService.getAllGamesAdmin(token).subscribe({
       next: (games) => {
-        // Ajusta o fuso horário das datas dos jogos
-        this.allGames = games.map(game => ({
-          ...game,
-          game_datetime: this.parseDateAsUTC(game.game_datetime) // <--- AGORA parseDateAsUTC EXISTE
-        }));
+        this.allGames = games;
+        this.roundsWithGames = [...new Set(this.allGames.map(game => game.round_number))].sort((a, b) => a - b);
+
+        if (this.roundsWithGames.length > 0) {
+          this.downloadRoundNumber = this.roundsWithGames[0];
+          this.deleteRoundNumber = this.roundsWithGames[0];
+        }
       },
       error: (err) => {
         console.error('Erro ao carregar todos os jogos (Admin):', err);
@@ -145,7 +142,7 @@ export class AdminPanelComponent implements OnInit {
         this.uploadMessage = `Sucesso! ${createdGames.length} jogo(s) inserido(s) na rodada ${this.selectedRound}.`;
         this.isUploadSuccess = true;
         this.selectedFile = null;
-        this.loadAllGames(); // Recarrega a tabela geral
+        this.loadAllGames();
         const fileInput = document.getElementById('excelFile') as HTMLInputElement;
         if (fileInput) {
             fileInput.value = '';
@@ -179,8 +176,8 @@ export class AdminPanelComponent implements OnInit {
     this.gameService.deleteGame(gameId, token).subscribe({
       next: (response) => {
         if (response.status === 204) {
-          this.errorMessage = null; // Limpa qualquer erro geral
-          this.loadAllGames(); // Recarrega a lista de jogos
+          this.errorMessage = null;
+          this.loadAllGames();
           this.showTemporaryMessage('Jogo excluído com sucesso!', true, 'deleteRoundMessage', 'isDeleteRoundSuccess');
         } else {
           this.showTemporaryMessage('Erro inesperado ao excluir jogo.', false, 'deleteRoundMessage', 'isDeleteRoundSuccess');
@@ -216,109 +213,15 @@ export class AdminPanelComponent implements OnInit {
     });
   }
 
-  // Métodos para Registrar Resultados (Manual)
-  loadGamesToScore(): void {
-    this.isLoadingGamesToScore = true;
-    this.scoreMessage = null;
-    this.isScoreSuccess = false;
+  private showTemporaryMessage(message: string, isSuccess: boolean, targetMessageProperty: 'uploadMessage' | 'deleteRoundMessage' | 'resultsUploadMessage', isTargetSuccessProperty: 'isUploadSuccess' | 'isDeleteRoundSuccess' | 'isResultsUploadSuccess'): void {
+      this.errorMessage = null;
 
-    const token = this.authService.getAccessToken();
-    if (!token) {
-      this.scoreMessage = 'Não autenticado. Faça login para gerenciar resultados.';
-      this.isScoreSuccess = false;
-      this.isLoadingGamesToScore = false;
-      return;
-    }
-
-    this.gameService.getGamesByRound(this.selectedResultRound, token).subscribe({
-      next: (games) => {
-        // Ajusta o fuso horário das datas dos jogos
-        this.gamesToScore = games.filter(game => game.status === GameStatus.SCHEDULED || (game.home_score === null && game.away_score === null));
-        this.gamesToScore = this.gamesToScore.map(game => ({
-          ...game,
-          game_datetime: this.parseDateAsUTC(game.game_datetime) // <--- AGORA parseDateAsUTC EXISTE
-        }));
-        this.isLoadingGamesToScore = false;
-        if (this.gamesToScore.length === 0) {
-          this.scoreMessage = `Nenhum jogo agendado na rodada ${this.selectedResultRound} para registrar resultados.`;
-          this.isScoreSuccess = true;
-        }
-      },
-      error: (err) => {
-        console.error('Erro ao carregar jogos para resultados:', err);
-        this.scoreMessage = `Erro ao carregar jogos da rodada ${this.selectedResultRound}: ${err.error?.detail || 'Verifique o console.'}`;
-        this.isScoreSuccess = false;
-        this.isLoadingGamesToScore = false;
-      }
-    });
-  }
-
-  onSubmitGameScores(): void {
-    this.scoreMessage = null;
-    this.isScoreSuccess = false;
-
-    const token = this.authService.getAccessToken();
-    if (!token) {
-      this.scoreMessage = 'Não autenticado. Faça login como admin para registrar resultados.';
-      this.isScoreSuccess = false;
-      return;
-    }
-
-    const updates: Promise<GameRead>[] = [];
-
-    for (const game of this.gamesToScore) {
-      if (game.home_score !== null && game.away_score !== null) {
-        updates.push(
-          new Promise((resolve, reject) => {
-            this.gameService.updateGameResult(game.id, game.home_score, game.away_score, token).subscribe({
-              next: (updatedGame) => {
-                console.log(`Resultado do jogo ${updatedGame.home_team} x ${updatedGame.away_team} atualizado.`);
-                resolve(updatedGame);
-              },
-              error: (err) => {
-                console.error(`Erro ao atualizar resultado do jogo ${game.id}:`, err);
-                reject(err);
-              }
-            });
-          })
-        );
-      }
-    }
-
-    if (updates.length === 0) {
-      this.scoreMessage = 'Nenhum placar preenchido para registrar nesta rodada.';
-      this.isScoreSuccess = false;
-      return;
-    }
-
-    Promise.all(updates)
-      .then(() => {
-        this.scoreMessage = `Resultados da rodada ${this.selectedResultRound} registrados com sucesso!`;
-        this.isScoreSuccess = true;
-        this.loadGamesToScore();
-        this.loadAllGames();
-      })
-      .catch((err) => {
-        this.scoreMessage = `Erro ao registrar resultados: ${err.error?.detail || 'Verifique o console.'}`;
-        this.isScoreSuccess = false;
-      });
-  }
-
-  onResultRoundChange(): void {
-    this.loadGamesToScore();
-  }
-
-  // Método auxiliar para exibir mensagens temporárias (generalizado)
-  private showTemporaryMessage(message: string, isSuccess: boolean, targetMessageProperty: 'uploadMessage' | 'deleteRoundMessage' | 'scoreMessage' | 'resultsUploadMessage', isTargetSuccessProperty: 'isUploadSuccess' | 'isDeleteRoundSuccess' | 'isScoreSuccess' | 'isResultsUploadSuccess'): void {
-      this.errorMessage = null; // Garante que a mensagem principal (topo) seja limpa
-
-      // Define a mensagem e o status na propriedade alvo
       (this as any)[targetMessageProperty] = message;
       (this as any)[isTargetSuccessProperty] = isSuccess;
 
       setTimeout(() => {
-          (this as any)[targetMessageProperty] = null; // Limpa a mensagem alvo
-      }, 5000); // Mensagem some após 5 segundos
+          (this as any)[targetMessageProperty] = null;
+      }, 5000);
   }
 
   // ----------------------------------------------------
@@ -382,10 +285,8 @@ export class AdminPanelComponent implements OnInit {
         this.resultsUploadMessage = `Sucesso! ${updatedGames.length} jogo(s) com resultados atualizado(s).`;
         this.isResultsUploadSuccess = true;
         this.resultsFile = null;
-        this.loadAllGames(); // Recarrega a tabela geral para mostrar os resultados
-        this.loadGamesToScore(); // Recarrega a seção de resultados caso o status mude
+        this.loadAllGames();
 
-        // Limpar o input file manualmente
         const fileInput = document.getElementById('resultsExcelFile') as HTMLInputElement;
         if (fileInput) {
             fileInput.value = '';

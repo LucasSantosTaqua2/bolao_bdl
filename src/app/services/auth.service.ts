@@ -5,6 +5,11 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 
+// <<< MUDANÇA: AGORA IMPORTA DE app/models/user.model.ts APENAS
+import { UserRole, UserProfile, UserUpdate as UserUpdateData, UserPasswordUpdate as UserPasswordUpdateData } from '../models/user.model';
+
+// <<< REMOVER ESTAS DEFINIÇÕES DUPLICADAS >>>
+/*
 export enum UserRole {
   USER = 'user',
   ADMIN = 'admin'
@@ -27,12 +32,15 @@ export interface UserPasswordUpdateData {
   current_password: string;
   new_password: string;
 }
+*/
+// <<< FIM DAS DEFINIÇÕES DUPLICADAS A REMOVER >>>
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8000/api/v1/users';
+  private apiUrl = 'http://localhost:8001/api/v1/users'; // <<< MUDE PARA A PORTA 8001
 
   private _isLoggedIn = new BehaviorSubject<boolean>(this.hasToken());
   public isLoggedIn$ = this._isLoggedIn;
@@ -169,7 +177,6 @@ export class AuthService {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
-    // O endpoint é /api/v1/users/admin/users
     return this.http.get<UserProfile[]>(`${this.apiUrl}/admin/users`, { headers });
   }
 }

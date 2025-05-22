@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AuthService, UserRole } from '../services/auth.service';
+import { AuthService} from '../services/auth.service';
+import { UserRole } from '../models/user.model';
 import { map, take, switchMap } from 'rxjs/operators'; // <--- Importe switchMap
 import { of } from 'rxjs'; // <--- Importe 'of' para criar um observable
 

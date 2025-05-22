@@ -2,15 +2,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { UserProfile } from './auth.service'; // <--- Importe UserProfile do AuthService (onde ela está definida)
+import { UserProfile } from '../models/user.model'; // <--- Importe UserProfile do AuthService (onde ela está definida)
 
 @Injectable({
   providedIn: 'root' // Isso faz com que o serviço seja um singleton e esteja disponível em toda a aplicação
 })
 export class RankingService {
   // Ajuste a URL base da sua API FastAPI para o endpoint de ranking
-  private apiUrl = 'http://localhost:8000/api/v1/users/ranking'; // Endpoint direto do ranking
-
+  private apiUrl = 'http://localhost:8001/api/v1/users/ranking'; // <<< MUDE PARA A PORTA 8001
+  
   constructor(private http: HttpClient) { } // Injeção do HttpClient
 
   getRanking(accessToken: string): Observable<UserProfile[]> {

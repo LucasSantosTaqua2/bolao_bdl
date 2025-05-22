@@ -11,6 +11,7 @@ import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard'; // Se você criar uma rota para admins
 import { ProfileComponent } from './pages/profile/profile.component';
 import { AdminPanelComponent } from './pages/admin-panel/admin-panel.component';
+import { ApostarComponent } from './pages/apostar/apostar.component';
 
 
 export const routes: Routes = [
@@ -37,7 +38,7 @@ export const routes: Routes = [
   },
   {
     path: 'apostar',
-    component: ApostasComponent,
+    component: ApostarComponent,
     canActivate: [authGuard] // <--- Protegido pelo AuthGuard
   },
   {

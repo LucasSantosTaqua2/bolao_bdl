@@ -2,7 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService, UserProfile, UserUpdateData, UserPasswordUpdateData } from '../../services/auth.service';
+import { AuthService,} from '../../services/auth.service';
+import { UserProfile, UserUpdate, UserPasswordUpdate } from '../../models/user.model';
 import { PasswordComplexityDirective } from '../../directives/password-complexity.directive';
 import { PasswordMatchDirective } from '../../directives/password-match.directive';
 
@@ -105,7 +106,7 @@ export class ProfileComponent implements OnInit {
         return;
     }
 
-    const updateData: UserUpdateData = { username: this.newUsername };
+    const updateData: UserUpdate = { username: this.newUsername };
     this.authService.updateProfile(updateData).subscribe({
       next: (updatedProfile) => {
         this.userProfile = {
@@ -145,7 +146,7 @@ export class ProfileComponent implements OnInit {
       return;
     }
 
-    const passwordData: UserPasswordUpdateData = {
+    const passwordData: UserPasswordUpdate = {
       current_password: this.currentPassword,
       new_password: this.newPassword
     };

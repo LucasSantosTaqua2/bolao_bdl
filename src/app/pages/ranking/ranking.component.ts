@@ -3,7 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule, NgIf } from '@angular/common';
 // Importe o RankingService e UserProfile do AuthService
 import { RankingService } from '../../services/ranking.service';
-import { AuthService, UserProfile } from '../../services/auth.service'; // UserProfile ainda é definido no AuthService
+import { AuthService} from '../../services/auth.service'; 
+import { UserProfile } from '../../models/user.model'; // Mude o caminho
+import { GameService } from '../../services/game.service'; // Se for usado
+// UserProfile ainda é definido no AuthService
 
 @Component({
   selector: 'app-ranking',

@@ -2,168 +2,192 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators'; // Importe o operador 'map'
 import { GameRead, GameStatus, GameCreate, GameUpdateResult } from '../models/game.model';
 
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root'
 })
 export class GameService {
-  private apiUrl = 'http://localhost:8000/api/v1/games'; // URL dos endpoints de jogos no FastAPI
+  private apiUrl = 'http://localhost:8001/api/v1/games'; // <<< MUDE PARA A PORTA 8001;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) { }
 
-  /**
-   * Envia uma planilha Excel com jogos para o backend (criação de jogos).
-   * @param file O arquivo Excel (.xlsx) a ser enviado.
-   * @param roundNumber O número da rodada para os jogos na planilha.
-   * @param accessToken O token JWT do admin.
-   * @returns Um Observable com a lista de jogos criados.
-   */
-  uploadGamesExcel(file: File, roundNumber: number, accessToken: string): Observable<GameRead[]> {
-    if (!accessToken) {
-      return new Observable(observer => observer.error('Token de autenticação ausente.'));
-    }
+  /**
+   * Função auxiliar para converter strings de data/hora ISO recebidas da API para objetos Date.
+   * Isso garante que os componentes recebam GameRead com game_datetime como Date.
+   */
+  private parseGameDates(game: any): GameRead {
+    return {
+      ...game,
+      game_datetime: new Date(game.game_datetime), // Converte a string ISO para objeto Date
+    } as GameRead; // Assegura que o tipo final é GameRead
+  }
 
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${accessToken}`
-    });
+  private getAuthHeaders(token: string): HttpHeaders {
+    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  }
 
-    const formData = new FormData();
-    formData.append('file', file);
+  /**
+   * Envia uma planilha Excel com jogos para o backend (criação de jogos).
+   * @param file O arquivo Excel (.xlsx) a ser enviado.
+   * @param roundNumber O número da rodada para os jogos na planilha.
+   * @param accessToken O token JWT do admin.
+   * @returns Um Observable com a lista de jogos criados.
+   */
+  uploadGamesExcel(file: File, roundNumber: number, accessToken: string): Observable<GameRead[]> {
+    if (!accessToken) {
+      return new Observable(observer => observer.error('Token de autenticação ausente.'));
+    }
 
-    let params = new HttpParams().set('round_number', roundNumber.toString());
+    const headers = this.getAuthHeaders(accessToken);
 
-    return this.http.post<GameRead[]>(`${this.apiUrl}/admin/games/upload-excel`, formData, { headers, params });
-  }
+    const formData = new FormData();
+    formData.append('file', file);
 
-  /**
-   * Obtém os jogos de uma rodada específica.
-   * @param roundNumber O número da rodada.
-   * @param accessToken O token JWT do usuário.
-   * @returns Um Observable com a lista de jogos da rodada.
-   */
-  getGamesByRound(roundNumber: number, accessToken: string): Observable<GameRead[]> {
-    if (!accessToken) {
-      return new Observable(observer => observer.error('Token de autenticação ausente.'));
-    }
+    let params = new HttpParams().set('round_number', roundNumber.toString());
 
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${accessToken}`
-    });
-    return this.http.get<GameRead[]>(`${this.apiUrl}/${roundNumber}`, { headers });
-  }
+    return this.http.post<any[]>(`${this.apiUrl}/admin/games/upload-excel`, formData, { headers, params }).pipe(
+      map(games => games.map(this.parseGameDates))
+    );
+  }
 
-  /**
-   * Atualiza o placar de um jogo (admin).
-   * @param gameId O ID do jogo.
-   * @param homeScore Placar do mandante (pode ser null se ainda não preenchido).
-   * @param awayScore Placar do visitante (pode ser null se ainda não preenchido).
-   * @param accessToken O token JWT do admin.
-   * @returns Um Observable com o jogo atualizado.
-   */
-  updateGameResult(gameId: number, homeScore: number | null, awayScore: number | null, accessToken: string): Observable<GameRead> {
-    if (!accessToken) {
-      return new Observable(observer => observer.error('Token de autenticação ausente.'));
-    }
+  /**
+   * Obtém os jogos de uma rodada específica.
+   * @param roundNumber O número da rodada.
+   * @param accessToken O token JWT do usuário.
+   * @returns Um Observable com a lista de jogos da rodada.
+   */
+  getGamesByRound(roundNumber: number, accessToken: string): Observable<GameRead[]> {
+    if (!accessToken) {
+      return new Observable(observer => observer.error('Token de autenticação ausente.'));
+    }
 
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
-    });
+    const headers = this.getAuthHeaders(accessToken);
+    return this.http.get<any[]>(`${this.apiUrl}/${roundNumber}`, { headers }).pipe(
+      map(games => games.map(this.parseGameDates))
+    );
+  }
 
-    const body: GameUpdateResult = {
-        home_score: homeScore,
-        away_score: awayScore,
-        status: GameStatus.FINISHED // Assume que ao atualizar placar, o jogo está finalizado
-    };
+  /**
+   * Atualiza o placar de um jogo (admin).
+   * @param gameId O ID do jogo.
+   * @param homeScore Placar do mandante (pode ser null se ainda não preenchido).
+   * @param awayScore Placar do visitante (pode ser null se ainda não preenchido).
+   * @param accessToken O token JWT do admin.
+   * @returns Um Observable com o jogo atualizado.
+   */
+  updateGameResult(gameId: number, homeScore: number | null, awayScore: number | null, accessToken: string): Observable<GameRead> {
+    if (!accessToken) {
+      return new Observable(observer => observer.error('Token de autenticação ausente.'));
+    }
 
-    return this.http.put<GameRead>(`${this.apiUrl}/admin/games/${gameId}/result`, body, { headers });
-  }
+    const headers = this.getAuthHeaders(accessToken);
 
-  /**
-   * Obtém todos os jogos cadastrados (apenas para admin).
-   * @param accessToken O token JWT do admin.
-   * @returns Um Observable com a lista de todos os jogos.
-   */
-  getAllGamesAdmin(accessToken: string): Observable<GameRead[]> {
-    if (!accessToken) {
-      return new Observable(observer => observer.error('Token de autenticação ausente.'));
-    }
+    const body: GameUpdateResult = {
+        home_score: homeScore,
+        away_score: awayScore,
+        status: GameStatus.FINISHED // Assume que ao atualizar placar, o jogo está finalizado
+    };
 
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${accessToken}`
-    });
-    return this.http.get<GameRead[]>(`${this.apiUrl}/admin/games`, { headers });
-  }
+    return this.http.put<any>(`${this.apiUrl}/admin/games/${gameId}/result`, body, { headers }).pipe(
+      map(this.parseGameDates)
+    );
+  }
 
-  /**
-   * Deleta um jogo específico pelo ID (apenas para administradores).
-   * @param gameId O ID do jogo a ser deletado.
-   * @param accessToken O token JWT do admin.
-   * @returns Um Observable (sem corpo de resposta para 204 No Content).
-   */
-  deleteGame(gameId: number, accessToken: string): Observable<any> {
-    if (!accessToken) {
-      return new Observable(observer => observer.error('Token de autenticação ausente.'));
-    }
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${accessToken}`
-    });
-    return this.http.delete(`${this.apiUrl}/admin/games/${gameId}`, { headers, observe: 'response' });
-  }
+  /**
+   * Obtém todos os jogos cadastrados (apenas para admin).
+   * @param accessToken O token JWT do admin.
+   * @returns Um Observable com a lista de todos os jogos.
+   */
+  getAllGamesAdmin(accessToken: string): Observable<GameRead[]> {
+    if (!accessToken) {
+      return new Observable(observer => observer.error('Token de autenticação ausente.'));
+    }
 
-  /**
-   * Deleta todos os jogos de uma rodada específica (apenas para administradores).
-   * @param roundNumber A rodada cujos jogos serão deletados.
-   * @param accessToken O token JWT do admin.
-   * @returns Um Observable com a mensagem de sucesso (número de jogos deletados).
-   */
-  deleteRoundGames(roundNumber: number, accessToken: string): Observable<any> {
-    if (!accessToken) {
-      return new Observable(observer => observer.error('Token de autenticação ausente.'));
-    }
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${accessToken}`
-    });
-    return this.http.delete(`${this.apiUrl}/admin/rounds/${roundNumber}`, { headers });
-  }
+    const headers = this.getAuthHeaders(accessToken);
+    return this.http.get<any[]>(`${this.apiUrl}/admin/games`, { headers }).pipe(
+      map(games => games.map(this.parseGameDates))
+    );
+  }
 
-  /**
-   * Faz o download de uma planilha Excel com jogos de uma rodada para preencher resultados.
-   * @param roundNumber A rodada para a qual baixar a planilha.
-   * @param accessToken O token JWT do admin.
-   * @returns Um Observable com o Blob do arquivo Excel.
-   */
-  downloadResultsTemplate(roundNumber: number, accessToken: string): Observable<Blob> {
-    if (!accessToken) {
-      return new Observable(observer => observer.error('Token de autenticação ausente.'));
-    }
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${accessToken}`
-    });
-    // responseType: 'blob' é crucial para receber o arquivo binário
-    return this.http.get(`${this.apiUrl}/admin/games/download-results-template/${roundNumber}`, { headers, responseType: 'blob' });
-  }
+  /**
+   * NOVO MÉTODO: Obtém todos os jogos visíveis para usuários comuns.
+   * @param accessToken O token JWT do usuário.
+   * @returns Um Observable com a lista de todos os jogos visíveis para usuários.
+   */
+  getAllGamesForUser(accessToken: string): Observable<GameRead[]> {
+    if (!accessToken) {
+      return new Observable(observer => observer.error('Token de autenticação ausente.'));
+    }
+    const headers = this.getAuthHeaders(accessToken);
+    // Este endpoint '/all' deve ser o que você criou no backend para usuários comuns
+    return this.http.get<any[]>(`${this.apiUrl}/all`, { headers }).pipe(
+      map(games => games.map(this.parseGameDates))
+    );
+  }
 
-  /**
-   * Faz upload de uma planilha Excel com resultados de jogos para atualizar.
-   * @param file O arquivo Excel (.xlsx) com os resultados.
-   * @param accessToken O token JWT do admin.
-   * @returns Um Observable com a lista de jogos atualizados.
-   */
-  uploadResultsExcel(file: File, accessToken: string): Observable<GameRead[]> {
-    if (!accessToken) {
-      return new Observable(observer => observer.error('Token de autenticação ausente.'));
-    }
+  /**
+   * Deleta um jogo específico pelo ID (apenas para administradores).
+   * @param gameId O ID do jogo a ser deletado.
+   * @param accessToken O token JWT do admin.
+   * @returns Um Observable (sem corpo de resposta para 204 No Content).
+   */
+  deleteGame(gameId: number, accessToken: string): Observable<any> {
+    if (!accessToken) {
+      return new Observable(observer => observer.error('Token de autenticação ausente.'));
+    }
+    const headers = this.getAuthHeaders(accessToken);
+    return this.http.delete(`${this.apiUrl}/admin/games/${gameId}`, { headers, observe: 'response' });
+  }
 
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${accessToken}`
-    });
+  /**
+   * Deleta todos os jogos de uma rodada específica (apenas para administradores).
+   * @param roundNumber A rodada cujos jogos serão deletados.
+   * @param accessToken O token JWT do admin.
+   * @returns Um Observable com a mensagem de sucesso (número de jogos deletados).
+   */
+  deleteRoundGames(roundNumber: number, accessToken: string): Observable<any> {
+    if (!accessToken) {
+      return new Observable(observer => observer.error('Token de autenticação ausente.'));
+    }
+    const headers = this.getAuthHeaders(accessToken);
+    return this.http.delete(`${this.apiUrl}/admin/rounds/${roundNumber}`, { headers });
+  }
 
-    const formData = new FormData();
-    formData.append('file', file); // 'file' deve corresponder ao nome do parâmetro no backend
+  /**
+   * Faz o download de uma planilha Excel com jogos de uma rodada para preencher resultados.
+   * @param roundNumber A rodada para a qual baixar a planilha.
+   * @param accessToken O token JWT do admin.
+   * @returns Um Observable com o Blob do arquivo Excel.
+   */
+  downloadResultsTemplate(roundNumber: number, accessToken: string): Observable<Blob> {
+    if (!accessToken) {
+      return new Observable(observer => observer.error('Token de autenticação ausente.'));
+    }
+    const headers = this.getAuthHeaders(accessToken);
+    return this.http.get(`${this.apiUrl}/admin/games/download-results-template/${roundNumber}`, { headers, responseType: 'blob' });
+  }
 
-    return this.http.post<GameRead[]>(`${this.apiUrl}/admin/games/upload-results-excel`, formData, { headers });
-  }
+  /**
+   * Faz upload de uma planilha Excel com resultados de jogos para atualizar.
+   * @param file O arquivo Excel (.xlsx) com os resultados.
+   * @param accessToken O token JWT do admin.
+   * @returns Um Observable com a lista de jogos atualizados.
+   */
+  uploadResultsExcel(file: File, accessToken: string): Observable<GameRead[]> {
+    if (!accessToken) {
+      return new Observable(observer => observer.error('Token de autenticação ausente.'));
+    }
+
+    const headers = this.getAuthHeaders(accessToken);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post<any[]>(`${this.apiUrl}/admin/games/upload-results-excel`, formData, { headers }).pipe(
+      map(games => games.map(this.parseGameDates))
+    );
+  }
 }
