@@ -1,17 +1,26 @@
 # app/models/bet.py
+from __future__ import annotations # <<< MUDE ESTA LINHA PARA O TOPO ABSOLUTO DO ARQUIVO
 from typing import Optional
-from datetime import datetime, timezone # <<< MUDANÇA: ADICIONE timezone AQUI
+from datetime import datetime, timezone
 
 from sqlalchemy import Column, Integer, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import relationship, Mapped
 
 from app.core.database import Base # Importar a Base declarativa
 
+# REMOVER ESTA LINHA (se ainda estiver aqui): from __future__ import annotations # Garantir que está no topo para forward references
+
 # Para as relações, ainda precisamos que User e Game sejam definidos
 # Não importamos diretamente para evitar circularidade, mas eles serão resolvidos
 # pela relação ou importados em main.py
 # from app.models.user import User # Não importar aqui
 # from app.models.game import Game # Não importar aqui
+from typing import TYPE_CHECKING # Certifique-se de que TYPE_CHECKING está aqui
+
+if TYPE_CHECKING:
+    from app.models.user import User
+    from app.models.game import Game
+
 
 class Bet(Base): # Herda de Base
     __tablename__ = "bet"
@@ -26,7 +35,6 @@ class Bet(Base): # Herda de Base
     is_correct: Mapped[Optional[bool]] = Column(Boolean)
     points_awarded: Mapped[Optional[int]] = Column(Integer, default=0)
 
-    # <<< MUDANÇA: Adicionar timezone=True para created_at e updated_at
     created_at: Mapped[datetime] = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at: Mapped[datetime] = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 

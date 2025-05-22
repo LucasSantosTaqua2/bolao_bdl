@@ -5,15 +5,14 @@ from sqlalchemy.orm import Session # <<< MUDANÇA: Use Session do SQLAlchemy ORM
 from sqlalchemy import select, desc, delete # <<< MUDANÇA: Use select, desc, delete do SQLAlchemy principal
 
 from app.models.game import Game, GameStatus # Importe o modelo Game
-from app.models.bet import Bet # <<< MUDANÇA: Importe o modelo Bet
-from app.models.user import User # <<< MUDANÇA: Importe o modelo User
+from app.models.bet import Bet # Importe o modelo Bet
+from app.models.user import User # Importe o modelo User
 from app.schemas.game import GameCreate, GameUpdateResult # Importe os schemas
 
 def create_game(game_create: GameCreate, db: Session) -> Game:
     """
     Cria um novo jogo no banco de dados.
     """
-    # <<< MUDANÇA: Crie a instância do modelo diretamente
     # Use model_dump() para Pydantic v2 para converter o schema em dict
     game = Game(**game_create.model_dump())
     db.add(game)
@@ -25,14 +24,12 @@ def get_game_by_id(game_id: int, db: Session) -> Optional[Game]:
     """
     Busca um jogo pelo seu ID.
     """
-    # <<< MUDANÇA: Use db.get() para buscar por PK (SQLAlchemy 2.0)
     return db.get(Game, game_id)
 
 def get_games_by_round(round_number: int, db: Session) -> List[Game]:
     """
     Busca todos os jogos de uma rodada específica.
     """
-    # <<< MUDANÇA: Use session.execute(select(...)).scalars().all()
     statement = select(Game).where(Game.round_number == round_number).order_by(Game.game_datetime)
     return db.execute(statement).scalars().all()
 
@@ -57,11 +54,12 @@ def update_game_result(game_id: int, game_update: GameUpdateResult, db: Session)
     db.commit() # Comita as mudanças no jogo
     db.refresh(game) # Refresha o objeto Game
 
-    # <<< NOVO: Chamar a função de cálculo de pontos SE o jogo foi FINALIZADO
-    if (game.status == GameStatus.FINISHED or game.status == GameStatus.COMPLETED) and \
-       (original_status != GameStatus.FINISHED and original_status != GameStatus.COMPLETED):
+    # <<< MUDANÇA AQUI: Removido 'GameStatus.COMPLETED' da condição
+    # A lógica deve ser: se o jogo foi finalizado E o status MUDOU para finalizado
+    if (game.status == GameStatus.FINISHED) and \
+       (original_status != GameStatus.FINISHED): # Apenas verifica se o status original NÃO era FINISHED
         print(f"Jogo {game.id} finalizado. Calculando e distribuindo pontos...")
-        calculate_and_award_points(game, db) # <<< CHAMA A FUNÇÃO AQUI
+        calculate_and_award_points(game, db) # CHAMA A FUNÇÃO AQUI
         print("Pontos distribuídos com sucesso para o jogo.")
     
     return game
@@ -70,7 +68,6 @@ def get_all_games(db: Session) -> List[Game]:
     """
     Retorna todos os jogos no banco de dados.
     """
-    # <<< MUDANÇA: Use session.execute(select(...)).scalars().all()
     statement = select(Game).order_by(Game.round_number, Game.game_datetime)
     return db.execute(statement).scalars().all()
 
@@ -87,7 +84,7 @@ def delete_game_by_id(game_id: int, db: Session) -> bool:
     Deleta um jogo específico pelo seu ID.
     Retorna True se o jogo foi encontrado e deletado, False caso contrário.
     """
-    game = db.get(Game, game_id) # Use db.get para buscar
+    game = db.get(Game, game_id)
     if game:
         db.delete(game)
         db.commit()
@@ -99,7 +96,6 @@ def delete_games_by_round(round_number: int, db: Session) -> int:
     Deleta todos os jogos de uma rodada específica.
     Retorna o número de jogos deletados.
     """
-    # <<< MUDANÇA: Use session.execute(delete(...)) e result.rowcount
     statement = delete(Game).where(Game.round_number == round_number)
     
     result = db.execute(statement) # Execute a declaração de delete
@@ -117,8 +113,9 @@ def calculate_and_award_points(game: Game, db: Session):
     e atualiza a tabela de apostas e os pontos dos usuários.
     Regra: 1 ponto por placar exato.
     """
-    if game.status != GameStatus.FINISHED and game.status != GameStatus.COMPLETED:
-        # Apenas jogos finalizados devem ter pontos calculados
+    # <<< MUDANÇA AQUI: Removido 'GameStatus.COMPLETED' da condição
+    if game.status != GameStatus.FINISHED:
+        # Apenas jogos com status FINISHED devem ter pontos calculados
         return
 
     bets_for_game = db.execute(

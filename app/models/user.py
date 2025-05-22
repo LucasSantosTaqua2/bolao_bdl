@@ -1,14 +1,14 @@
 # app/models/user.py
 from __future__ import annotations
 from typing import Optional, List, TYPE_CHECKING
-from app.core.database import Base
-from sqlmodel import Field # Remova Field se não estiver usando-o para Column
+from app.core.database import Base # Importar a Base declarativa
+# REMOVA ESTA LINHA: from sqlmodel import Field # Remova Field se não estiver usando-o para Column
 from sqlalchemy.orm import Mapped, relationship
-from datetime import datetime, timezone # <<< Mantenha timezone importado
+from datetime import datetime, timezone
 import enum
 from enum import Enum
 from sqlalchemy import Enum as SQLAlchemyEnum
-from sqlalchemy import Column, Integer, String, DateTime, Boolean # <<< MUDANÇA: Certifique-se de que DateTime é importado
+from sqlalchemy import Column, Integer, String, DateTime, Boolean
 
 if TYPE_CHECKING:
     from app.models.bet import Bet
@@ -29,7 +29,6 @@ class User(Base): # Herda de Base
     )
     points: Mapped[int] = Column(Integer, default=0, nullable=False)
     is_active: Mapped[bool] = Column(Boolean, default=True, nullable=False)
-    # <<< MUDANÇA: Adicionar timezone=True para created_at e updated_at
     created_at: Mapped[datetime] = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at: Mapped[datetime] = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
