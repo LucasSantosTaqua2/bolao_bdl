@@ -10,7 +10,7 @@ import { UserProfile } from '../models/user.model'; // <--- Importe UserProfile 
 export class RankingService {
   // Ajuste a URL base da sua API FastAPI para o endpoint de ranking
   // private apiUrl = 'http://localhost:8001/api/v1/users/ranking'; 
-  private apiUrl = 'https://back-bolao-bdl-production.up.railway.app/api/v1/ranking';
+  private apiUrl = 'https://back-bolao-bdl-production.up.railway.app/api/v1/users/ranking';
 
   constructor(private http: HttpClient) { } // Injeção do HttpClient
 
