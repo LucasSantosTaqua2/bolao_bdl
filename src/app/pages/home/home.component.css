@@ -35,7 +35,7 @@
     }
 }
 
-/* NOVO: Estilo para o título principal (h1) */
+/* Estilo para o título principal (h1) */
 .welcome-title {
     color: #212529; /* Cor preta padrão do Bootstrap */
     font-weight: bold;
@@ -48,8 +48,20 @@
     color: #212529; /* Mantém preto */
     font-weight: bold;
     font-size: 1.1em; /* Levemente maior que o texto ao redor */
-    /* A animação principal virá do .welcome-title, mas se quiser uma extra, pode adicionar aqui */
 }
+
+/* NOVO: Estilo para destacar as regras */
+.rule-highlight {
+    font-weight: bold; /* Deixa o texto em negrito */
+    color: #495057; /* Uma cor um pouco mais escura que o texto normal para destaque, ou uma cor primária */
+}
+
+/* NOVO: Estilo para o prazo limite, se quiser um destaque diferente */
+.rule-deadline {
+    color: #dc3545; /* Vermelho Bootstrap */
+    font-weight: bold;
+}
+
 
 /* Animação de aparecer e escalar (reutilizada para o título) */
 @keyframes fadeInScale {

@@ -1,19 +1,19 @@
 // src/app/pages/ranking/ranking.component.ts
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, NgIf } from '@angular/common';
-// Importe o RankingService e UserProfile do AuthService
+import { CommonModule } from '@angular/common'; // Mantenha CommonModule
+import { RouterLink } from '@angular/router'; // Se RouterLink for usado no HTML
+// Importe o RankingService e AuthService
 import { RankingService } from '../../services/ranking.service';
-import { AuthService} from '../../services/auth.service'; 
-import { UserProfile } from '../../models/user.model'; // Mude o caminho
-import { GameService } from '../../services/game.service'; // Se for usado
-// UserProfile ainda é definido no AuthService
+import { AuthService} from '../../services/auth.service';
+// Importe UserProfile e UserRole do user.model.ts
+import { UserProfile, UserRole } from '../../models/user.model';
 
 @Component({
   selector: 'app-ranking',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink], // Certifique-se que RouterLink está aqui se for usado no HTML
   templateUrl: './ranking.component.html',
-  styleUrl: './ranking.component.css'
+  styleUrls: ['./ranking.component.css']
 })
 export class RankingComponent implements OnInit {
   usersRanking: UserProfile[] = [];
@@ -21,8 +21,8 @@ export class RankingComponent implements OnInit {
   errorMessage: string | null = null;
 
   constructor(
-    private rankingService: RankingService, // <--- Injete o RankingService
-    private authService: AuthService // <--- Continue injetando AuthService para obter o token
+    private rankingService: RankingService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -33,23 +33,26 @@ export class RankingComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = null;
 
-    const token = this.authService.getAccessToken(); // <--- Obtenha o token do AuthService
+    const token = this.authService.getAccessToken();
     if (!token) {
       this.errorMessage = 'Não autenticado. Por favor, faça login para ver o ranking.';
       this.isLoading = false;
       return;
     }
 
-    this.rankingService.getRanking(token).subscribe({ // <--- Use o RankingService
+    this.rankingService.getRanking(token).subscribe({
       next: (data) => {
-        this.usersRanking = data.sort((a, b) => b.points - a.points);
+        // <<< MUDANÇA AQUI: Filtrar o usuário ADMIN >>>
+        this.usersRanking = data
+          .filter(user => user.role !== UserRole.ADMIN) // Filtra para remover o admin
+          .sort((a, b) => b.points - a.points); // Mantém a ordenação por pontos
+
         this.isLoading = false;
       },
       error: (err) => {
         console.error('Erro ao carregar ranking:', err);
         this.errorMessage = 'Não foi possível carregar o ranking. Por favor, tente novamente mais tarde.';
         this.isLoading = false;
-        // O AuthGuard já deve redirecionar para login se o token for inválido.
       }
     });
   }

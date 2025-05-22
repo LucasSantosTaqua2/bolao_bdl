@@ -10,7 +10,7 @@ import { GameRead, GameStatus, GameCreate, GameUpdateResult } from '../models/ga
   providedIn: 'root'
 })
 export class GameService {
-  private apiUrl = 'http://localhost:8001/api/v1/games'; // <<< MUDE PARA A PORTA 8001;
+  private apiUrl = 'https://back-bolao-bdl-production.up.railway.app/api/v1/games'; // <<< MUDE PARA A PORTA 8001;
 
   constructor(private http: HttpClient) { }
 

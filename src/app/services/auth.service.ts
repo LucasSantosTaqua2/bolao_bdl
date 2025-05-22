@@ -40,7 +40,7 @@ export interface UserPasswordUpdateData {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8001/api/v1/users'; // <<< MUDE PARA A PORTA 8001
+  private apiUrl = 'https://back-bolao-bdl-production.up.railway.app/api/v1/users'; // <<< MUDE PARA A PORTA 8001
 
   private _isLoggedIn = new BehaviorSubject<boolean>(this.hasToken());
   public isLoggedIn$ = this._isLoggedIn;
