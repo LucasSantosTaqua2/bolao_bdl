@@ -1,4 +1,4 @@
-<div class="container mt-5">
+<!-- <div class="container mt-5">
   <h2 class="text-center mb-4">Realizar Apostas</h2>
 
   <div *ngIf="message" class="alert mb-3" [ngClass]="{'alert-success': isSuccess, 'alert-danger': !isSuccess}">
@@ -22,7 +22,7 @@
         name="selectedRound"
         (change)="onRoundChange()"
       >
-        <option *ngFor="let round of availableRounds" [value]="round">Rodada {{ round }}</option>
+        <option *ngFor="let round of availableRounds" [ngValue]="round">Rodada {{ round }}</option>
       </select>
       <div *ngIf="availableRounds.length === 0" class="alert alert-warning mt-2">
         Nenhuma rodada com jogos disponível.
@@ -118,13 +118,146 @@
         </table>
 
         <div class="text-center mt-4" *ngIf="hasGamesToBetOn()">
-          <button type="submit" class="btn btn-dark btn-lg" [disabled]="betsForm.invalid">Registrar Todas as Apostas</button>
+          <button type="submit" class="btn btn-dark btn-lg" [disabled]="betsForm.invalid || bettingBlockedForRound">Registrar Todas as Apostas</button>
         </div>
       </form>
     </div>
 
     <div *ngIf="games.length === 0 && availableRounds.length > 0 && !message" class="alert alert-info text-center mt-4">
-      Nenhum jogo agendado para apostar na rodada selecionada.
+        Nenhum jogo encontrado para a Rodada {{ selectedRound }}.
+    </div>
+
+    <div *ngIf="availableRounds.length === 0" class="alert alert-warning mt-2">
+      Nenhuma rodada com jogos disponível.
     </div>
   </div>
+</div> -->
+
+
+<div class="container mt-5 apostas-container"> <h2 class="text-center mb-4 apostas-title">Realizar Apostas</h2> <div *ngIf="message" class="alert mb-3" [ngClass]="{'alert-success': isSuccess, 'alert-danger': !isSuccess}">
+  {{ message }}
+</div>
+
+<div *ngIf="isLoading" class="text-center my-4">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Carregando...</span>
+  </div>
+  <p class="mt-2">Carregando jogos...</p>
+</div>
+
+<div *ngIf="!isLoading">
+  <div class="mb-4">
+    <label for="roundSelect" class="form-label fw-bold">Selecione a Rodada</label>
+    <select
+      id="roundSelect"
+      class="form-select form-select-lg"
+      [(ngModel)]="selectedRound"
+      name="selectedRound"
+      (change)="onRoundChange()"
+    >
+      <option *ngFor="let round of availableRounds" [ngValue]="round">Rodada {{ round }}</option>
+    </select>
+    <div *ngIf="availableRounds.length === 0" class="alert alert-warning mt-2">
+      Nenhuma rodada com jogos disponível.
+    </div>
+  </div>
+
+  <div class="table-responsive-mobile" *ngIf="games.length > 0">
+    <form (ngSubmit)="onSubmitAllBets(betsForm)" #betsForm="ngForm">
+      <table class="table table-striped table-bordered align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th scope="col" class="text-center">Data/Hora</th>
+            <th scope="col" class="text-center">Mandante</th>
+            <th scope="col" class="text-center">Placar Aposta</th>
+            <th scope="col" class="text-center"></th>
+            <th scope="col" class="text-center">Placar Aposta</th>
+            <th scope="col" class="text-center">Visitante</th>
+            <th scope="col" class="text-center">Resultado Real</th>
+            <th scope="col" class="text-center">Sua Aposta</th>
+            <th scope="col" class="text-center">Acertou?</th>
+            <th scope="col" class="text-center">Pontos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let game of games">
+            <td class="text-center">{{ game.game_datetime | date:'dd/MM HH:mm':'America/Sao_Paulo' }}</td>
+            <td class="text-end fw-bold">{{ game.home_team }}</td>
+            
+            <td class="text-center">
+              <input
+                type="number"
+                class="form-control form-control-sm text-center"
+                [(ngModel)]="game.user_bet_home_score" #homeScoreInput="ngModel"
+                name="homeScoreBet_{{ game.id }}"
+                [required]="game.can_bet || false"
+                min="0"
+                [disabled]="!(game.can_bet || false)" />
+            </td>
+            <td class="text-center fw-bold">X</td>
+            <td class="text-center">
+              <input
+                type="number"
+                class="form-control form-control-sm text-center"
+                [(ngModel)]="game.user_bet_away_score" #awayScoreInput="ngModel"
+                name="awayScoreBet_{{ game.id }}"
+                [required]="game.can_bet || false"
+                min="0"
+                [disabled]="!(game.can_bet || false)" />
+            </td>
+
+            <td class="text-start fw-bold">{{ game.away_team }}</td>
+            
+            <td class="text-center">
+              <ng-container *ngIf="game.status === GameStatus.FINISHED || game.status === GameStatus.COMPLETED; else notFinishedResult">
+                {{ game.home_score !== null ? game.home_score : '-' }} x {{ game.away_score !== null ? game.away_score : '-' }}
+              </ng-container>
+              <ng-template #notFinishedResult>
+                <span class="text-muted">Aguardando</span>
+              </ng-template>
+            </td>
+            
+            <td class="text-center">
+              <ng-container *ngIf="game.has_user_bet; else noBetResult">
+                {{ game.user_bet_home_score !== null ? game.user_bet_home_score : '-' }} x {{ game.user_bet_away_score !== null ? game.user_bet_away_score : '-' }}
+              </ng-container>
+              <ng-template #noBetResult>
+                <span class="text-muted">N/A</span>
+              </ng-template>
+            </td>
+
+            <td class="text-center">
+              <ng-container *ngIf="game.has_user_bet && (game.status === GameStatus.FINISHED || game.status === GameStatus.COMPLETED); else noResultYet">
+                <i class="bi" [ngClass]="{'bi-check-circle-fill text-success': game.user_bet_is_correct, 'bi-x-circle-fill text-danger': game.user_bet_is_correct === false}"></i>
+              </ng-container>
+              <ng-template #noResultYet>
+                  <span *ngIf="game.has_user_bet && game.game_datetime >= now" class="text-muted">Aguardando</span>
+                  <span *ngIf="!game.has_user_bet" class="text-muted">N/A</span>
+              </ng-template>
+            </td>
+
+            <td class="text-center">
+              <ng-container *ngIf="game.has_user_bet && (game.status === GameStatus.FINISHED || game.status === GameStatus.COMPLETED); else noPointsYet">
+                {{ game.user_bet_points_awarded !== null ? game.user_bet_points_awarded : '0' }}
+              </ng-container>
+              <ng-template #noPointsYet>
+                  <span *ngIf="game.has_user_bet && game.game_datetime >= now" class="text-muted">Aguardando</span>
+                  <span *ngIf="!game.has_user_bet" class="text-muted">N/A</span>
+              </ng-template>
+            </td>
+
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="text-center mt-4" *ngIf="hasGamesToBetOn()">
+        <button type="submit" class="btn btn-dark btn-lg" [disabled]="betsForm.invalid || bettingBlockedForRound">Registrar Todas as Apostas</button>
+      </div>
+    </form>
+  </div>
+
+  <div *ngIf="games.length === 0 && availableRounds.length > 0 && !message" class="alert alert-info text-center mt-4">
+    Nenhum jogo agendado para apostar na rodada selecionada.
+  </div>
+</div>
 </div>

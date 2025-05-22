@@ -1,235 +1,269 @@
 /* src/app/nav-bar/nav-bar.component.css */
 
-/* Estilos Globais para a.nav-item */
+/* Estilos Globais para a.nav-item (mantido) */
 a.nav-item {
-    text-decoration: none;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-size: 18pt; /* Default for desktop */
-    font-weight: 600;
-    color: white;
-    position: relative;
-    transition: color 0.3s ease, transform 0.3s ease;
-    display: flex;
-    align-items: center;
-    padding: 5px 0;
-    white-space: nowrap;
-    cursor: pointer;
+  text-decoration: none;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-size: 18pt;
+  font-weight: 600;
+  color: white;
+  position: relative;
+  transition: color 0.3s ease, transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+a.nav-item i {
+  font-size: 1.2em;
+  margin-right: 8px;
+}
+
+/* Underline effect for desktop links (mantido) */
+@media (min-width: 769px) {
+
+  .desktop-center-content a.nav-item::after,
+  .desktop-right-actions a.nav-item::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 0%;
+    height: 3px;
+    background-color: gold;
+    transition: width 0.3s ease;
   }
-  
-  a.nav-item i {
-    font-size: 1.2em;
-    margin-right: 8px;
-  }
-  
-  /* Underline effect for desktop links */
-  @media (min-width: 769px) {
-    .desktop-center-content a.nav-item::after,
-    .desktop-right-actions a.nav-item::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      bottom: -5px;
-      width: 0%;
-      height: 3px;
-      background-color: gold; /* Default underline color */
-      transition: width 0.3s ease;
-    }
-  
-    .desktop-center-content a.nav-item:hover,
-    .desktop-center-content a.nav-item:focus,
-    .desktop-right-actions a.nav-item:hover,
-    .desktop-right-actions a.nav-item:focus {
-      color: gold;
-      transform: scale(1.05);
-    }
-  
-    .desktop-center-content a.nav-item:hover::after,
-    .desktop-center-content a.nav-item:focus::after,
-    .desktop-right-actions a.nav-item:hover::after,
-    .desktop-right-actions a.nav-item:focus::after {
-      width: 100%;
-    }
-  }
-  
-  /* Estilos Específicos do Logout Link */
-  a.nav-item.logout-link {
-    color: #ff6b6b !important; /* Cor VERMELHA para o botão Sair */
-  }
-  
-  a.nav-item.logout-link:hover,
-  a.nav-item.logout-link:focus {
-    color: #ff3333 !important; /* Cor mais escura no hover */
+
+  .desktop-center-content a.nav-item:hover,
+  .desktop-center-content a.nav-item:focus,
+  .desktop-right-actions a.nav-item:hover,
+  .desktop-right-actions a.nav-item:focus {
+    color: gold;
     transform: scale(1.05);
   }
-  
-  /* Logout link underline color on desktop */
-  @media (min-width: 769px) {
-    .desktop-right-actions a.nav-item.logout-link::after {
-      background-color: #ff3333; /* Red underline for logout */
-    }
+
+  .desktop-center-content a.nav-item:hover::after,
+  .desktop-center-content a.nav-item:focus::after,
+  .desktop-right-actions a.nav-item:hover::after,
+  .desktop-right-actions a.nav-item:focus::after {
+    width: 100%;
   }
-  
-  
-  /* ---------------------------------------------------- */
-  /* Estilos para Desktop (maior que 768px) */
-  @media (min-width: 769px) {
-    .nav-bar {
-      background-color: black;
-      display: flex;
-      align-items: center;
-      justify-content: space-between; /* Key for positioning left, center, right groups */
-      padding: 10px 20px;
-      position: relative;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-      min-height: 60px;
-      width: 100%;
-    }
-  
-    .navbar-header-left {
-      display: flex;
-      align-items: center;
-      flex-shrink: 0; /* Prevent shrinking */
-      margin-right: 20px; /* Spacing from center content */
-    }
-  
-    .menu-icon { display: none; } /* Hide mobile menu icon on desktop */
-  
-    .navbar-brand {
-      display: flex;
-      align-items: center;
-      height: 100%;
-      padding: 0;
-    }
-    .navbar-logo {
-      height: 40px;
-      width: auto;
-      transition: transform 0.3s ease;
-    }
-    .navbar-logo:hover { transform: scale(1.05); }
-  
-    .desktop-center-content {
-      display: flex;
-      align-items: center;
-      justify-content: center; /* Center its children (the links) */
-      flex-grow: 1; /* Allow this section to take up available central space */
-      gap: 45px; /* Adjust gap between links */
-    }
-  
-    .desktop-right-actions {
-      display: flex;
-      align-items: center;
-      flex-shrink: 0; /* Prevent shrinking */
-      margin-left: 20px; /* Spacing from center content */
-    }
-  
-    /* Hide mobile menu container on desktop */
-    .nav-links-mobile {
-      display: none;
-    }
+}
+
+/* Estilos Específicos do Logout Link (mantido) */
+a.nav-item.logout-link {
+  color: #ff6b6b !important;
+}
+
+a.nav-item.logout-link:hover,
+a.nav-item.logout-link:focus {
+  color: #ff3333 !important;
+  transform: scale(1.05);
+}
+
+/* Logout link underline color on desktop (mantido) */
+@media (min-width: 769px) {
+  .desktop-right-actions a.nav-item.logout-link::after {
+    background-color: #ff3333;
   }
-  
-  /* ---------------------------------------------------- */
-  /* Estilos para Mobile (telas menores ou iguais a 768px) */
-  @media (max-width: 768px) {
-    .nav-bar {
-      justify-content: space-between;
-      padding: 15px;
-      position: fixed;
-      width: 100%;
-      top: 0;
-      left: 0;
-      z-index: 1030;
-      background-color: black;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-      display: flex;
-      align-items: center;
-    }
-  
-    .navbar-header-left {
-      display: flex;
-      align-items: center;
-    }
-  
-    .menu-icon {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      width: 30px;
-      height: 20px;
-      cursor: pointer;
-      z-index: 1031; /* Ensures it's above other navbar elements and the slide-out menu */
-      position: relative;
-      min-width: 30px;
-      min-height: 20px;
-      margin-right: 15px;
-    }
-    .menu-icon .bar {
-      height: 4px;
-      width: 100%;
-      background-color: white;
-      border-radius: 2px;
-      transition: all 0.3s ease;
-    }
-    .menu-icon.open .bar-top { transform: translateY(8px) rotate(45deg); }
-    .menu-icon.open .bar-middle { opacity: 0; }
-    .menu-icon.open .bar-bottom { transform: translateY(-8px) rotate(-45deg); }
-  
-    .navbar-brand {
-      margin-left: auto; /* Pushes brand to the right of the menu icon */
-      margin-right: 0;
-      display: flex;
-      align-items: center;
-    }
-    .navbar-logo { height: 40px; }
-  
-    /* Mobile Menu container */
-    .nav-links-mobile {
-      position: fixed;
-      top: 0;
-      left: -100%; /* Initially hidden off-screen */
-      width: 100%;
-      height: 100vh;
-      background-color: #333;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 25px;
-      padding-top: 70px; /* Space for the fixed navbar, adjust if navbar height changes */
-      z-index: 1000; /* Below navbar (1030) so navbar remains visible, above page content */
-      transition: left 0.3s ease-in-out;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
-    }
-  
-    .nav-links-mobile.active {
-      left: 0; /* Slides in from the left */
-    }
-  
-    .nav-links-mobile a.nav-item {
-      font-size: 18pt;
-      color: white;
-      padding: 12px 20px;
-      width: 80%;
-      justify-content: center;
-      border-radius: 5px;
-    }
-    .nav-links-mobile a.nav-item::after { display: none; } /* No underline animation in mobile menu */
-  
-    .nav-links-mobile a.nav-item:hover,
-    .nav-links-mobile a.nav-item:focus {
-      background-color: rgba(255, 255, 255, 0.1);
-      transform: scale(1.02);
-      color: gold; /* Consistent hover color */
-    }
-     .nav-links-mobile a.nav-item.logout-link:hover,
-     .nav-links-mobile a.nav-item.logout-link:focus {
-      color: #ff3333 !important; /* Hover red for logout on mobile */
-      background-color: rgba(255, 107, 107, 0.1); /* Optional: slight red glow for logout hover */
-    }
-  
-    /* Hide desktop specific containers on mobile */
-    .desktop-center-content,
-    .desktop-right-actions {
-      display: none;
-    }
+}
+
+/* ---------------------------------------------------- */
+/* Estilos para Desktop (maior que 768px) */
+@media (min-width: 769px) {
+  .nav-bar {
+    background-color: black;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1030;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    min-height: 60px;
+    width: 100%;
+    /* MUDANÇA CRÍTICA AQUI: box-sizing */
+    box-sizing: border-box;
+    /* Garante que padding e border sejam incluídos na largura */
   }
+
+  .navbar-header-left {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    margin-right: 20px;
+  }
+
+  .menu-icon {
+    display: none;
+  }
+
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0;
+  }
+
+  .navbar-logo {
+    height: 40px;
+    width: auto;
+    transition: transform 0.3s ease;
+  }
+
+  .navbar-logo:hover {
+    transform: scale(1.05);
+  }
+
+  .desktop-center-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    gap: 45px;
+    /* Mantém o gap entre os itens do centro */
+  }
+
+  .desktop-right-actions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    margin-left: 20px;
+  }
+
+  .nav-links-mobile {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------- */
+/* Estilos para Mobile (telas menores ou iguais a 768px) */
+@media (max-width: 768px) {
+  .nav-bar {
+    justify-content: space-between;
+    padding: 15px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1030;
+    background-color: black;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    min-height: 70px;
+    /* MUDANÇA CRÍTICA AQUI: box-sizing */
+    box-sizing: border-box;
+    /* Garante que padding e border sejam incluídos na largura */
+  }
+
+  .navbar-header-left {
+    display: flex;
+    align-items: center;
+  }
+
+  .menu-icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 20px;
+    cursor: pointer;
+    z-index: 1031;
+    position: relative;
+    min-width: 30px;
+    min-height: 20px;
+    margin-right: 15px;
+  }
+
+  .menu-icon .bar {
+    height: 4px;
+    width: 100%;
+    background-color: white;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .menu-icon.open .bar-top {
+    transform: translateY(8px) rotate(45deg);
+  }
+
+  .menu-icon.open .bar-middle {
+    opacity: 0;
+  }
+
+  .menu-icon.open .bar-bottom {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+
+  .navbar-brand {
+    margin-left: auto;
+    margin-right: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .navbar-logo {
+    height: 40px;
+  }
+
+  .nav-links-mobile {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100vh;
+    background-color: #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    padding-top: 70px;
+    z-index: 1000;
+    transition: left 0.3s ease-in-out;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+    /* MUDANÇA CRÍTICA AQUI: box-sizing */
+    box-sizing: border-box;
+    /* Garante que padding e border sejam incluídos na largura */
+  }
+
+  .nav-links-mobile.active {
+    left: 0;
+  }
+
+  .nav-links-mobile a.nav-item {
+    font-size: 18pt;
+    color: white;
+    padding: 12px 20px;
+    width: 80%;
+    justify-content: center;
+    border-radius: 5px;
+  }
+
+  .nav-links-mobile a.nav-item::after {
+    display: none;
+  }
+
+  .nav-links-mobile a.nav-item:hover,
+  .nav-links-mobile a.nav-item:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: scale(1.02);
+    color: gold;
+  }
+
+  .nav-links-mobile a.nav-item.logout-link:hover,
+  .nav-links-mobile a.nav-item.logout-link:focus {
+    color: #ff3333 !important;
+    background-color: rgba(255, 107, 107, 0.1);
+  }
+
+  .desktop-center-content,
+  .desktop-right-actions {
+    display: none;
+  }
+}

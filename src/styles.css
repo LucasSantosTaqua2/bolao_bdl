@@ -1,39 +1,49 @@
-html, body {
+/* src/styles.css */
+
+html,
+body {
   height: 100%;
   margin: 0;
-  overflow-x: hidden; /* Evita rolagem horizontal indesejada */
+  overflow-x: hidden;
+  /* Evita rolagem horizontal indesejada */
 }
 
 /* Estilo para o componente raiz, app-root, que engloba tudo */
 app-root {
-  display: flex; /* Para que seus filhos (navbar e main-content) se comportem bem */
-  flex-direction: column; /* Coloca os filhos em coluna */
-  min-height: 100vh; /* Faz com que o app-root ocupe a altura mínima da viewport */
-}
-
-/* Estilo para empurrar o conteúdo abaixo da navbar fixa */
-.main-content-wrapper {
-  padding-top: 80px;
-  min-height: calc(100vh - 80px); 
-  flex-grow: 1; 
   display: flex;
-  justify-content: center;
-  align-items: center;
+  /* Para que seus filhos (navbar e main-content) se comportem bem */
   flex-direction: column;
-  background-color: transparent; 
+  /* Coloca os filhos em coluna */
+  min-height: 100vh;
+  /* Faz com que o app-root ocupe a altura mínima da viewport */
 }
 
+/* MUDANÇA CRÍTICA: Ajusta o padding-top do body para empurrar todo o conteúdo */
+/* Adiciona overflow-y para garantir que a barra de rolagem vertical funcione corretamente */
+body {
+  padding-top: 75px;
+  /* Ajuste este valor para ser um pouco maior que a altura máxima da sua navbar (60px desktop, 70px mobile) */
+  overflow-y: auto;
+  /* Garante que a barra de rolagem vertical apareça no body quando necessário */
+}
+
+/* Remova o estilo .main-content-wrapper se ele estiver apenas empurrando o conteúdo */
+/* Caso contrário, se .main-content-wrapper é um container estrutural, ele não deve ter padding-top */
+/* e o padding-top deve ficar no body ou em um container mais alto, como aqui */
+
+
+/* Fundo da página (mantido) */
 body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background-image: url(../public/img/background.png);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: 0.5; /* ajuste aqui */
-    z-index: -1;
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-image: url(../public/img/background.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.5;
+  z-index: -1;
 }

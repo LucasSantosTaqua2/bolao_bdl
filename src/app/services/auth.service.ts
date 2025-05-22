@@ -180,3 +180,5 @@ export class AuthService {
     return this.http.get<UserProfile[]>(`${this.apiUrl}/admin/users`, { headers });
   }
 }
+
+export { UserRole };

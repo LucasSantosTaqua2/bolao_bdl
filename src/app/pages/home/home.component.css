@@ -1,11 +1,13 @@
+/* src/app/pages/home/home.component.css */
 .content {
     align-items: center;
-    background-color: wheat;
-    border-radius: 8px;
-    padding: 20px; /* Adicionado um padding interno para o conteúdo do card */
-    max-width: 800px; /* Opcional: limitar a largura do conteúdo para melhor leitura */
-    margin-left: auto; /* Centraliza o card na página */
+    background-color: #f8f9fa;
+    border-radius: 15px;
+    padding: 20px;
+    max-width: 800px;
+    margin-left: auto;
     margin-right: auto;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
@@ -20,15 +22,43 @@
     margin-left: auto;
     margin-right: auto;
 
-    /* Animação de Pulsar */
-    animation: pulse 2s infinite alternate; /* Nome, duração, repetição, alternar direção */
+    /* Animação de Pulsar (logo) */
+    animation: pulse 2s infinite alternate;
 }
 
 @keyframes pulse {
     0% {
-        transform: scale(1); /* Tamanho normal */
+        transform: scale(1);
     }
     100% {
-        transform: scale(1.1); /* Aumenta 10% do tamanho */
+        transform: scale(1.1);
+    }
+}
+
+/* NOVO: Estilo para o título principal (h1) */
+.welcome-title {
+    color: #212529; /* Cor preta padrão do Bootstrap */
+    font-weight: bold;
+    animation: fadeInScale 1s ease-out forwards; /* Aplica a animação ao h1 */
+    display: inline-block; /* Necessário para aplicar transform */
+}
+
+/* Estilo para o nome de usuário dentro do título */
+.username-highlight {
+    color: #212529; /* Mantém preto */
+    font-weight: bold;
+    font-size: 1.1em; /* Levemente maior que o texto ao redor */
+    /* A animação principal virá do .welcome-title, mas se quiser uma extra, pode adicionar aqui */
+}
+
+/* Animação de aparecer e escalar (reutilizada para o título) */
+@keyframes fadeInScale {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
     }
 }
