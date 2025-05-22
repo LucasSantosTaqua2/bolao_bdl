@@ -1,10 +1,12 @@
+# app/crud/user.py
 from typing import Optional, List
-from sqlmodel import Session, select, desc
-from datetime import datetime, timezone # <--- Importe datetime e timezone para updated_at
+from datetime import datetime, timezone # Mantenha datetime e timezone
+from sqlalchemy.orm import Session # <<< MUDANÇA: Use Session do SQLAlchemy ORM
+from sqlalchemy import select, desc # <<< MUDANÇA: Use select, desc do SQLAlchemy principal
 
-from app.models.user import User # Mantenha apenas o User do models
-from app.schemas.user import UserCreate, UserUpdate, UserPasswordUpdate # <--- Importe os novos schemas
-from app.core.security import get_password_hash, verify_password # <--- Importe verify_password
+from app.models.user import User # Importe o modelo User
+from app.schemas.user import UserCreate, UserUpdate, UserPasswordUpdate # Importe os schemas
+from app.core.security import get_password_hash # Importe a função de hash de senha
 
 def create_user(user_create: UserCreate, db: Session) -> User:
     """
@@ -13,21 +15,26 @@ def create_user(user_create: UserCreate, db: Session) -> User:
     """
     hashed_password = get_password_hash(user_create.password)
 
+    # <<< MUDANÇA: Crie a instância do modelo diretamente
     user = User(
         username=user_create.username,
         hashed_password=hashed_password,
-        role=user_create.role
+        role=user_create.role, # Role já é UserRole do Enum
+        points=0, # Default já está no modelo, mas pode ser explícito aqui
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc)
     )
 
     db.add(user)
     db.commit()
-    db.refresh(user)
+    db.refresh(user) # Refresha o objeto para ter o ID gerado pelo DB
     return user
 
 def get_user_by_id(user_id: int, db: Session) -> Optional[User]:
     """
     Busca um usuário no banco de dados pelo seu ID.
     """
+    # <<< MUDANÇA: Use db.get() para buscar por PK (SQLAlchemy 2.0)
     user = db.get(User, user_id)
     return user
 
@@ -35,8 +42,9 @@ def get_user_by_username(username: str, db: Session) -> Optional[User]:
     """
     Busca um usuário no banco de dados pelo seu username.
     """
+    # <<< MUDANÇA: Use session.execute(select(...)).scalars().first()
     statement = select(User).where(User.username == username)
-    user = db.exec(statement).first()
+    user = db.execute(statement).scalars().first()
     return user
 
 # ----------------------------------------------------
@@ -47,11 +55,11 @@ def update_user_profile(user_id: int, user_update: UserUpdate, db: Session) -> O
     """
     Atualiza os dados de perfil de um usuário (ex: username).
     """
-    user = db.get(User, user_id)
+    user = db.get(User, user_id) # Use db.get para buscar
     if not user:
         return None
 
-    # Transforma o schema UserUpdate em um dicionário, excluindo campos não definidos
+    # <<< MUDANÇA: Use model_dump() para Pydantic v2
     update_data = user_update.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(user, key, value) # Atualiza o atributo do objeto User
@@ -77,8 +85,9 @@ def get_users_ranking(db: Session, limit: Optional[int] = None) -> List[User]:
     """
     Busca todos os usuários, ordenados por pontos em ordem decrescente.
     """
+    # <<< MUDANÇA: Use session.execute(select(...)).scalars().all()
     statement = select(User).order_by(desc(User.points)) # Ordena por pontos em ordem decrescente
     if limit:
         statement = statement.limit(limit) # Limita o número de resultados, se especificado
-    users = db.exec(statement).all()
+    users = db.execute(statement).scalars().all()
     return users

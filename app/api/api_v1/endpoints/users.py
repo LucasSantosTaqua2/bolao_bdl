@@ -1,13 +1,17 @@
-from typing import Annotated, List
+# app/api/v1/endpoints/users.py
+from typing import Annotated, List, Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlmodel import Session
-from datetime import datetime, timezone
+from sqlalchemy.orm import Session # <<< MUDANÇA: Use Session do SQLAlchemy ORM
+from sqlalchemy import select # <<< MUDANÇA: Use select do SQLAlchemy principal
+from datetime import datetime, timezone # <<< Adicione timezone
 
-from app.core.security import create_access_token, verify_password, Token
-from app.core.database import get_session
-# Importe as funções CRUD, incluindo a nova get_users_ranking
+from app.core.security import create_access_token, verify_password, Token # <<< Token e funções de segurança vêm do core.security
+from app.core.database import get_session # Importe sua função para obter a sessão do DB
+# MUDANÇA: Importe get_current_user e get_current_active_admin do core.security
+from app.core.security import get_current_user, get_current_active_admin
+# Importe as funções CRUD do seu arquivo app/crud/user.py (que será atualizado)
 from app.crud.user import (
     create_user,
     get_user_by_username,
@@ -16,55 +20,10 @@ from app.crud.user import (
     update_user_password,
     get_users_ranking
 )
-from app.models.user import User, UserRole
-from app.schemas.user import UserCreate, UserRead, UserUpdate, UserPasswordUpdate
-
-from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
-from app.core.config import settings
-
+from app.models.user import User, UserRole # <<< Mantenha User e UserRole de app.models.user
+from app.schemas.user import UserCreate, UserRead, UserUpdate, UserPasswordUpdate # <<< Mantenha schemas
 
 router = APIRouter()
-
-# --------------------------------------------------
-# Dependência para Usuário Atual (Proteção de Rotas)
-# --------------------------------------------------
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/users/token")
-
-async def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)],
-    db: Session = Depends(get_session)
-) -> User:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Não foi possível validar as credenciais",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-
-    user = get_user_by_username(username, db)
-    if user is None:
-        raise credentials_exception
-    return user
-
-# --------------------------------------------------
-# NOVA DEPENDÊNCIA: Para Superusuários (Admin)
-# --------------------------------------------------
-async def get_current_active_admin(
-    current_user: Annotated[User, Depends(get_current_user)]
-) -> User:
-    if current_user.role != UserRole.ADMIN:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Acesso não autorizado. Apenas administradores podem acessar este recurso."
-        )
-    return current_user
 
 # --------------------------------------------------
 # Endpoint de Registro de Usuário
@@ -75,6 +34,7 @@ def register_user(user_create: UserCreate, db: Session = Depends(get_session)):
     Registra um novo usuário no sistema.
     Retorna os dados do usuário registrado (sem a senha).
     """
+    # MUDANÇA: get_user_by_username agora é uma função CRUD para SQLAlchemy Puro
     db_user = get_user_by_username(user_create.username, db)
     if db_user:
         raise HTTPException(
@@ -82,6 +42,7 @@ def register_user(user_create: UserCreate, db: Session = Depends(get_session)):
             detail="Nome de usuário já registrado."
         )
 
+    # MUDANÇA: create_user agora é uma função CRUD para SQLAlchemy Puro
     user = create_user(user_create, db)
     return user
 
@@ -97,6 +58,7 @@ async def login_for_access_token(
     Realiza o login de um usuário e retorna um token de acesso JWT.
     Requer 'username' e 'password' no corpo da requisição (x-www-form-urlencoded).
     """
+    # MUDANÇA: get_user_by_username agora é uma função CRUD para SQLAlchemy Puro
     user = get_user_by_username(form_data.username, db)
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
@@ -104,6 +66,7 @@ async def login_for_access_token(
             detail="Credenciais inválidas",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    # create_access_token e verify_password vêm do core.security
     access_token = create_access_token(
         data={"sub": user.username, "role": user.role}
     )
@@ -114,7 +77,7 @@ async def login_for_access_token(
 # Endpoint de Perfil (Obter e Atualizar)
 # --------------------------------------------------
 @router.get("/me", response_model=UserRead)
-async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
+async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]): # get_current_user vem do core.security
     """
     Retorna as informações do usuário atualmente logado.
     Esta rota requer um token JWT válido.
@@ -124,7 +87,7 @@ async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]
 @router.put("/me", response_model=UserRead)
 async def update_users_me(
     user_update: UserUpdate,
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(get_current_user)], # get_current_user vem do core.security
     db: Session = Depends(get_session)
 ):
     """
@@ -132,6 +95,7 @@ async def update_users_me(
     Esta rota requer um token JWT válido.
     """
     if user_update.username and user_update.username != current_user.username:
+        # MUDANÇA: get_user_by_username agora é uma função CRUD para SQLAlchemy Puro
         existing_user = get_user_by_username(user_update.username, db)
         if existing_user:
             raise HTTPException(
@@ -139,6 +103,7 @@ async def update_users_me(
                 detail="Novo nome de usuário já está em uso."
             )
 
+    # MUDANÇA: update_user_profile agora é uma função CRUD para SQLAlchemy Puro
     updated_user = update_user_profile(current_user.id, user_update, db)
     if not updated_user:
         raise HTTPException(
@@ -153,34 +118,39 @@ async def update_users_me(
 @router.put("/me/password", status_code=status.HTTP_204_NO_CONTENT)
 async def change_my_password(
     password_update: UserPasswordUpdate,
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(get_current_user)], # get_current_user vem do core.security
     db: Session = Depends(get_session)
 ):
     """
     Permite que o usuário logado altere sua senha.
     Requer a senha atual para verificação.
     """
+    # verify_password vem do app.core.security
     if not verify_password(password_update.current_password, current_user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Senha atual incorreta."
         )
 
+    # MUDANÇA: update_user_password agora é uma função CRUD para SQLAlchemy Puro
     update_user_password(current_user, password_update.new_password, db)
-    return {"message": "Senha alterada com sucesso."}
+    # Retornar uma resposta vazia para 204 No Content
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
 
 # --------------------------------------------------
 # ENDPOINT: Ranking de Usuários
 # --------------------------------------------------
 @router.get("/ranking", response_model=List[UserRead])
 async def read_users_ranking(
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(get_current_user)], # get_current_user vem do core.security
     db: Session = Depends(get_session)
 ):
     """
     Retorna a classificação de todos os usuários, ordenada por pontos.
     Esta rota requer um token JWT válido.
     """
+    # MUDANÇA: get_users_ranking agora é uma função CRUD para SQLAlchemy Puro
     ranking_users = get_users_ranking(db)
     return ranking_users
 
@@ -190,13 +160,12 @@ async def read_users_ranking(
 # --------------------------------------------------
 @router.get("/admin/users", response_model=List[UserRead])
 async def read_all_users(
-    current_user: Annotated[User, Depends(get_current_active_admin)], # <--- ESTE VEM PRIMEIRO
-    db: Session = Depends(get_session) # <--- ESTE VEM DEPOIS
+    current_user: Annotated[User, Depends(get_current_active_admin)], # get_current_active_admin vem do core.security
+    db: Session = Depends(get_session)
 ):
     """
     Retorna uma lista de todos os usuários no sistema (apenas para administradores).
     """
-    from sqlmodel import select # Reafirma a importação localmente
-
-    users = db.exec(select(User)).all()
+    # MUDANÇA: Consulta direta com SQLAlchemy
+    users = db.execute(select(User)).scalars().all() # MUDANÇA AQUI
     return users

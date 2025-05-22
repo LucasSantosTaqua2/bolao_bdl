@@ -1,28 +1,36 @@
-from typing import Optional
-from sqlmodel import Field, SQLModel
-from datetime import datetime, timezone
-import enum  # Importe o módulo enum
+# app/models/user.py
+from __future__ import annotations
+from typing import Optional, List, TYPE_CHECKING
+from app.core.database import Base
+from sqlmodel import Field # Remova Field se não estiver usando-o para Column
+from sqlalchemy.orm import Mapped, relationship
+from datetime import datetime, timezone # <<< Mantenha timezone importado
+import enum
+from enum import Enum
+from sqlalchemy import Enum as SQLAlchemyEnum
+from sqlalchemy import Column, Integer, String, DateTime, Boolean # <<< MUDANÇA: Certifique-se de que DateTime é importado
+
+if TYPE_CHECKING:
+    from app.models.bet import Bet
 
 
-# Defina um Enum para os papéis do usuário
-class UserRole(str, enum.Enum):  # Herda de str para serializar como string no DB e de enum.Enum
+class UserRole(str, Enum):
     USER = "user"
     ADMIN = "admin"
 
+class User(Base): # Herda de Base
+    __tablename__ = "user"
 
-class User(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    username: str = Field(unique=True, index=True, max_length=50)  # Nome de usuário único
-    hashed_password: str  # Senha com hash
-    role: UserRole = Field(
-        default=UserRole.USER, nullable=False
-    )  # <--- Adicionado o campo role com valor padrão
-    # --- NOVO CAMPO AQUI ---
-    points: int = Field(default=0, nullable=False)  # Adicionado o campo 'points' com valor padrão 0
-    # -----------------------
-    created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc), nullable=False
-    )  # Data de criação (UTC)
-    updated_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc), nullable=False
-    )  # Data da última atualização (UTC)
+    id: Mapped[int] = Column(Integer, primary_key=True, index=True)
+    username: Mapped[str] = Column(String(50), unique=True, index=True, nullable=False)
+    hashed_password: Mapped[str] = Column(String(255), nullable=False)
+    role: Mapped[UserRole] = Column(
+        SQLAlchemyEnum(UserRole, name="user_roles"), default=UserRole.USER, nullable=False
+    )
+    points: Mapped[int] = Column(Integer, default=0, nullable=False)
+    is_active: Mapped[bool] = Column(Boolean, default=True, nullable=False)
+    # <<< MUDANÇA: Adicionar timezone=True para created_at e updated_at
+    created_at: Mapped[datetime] = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at: Mapped[datetime] = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    bets: Mapped[List["Bet"]] = relationship("Bet", back_populates="user")

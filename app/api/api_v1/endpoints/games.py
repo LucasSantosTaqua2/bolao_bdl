@@ -1,20 +1,24 @@
-# app/api/api_v1/endpoints/games.py
+# app/api/v1/endpoints/games.py
 from typing import Annotated, List, Any
-from datetime import datetime
+from datetime import datetime, timezone # Adicione timezone
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Query, Response
 from fastapi.responses import StreamingResponse
-from sqlmodel import Session
+from sqlalchemy.orm import Session # <<< MUDANÇA: Use Session do SQLAlchemy ORM
+from sqlalchemy import select # <<< MUDANÇA: Use select do SQLAlchemy principal
 import openpyxl
 from io import BytesIO
 
 from app.core.database import get_session
-from app.api.api_v1.endpoints.users import get_current_active_admin, get_current_user
+# MUDANÇA: Importe get_current_active_admin e get_current_user do core.security
+from app.core.security import get_current_active_admin, get_current_user
 from app.models.game import Game, GameStatus
+# MUDANÇA: Importe as funções CRUD do seu arquivo app/crud/game.py (que agora está atualizado para SQLAlchemy Puro)
 from app.crud.game import (
     create_game,
     get_games_by_round,
     update_game_result,
     get_all_games,
+    get_all_games_for_user,
     delete_game_by_id,
     delete_games_by_round
 )
@@ -99,7 +103,7 @@ async def upload_games_excel(
 
     created_games = []
     for game_data in games_to_create:
-        created_games.append(create_game(game_data, db))
+        created_games.append(create_game(game_data, db)) # Usar a função CRUD
     
     return created_games
 
@@ -109,13 +113,13 @@ async def upload_games_excel(
 @router.get("/games/{round_number}", response_model=List[GameRead])
 async def read_games_by_round(
     round_number: int,
-    current_user: Annotated[Any, Depends(get_current_user)],
+    current_user: Annotated[Any, Depends(get_current_user)], # get_current_user vem do core.security
     db: Session = Depends(get_session)
 ):
     """
     Retorna todos os jogos de uma rodada específica.
     """
-    games = get_games_by_round(round_number, db)
+    games = get_games_by_round(round_number, db) # Usar a função CRUD
     if not games:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -130,13 +134,13 @@ async def read_games_by_round(
 async def update_game_scores(
     game_id: int,
     game_update: GameUpdateResult,
-    current_admin: Annotated[Any, Depends(get_current_active_admin)],
+    current_admin: Annotated[Any, Depends(get_current_active_admin)], # get_current_active_admin vem do core.security
     db: Session = Depends(get_session)
 ):
     """
     Atualiza o placar e status de um jogo específico (apenas para administradores).
     """
-    updated_game = update_game_result(game_id, game_update, db)
+    updated_game = update_game_result(game_id, game_update, db) # Usar a função CRUD
     if not updated_game:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Jogo não encontrado.")
     return updated_game
@@ -146,16 +150,13 @@ async def update_game_scores(
 # --------------------------------------------------
 @router.get("/admin/games", response_model=List[GameRead])
 async def read_all_games_admin(
-    current_admin: Annotated[Any, Depends(get_current_active_admin)],
+    current_admin: Annotated[Any, Depends(get_current_active_admin)], # get_current_active_admin vem do core.security
     db: Session = Depends(get_session)
 ):
     """
     Retorna a lista de todos os jogos cadastrados (apenas para administradores).
     """
-    from sqlmodel import select # Reafirma a importaçao localmente
-    from app.models.game import Game # Reafirma a importaçao localmente
-
-    games = get_all_games(db)
+    games = get_all_games(db) # Usar a função CRUD
     return games
 
 # --------------------------------------------------
@@ -166,28 +167,28 @@ async def read_all_games_admin(
 @router.delete("/admin/games/{game_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_single_game(
     game_id: int,
-    current_admin: Annotated[Any, Depends(get_current_active_admin)],
+    current_admin: Annotated[Any, Depends(get_current_active_admin)], # get_current_active_admin vem do core.security
     db: Session = Depends(get_session)
 ):
     """
     Deleta um único jogo pelo seu ID (apenas para administradores).
     """
-    deleted = delete_game_by_id(game_id, db)
+    deleted = delete_game_by_id(game_id, db) # Usar a função CRUD
     if not deleted:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Jogo não encontrado.")
-    return {}
+    return Response(status_code=status.HTTP_204_NO_CONTENT) # Retorna Response vazio para 204
 
 @router.delete("/admin/rounds/{round_number}", status_code=status.HTTP_200_OK)
 async def delete_round_games(
     round_number: int,
-    current_admin: Annotated[Any, Depends(get_current_active_admin)],
+    current_admin: Annotated[Any, Depends(get_current_active_admin)], # get_current_active_admin vem do core.security
     db: Session = Depends(get_session)
 ):
     """
     Deleta todos os jogos de uma rodada específica (apenas para administradores).
     Retorna o número de jogos deletados.
     """
-    deleted_count = delete_games_by_round(round_number, db)
+    deleted_count = delete_games_by_round(round_number, db) # Usar a função CRUD
     if deleted_count == 0:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -201,14 +202,14 @@ async def delete_round_games(
 @router.get("/admin/games/download-results-template/{round_number}", response_class=StreamingResponse)
 async def download_results_template(
     round_number: int,
-    current_admin: Annotated[Any, Depends(get_current_active_admin)],
+    current_admin: Annotated[Any, Depends(get_current_active_admin)], # get_current_active_admin vem do core.security
     db: Session = Depends(get_session)
 ):
     """
     Gera e retorna uma planilha Excel com os jogos de uma rodada específica,
     incluindo colunas para preencher os placares (para administradores).
     """
-    games = get_games_by_round(round_number, db)
+    games = get_games_by_round(round_number, db) # Usar a função CRUD
     if not games:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -315,7 +316,7 @@ async def upload_results_excel(
             away_score=game_data["away_score"],
             status=game_data["status"]
         )
-        updated_game = update_game_result(game_data["id"], game_update_result, db)
+        updated_game = update_game_result(game_data["id"], game_update_result, db) # Usar a função CRUD
         if not updated_game:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -324,3 +325,33 @@ async def upload_results_excel(
         updated_games.append(updated_game)
 
     return updated_games
+
+# --------------------------------------------------
+# NOVO ENDPOINT: Listar Todos os Jogos (para Usuários Comuns)
+# --------------------------------------------------
+@router.get("/all", response_model=List[GameRead]) # << MUDANÇA: Novo endpoint /all (para usuários)
+async def read_all_games_for_user(
+    current_user: Annotated[Any, Depends(get_current_user)], # <<< Não exige admin, apenas usuário logado
+    db: Session = Depends(get_session)
+):
+    """
+    Retorna a lista de todos os jogos cadastrados (para usuários comuns).
+    Filtra jogos que estão agendados, finalizados ou adiados.
+    Não retorna jogos cancelados.
+    """
+    games = get_all_games_for_user(db) # <<< Usar a nova função CRUD
+    return games
+
+# --------------------------------------------------
+# ENDPOINT: Listar Todos os Jogos (Admin) - Mantido
+# --------------------------------------------------
+@router.get("/admin/games", response_model=List[GameRead])
+async def read_all_games_admin(
+    current_admin: Annotated[Any, Depends(get_current_active_admin)],
+    db: Session = Depends(get_session)
+):
+    """
+    Retorna a lista de todos os jogos cadastrados (apenas para administradores).
+    """
+    games = get_all_games(db) # Esta função CRUD já existe e é para admin
+    return games
