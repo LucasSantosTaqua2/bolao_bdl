@@ -71,10 +71,10 @@ export class ProfileComponent implements OnInit {
           created_at: this.parseDateAsUTC(profile.created_at),
           updated_at: this.parseDateAsUTC(profile.updated_at)
         };
-        console.log('Perfil do usuário carregado:', this.userProfile);
+      
       },
       error: (error) => {
-        console.error('Erro ao carregar perfil:', error);
+        
         this.profileApiMessage = 'Erro ao carregar perfil. Por favor, faça login novamente.';
         this.isProfileSuccess = false;
         if (error.status === 401) {
@@ -117,10 +117,10 @@ export class ProfileComponent implements OnInit {
         this.profileApiMessage = 'Nome de usuário atualizado com sucesso! Use o novo nome para o próximo login.';
         this.isProfileSuccess = true;
         this.editMode = false;
-        console.log('Perfil atualizado:', updatedProfile);
+        
       },
       error: (error) => {
-        console.error('Erro ao atualizar perfil:', error);
+       
         this.isProfileSuccess = false;
         if (error.status === 400 && error.error && error.error.detail) {
           this.profileApiMessage = error.error.detail;
@@ -167,7 +167,7 @@ export class ProfileComponent implements OnInit {
         }
       },
       error: (error) => {
-        console.error('Erro ao alterar senha:', error);
+       
         this.isPasswordSuccess = false;
         if (error.status === 401 && error.error && error.error.detail) {
           this.passwordApiMessage = error.error.detail;
