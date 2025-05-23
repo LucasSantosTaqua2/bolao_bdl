@@ -2,8 +2,8 @@
 // Interfaces TypeScript para os schemas de usuário do backend
 
 export enum UserRole {
-  USER = 'user',
-  ADMIN = 'admin'
+  USER = 'USER',
+  ADMIN = 'ADMIN'
 }
 
 export interface UserBase {
