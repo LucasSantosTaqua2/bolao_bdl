@@ -50,7 +50,6 @@ export class RankingComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Erro ao carregar ranking:', err);
         this.errorMessage = 'Não foi possível carregar o ranking. Por favor, tente novamente mais tarde.';
         this.isLoading = false;
       }
