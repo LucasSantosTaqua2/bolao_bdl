@@ -73,10 +73,10 @@ export class AdminPanelComponent implements OnInit {
       next: (users) => {
         this.allUsers = users.sort((a, b) => a.id - b.id);
         this.isLoading = false;
-        console.log('Todos os usuários (Admin):', this.allUsers);
+       
       },
       error: (err) => {
-        console.error('Erro ao carregar usuários (Admin):', err);
+       
         this.isLoading = false;
         if (err.status === 403) {
           this.errorMessage = 'Acesso negado. Você não tem permissão de administrador para este recurso.';
@@ -104,7 +104,7 @@ export class AdminPanelComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.error('Erro ao carregar todos os jogos (Admin):', err);
+     
         this.errorMessage = 'Erro ao carregar todos os jogos. Tente novamente.';
       }
     });
@@ -149,7 +149,7 @@ export class AdminPanelComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.error('Erro no upload do Excel:', err);
+       
         this.uploadMessage = `Erro no upload: ${err.error?.detail || 'Verifique o console para mais detalhes.'}`;
         this.isUploadSuccess = false;
       }
@@ -184,7 +184,7 @@ export class AdminPanelComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.error('Erro ao excluir jogo:', err);
+  
         this.showTemporaryMessage(`Erro ao excluir jogo: ${err.error?.detail || 'Verifique o console.'}`, false, 'deleteRoundMessage', 'isDeleteRoundSuccess');
       }
     });
@@ -207,7 +207,7 @@ export class AdminPanelComponent implements OnInit {
         this.loadAllGames();
       },
       error: (err) => {
-        console.error('Erro ao excluir rodada:', err);
+        
         this.showTemporaryMessage(`Erro ao excluir rodada: ${err.error?.detail || 'Verifique o console.'}`, false, 'deleteRoundMessage', 'isDeleteRoundSuccess');
       }
     });
@@ -248,7 +248,7 @@ export class AdminPanelComponent implements OnInit {
         this.showTemporaryMessage('Planilha de resultados baixada com sucesso!', true, 'resultsUploadMessage', 'isResultsUploadSuccess');
       },
       error: (err) => {
-        console.error('Erro ao baixar planilha de resultados:', err);
+        
         this.showTemporaryMessage(`Erro ao baixar planilha: ${err.error?.detail || 'Verifique o console.'}`, false, 'resultsUploadMessage', 'isResultsUploadSuccess');
       }
     });
@@ -293,7 +293,7 @@ export class AdminPanelComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.error('Erro no upload de resultados Excel:', err);
+       
         this.resultsUploadMessage = `Erro no upload de resultados: ${err.error?.detail || 'Verifique o console.'}`;
         this.isResultsUploadSuccess = false;
       }
