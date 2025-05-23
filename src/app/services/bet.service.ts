@@ -3,8 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { BetRead } from '../models/bet.model';
-
+import { BetRead } from '../models/bet.model'; // Assegure-se que o caminho para bet.model.ts está correto
 
 // Interface para a aposta individual que será enviada à API
 export interface UserBet {
@@ -17,7 +16,7 @@ export interface UserBet {
   providedIn: 'root'
 })
 export class BetService {
-  // apiUrl termina com / para consistência com o endpoint POST
+  // apiUrl termina com / para consistência com o endpoint POST que usa a URL base diretamente.
   private apiUrl = 'https://back-bolao-bdl-production.up.railway.app/api/v1/bets/';
 
   constructor(private http: HttpClient) { }
@@ -41,8 +40,8 @@ export class BetService {
       return new Observable(observer => observer.error('Token de autenticação ausente.'));
     }
     const headers = this.getAuthHeaders(token);
-    // CORRIGIDO: Removida a barra extra aqui, pois apiUrl já termina com /
-    // O caminho final será .../api/v1/bets/my-bets-by-round/{roundNumber}
+    // CORRIGIDO: Removida a barra extra aqui.
+    // this.apiUrl já termina com '/', então o caminho construído será .../api/v1/bets/my-bets-by-round/{roundNumber}
     return this.http.get<BetRead[]>(`${this.apiUrl}my-bets-by-round/${roundNumber}`, { headers });
   }
 }
