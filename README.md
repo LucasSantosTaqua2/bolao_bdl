@@ -1,27 +1,37 @@
-# BolaoBdl
+# 🏆 Bolão Balde de Lixo - Frontend (Angular)
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.6.
+Bem-vindo ao frontend do Bolão Balde de Lixo! Esta é a interface de usuário para o sistema de bolão de futebol, construída com **Angular**.
 
-## Development server
+---
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## 📖 Descrição do Projeto
 
-## Code scaffolding
+Este frontend fornece uma interface de usuário interativa e responsiva para todas as funcionalidades do bolão do Brasileirão, comunicando-se com a API backend para:
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+* **Autenticação de Usuários:** Páginas de login e registro.
+* **Visualização de Jogos:** Exibição das rodadas e jogos.
+* **Registro de Apostas:** Interface para os usuários submeterem suas apostas.
+* **Ranking:** Apresentação da classificação dos participantes.
+* **Gerenciamento de Perfil:** Visualização e atualização de dados do usuário.
+* **Funcionalidades de Administrador:** Como upload de jogos e resultados.
 
-## Build
+---
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## 🛠️ Tecnologias Utilizadas
 
-## Running unit tests
+* **Angular 18:** Framework principal para construção da Single Page Application (SPA).
+* **TypeScript:** Superset do JavaScript usado pelo Angular.
+* **HTML5 & CSS3:** Para estrutura e estilização.
+* **Bootstrap 5:** Framework CSS para design responsivo e componentes de UI.
+* **Bootstrap Icons:** Para iconografia.
+* **Angular Router:** Para navegação entre as diferentes visualizações/componentes.
+* **Angular HttpClient:** Para comunicação com a API backend.
+* **JWT-Decode:** Para decodificar tokens JWT no lado do cliente.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+---
 
-## Running end-to-end tests
+## ☁️ Arquitetura de Deploy
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+* **Frontend (Esta Aplicação Angular):** Hospedado no Vercel.
+* **Backend (API FastAPI):** Hospedado no Railway.
+* **Banco de dados MySQL:** Hospedado no Railway.
