@@ -174,7 +174,7 @@ export class ApostarComponent implements OnInit {
 
     this.betService.getUserBetsByRound(this.selectedRound, this.userToken).subscribe({
       next: (userBetsForRound: BetRead[]) => {
-        console.log('ApostarComponent: Apostas do usuário para a rodada recebidas:', userBetsForRound);
+    
 
         const userBetsMap = new Map<number, BetRead>();
         userBetsForRound.forEach(bet => userBetsMap.set(bet.game_id, bet));
