@@ -40,7 +40,6 @@ export class LoginComponent implements OnInit {
     this.isSuccess = false; // Reseta o estado da mensagem
 
     if (loginForm.invalid) {
-      console.log('Formulário inválido. Preencha todos os campos obrigatórios.');
       this.apiMessage = 'Por favor, preencha o nome de usuário e a senha.';
       // Marca todos os campos como 'touched' para exibir as mensagens de erro
       Object.values(loginForm.controls).forEach(control => {
@@ -54,7 +53,6 @@ export class LoginComponent implements OnInit {
       .subscribe({
         next: (response) => {
           // Callback para sucesso
-          console.log('Login bem-sucedido!', response);
           this.apiMessage = 'Login realizado com sucesso! Você será redirecionado.';
           this.isSuccess = true; // Define para sucesso
           loginForm.resetForm(); // Opcional: limpa o formulário após o login
@@ -66,7 +64,7 @@ export class LoginComponent implements OnInit {
         },
         error: (error) => {
           // Callback para erro
-          console.error('Erro no login:', error);
+
           this.isSuccess = false; // Define para erro
 
           // Exibe uma mensagem de erro mais específica, se disponível na resposta da API
