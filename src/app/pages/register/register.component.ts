@@ -50,7 +50,7 @@ export class RegisterComponent implements OnInit {
     this.isSuccess = false;
 
     if (registerForm.invalid) {
-      console.log('Formulário inválido. Verifique os campos.');
+    
       this.apiMessage = 'Por favor, corrija os erros no formulário.';
       Object.values(registerForm.controls).forEach(control => {
         control.markAsTouched();
@@ -70,7 +70,7 @@ export class RegisterComponent implements OnInit {
     this.authService.register({ username: this.username, password: this.password })
       .subscribe({
         next: (response) => {
-          console.log('Usuário registrado com sucesso!', response);
+          
           this.apiMessage = 'Usuário registrado com sucesso! Você será redirecionado para o login.';
           this.isSuccess = true;
           registerForm.resetForm(); // Limpa o formulário
@@ -81,7 +81,7 @@ export class RegisterComponent implements OnInit {
           }, 3000); // 3 segundos
         },
         error: (error) => {
-          console.error('Erro ao registrar usuário:', error);
+          
           this.isSuccess = false;
           // Verifica o tipo de erro para dar um feedback mais específico
           if (error.status === 400 && error.error && error.error.detail) {
