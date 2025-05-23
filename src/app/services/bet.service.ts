@@ -39,6 +39,6 @@ export class BetService {
       return new Observable(observer => observer.error('Token de autenticação ausente.'));
     }
     const headers = this.getAuthHeaders(token);
-    return this.http.get<BetRead[]>(`${this.apiUrl}/my-bets-by-round/${roundNumber}`, { headers });
+     return this.http.get<BetRead[]>(`${this.apiUrl}/my-bets-by-round/${roundNumber}`,
   }
 }
