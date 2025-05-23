@@ -3,8 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-// <<< MUDANÇA AQUI: Importar BetRead do novo arquivo bet.model.ts
-import { BetRead } from '../models/bet.model'; // << AGORA IMPORTA DE '../models/bet.model'
+import { BetRead } from '../models/bet.model';
 
 
 // Interface para a aposta individual que será enviada à API
@@ -18,7 +17,8 @@ export interface UserBet {
   providedIn: 'root'
 })
 export class BetService {
-  private apiUrl = 'https://back-bolao-bdl-production.up.railway.app/api/v1/bets/'; // <<< MUDE PARA A PORTA 8001
+  // apiUrl termina com / para consistência com o endpoint POST
+  private apiUrl = 'https://back-bolao-bdl-production.up.railway.app/api/v1/bets/';
 
   constructor(private http: HttpClient) { }
 
@@ -31,7 +31,9 @@ export class BetService {
       return new Observable(observer => observer.error('Token de autenticação ausente.'));
     }
     const headers = this.getAuthHeaders(token);
-    return this.http.post<BetRead[]>(`${this.apiUrl}/`, { bets },
+    // A chamada POST usa this.apiUrl diretamente, que já tem a barra final.
+    // O backend espera POST em /api/v1/bets/
+    return this.http.post<BetRead[]>(this.apiUrl, { bets }, { headers });
   }
 
   getUserBetsByRound(roundNumber: number, token: string): Observable<BetRead[]> {
@@ -39,6 +41,8 @@ export class BetService {
       return new Observable(observer => observer.error('Token de autenticação ausente.'));
     }
     const headers = this.getAuthHeaders(token);
-      return this.http.get<BetRead[]>(`<span class="math-inline">\{this\.apiUrl\}/my\-bets\-by\-round/</span>{roundNumber}`, { headers });
+    // CORRIGIDO: Removida a barra extra aqui, pois apiUrl já termina com /
+    // O caminho final será .../api/v1/bets/my-bets-by-round/{roundNumber}
+    return this.http.get<BetRead[]>(`${this.apiUrl}my-bets-by-round/${roundNumber}`, { headers });
   }
 }
