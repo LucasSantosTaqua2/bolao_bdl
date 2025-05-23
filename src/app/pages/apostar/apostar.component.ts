@@ -38,7 +38,7 @@ export class ApostarComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    console.log('ApostarComponent: ngOnInit - Iniciando...');
+    
     this.userToken = this.authService.getAccessToken();
     if (!this.userToken) {
       this.message = 'Você precisa estar logado para ver os jogos e fazer apostas.';
@@ -54,41 +54,41 @@ export class ApostarComponent implements OnInit {
     this.isLoading = true;
     this.message = '';
     this.isSuccess = false;
-    console.log('ApostarComponent: loadAllGamesAndRounds - Carregando todos os jogos para usuário.');
+  
 
     if (!this.userToken) {
       this.message = 'Token de usuário não disponível. Por favor, faça login novamente.';
       this.isSuccess = false;
       this.isLoading = false;
-      console.log('ApostarComponent: Token nulo na chamada de loadAllGamesAndRounds.');
+     
       return;
     }
 
     this.gameService.getAllGamesForUser(this.userToken).subscribe({
       next: (gamesFromApi) => {
         this.allGamesData = gamesFromApi;
-        console.log('ApostarComponent: allGamesData populado (todos os jogos da API):', this.allGamesData);
+       
 
         this.availableRounds = [...new Set(this.allGamesData
           .map(game => game.round_number)
         )].sort((a, b) => a - b);
-        console.log('ApostarComponent: Rodadas disponíveis (availableRounds):', this.availableRounds);
+       
 
 
         if (this.availableRounds.length > 0) {
           this.selectedRound = this.availableRounds[0];
-          console.log('ApostarComponent: Rodada inicial selecionada (default):', this.selectedRound);
+          
           this.onRoundChange();
         } else {
           this.games = [];
           this.message = 'Nenhuma rodada com jogos encontrada no banco de dados.';
           this.isSuccess = true;
           this.isLoading = false;
-          console.log('ApostarComponent: Nenhuma rodada encontrada.');
+         
         }
       },
       error: (err) => {
-        console.error('ApostarComponent: Erro ao carregar todos os jogos e rodadas:', err);
+     
         this.message = 'Erro ao carregar jogos e rodadas. Tente novamente mais tarde.';
         this.isSuccess = false;
         this.isLoading = false;
@@ -97,10 +97,7 @@ export class ApostarComponent implements OnInit {
   }
 
   onRoundChange(): void {
-    console.log(`ApostarComponent: onRoundChange - INÍCIO.`);
-    console.log('ApostarComponent: Valor de this.selectedRound no início:', this.selectedRound);
-    console.log('ApostarComponent: Tipo de this.selectedRound no início:', typeof this.selectedRound);
-
+  
     this.message = ''; // Limpa a mensagem anterior
     this.isSuccess = false; // Reseta o estado da mensagem
     this.isLoading = true; // Define o loading como true
@@ -111,19 +108,18 @@ export class ApostarComponent implements OnInit {
       this.message = 'Token de usuário não disponível. Por favor, faça login novamente.';
       this.isSuccess = false;
       this.isLoading = false;
-      console.log('ApostarComponent: Token nulo na chamada de onRoundChange.');
+     
       return;
     }
 
     this.now = new Date(); // Atualiza 'now'
-    console.log('ApostarComponent: this.now (hora atual do navegador):', this.now);
+   
 
     let gamesForSelectedRound = this.allGamesData.filter(game => {
       return game.round_number === this.selectedRound;
     });
     
-    console.log(`ApostarComponent: gamesForSelectedRound APÓS filtro por rodada ${this.selectedRound}:`, gamesForSelectedRound);
-    console.log('ApostarComponent: Tamanho de gamesForSelectedRound:', gamesForSelectedRound.length);
+    
 
     // Se não houver jogos para esta rodada (depois do filtro inicial), define a mensagem e sai
     if (gamesForSelectedRound.length === 0) {
@@ -131,7 +127,7 @@ export class ApostarComponent implements OnInit {
         this.message = `Nenhum jogo encontrado na Rodada ${this.selectedRound}.`;
         this.isSuccess = true;
         this.isLoading = false;
-        console.log('ApostarComponent: Nenhum jogo encontrado após filtro inicial.');
+       
         return;
     }
 
@@ -146,23 +142,18 @@ export class ApostarComponent implements OnInit {
     let blockingReasonFound = false;
 
     if (firstScheduledGame) {
-        console.log('ApostarComponent: Primeiro jogo agendado da rodada (firstScheduledGame):', firstScheduledGame);
-        console.log('ApostarComponent: game_datetime do primeiro jogo:', firstScheduledGame.game_datetime);
-        console.log('ApostarComponent: Tipo de game_datetime:', typeof firstScheduledGame.game_datetime);
-        
+     
         const bettingDeadline = new Date(firstScheduledGame.game_datetime.getTime() - (this.BETTING_DEADLINE_MINUTES * 60 * 1000));
-        console.log(`ApostarComponent: Prazo limite para apostas (${this.BETTING_DEADLINE_MINUTES}min antes):`, bettingDeadline);
-
+       
         const deadlinePassed = this.now.getTime() >= bettingDeadline.getTime();
-        console.log(`ApostarComponent: this.now.getTime() >= bettingDeadline.getTime() --> ${this.now.getTime()} >= ${bettingDeadline.getTime()} = ${deadlinePassed}`);
-
+       
 
         if (deadlinePassed) {
             this.bettingBlockedForRound = true;
             determinedMessage = `Apostas encerradas para a Rodada ${this.selectedRound}. O prazo limite de ${this.BETTING_DEADLINE_MINUTES} minutos antes do início do primeiro jogo já passou.`;
             determinedIsSuccess = false; // Cor vermelha para "encerradas"
             blockingReasonFound = true;
-            console.log('ApostarComponent: Apostas bloqueadas para a rodada: PRAZO EXPIRADO.');
+            
         }
     } else { // Não há jogos agendados/futuros nesta rodada
         const allGamesFinished = gamesForSelectedRound.every(game => game.status === GameStatus.FINISHED || game.status === GameStatus.COMPLETED);
@@ -171,13 +162,13 @@ export class ApostarComponent implements OnInit {
             determinedMessage = `Todos os jogos da Rodada ${this.selectedRound} já foram encerrados.`;
             determinedIsSuccess = true; // Cor verde para "encerrados"
             blockingReasonFound = true;
-            console.log('ApostarComponent: Todos os jogos da rodada terminaram (sem jogos futuros).');
+           
         } else if (gamesForSelectedRound.length > 0) { // Existe jogos, mas nenhum agendado/futuro E nem todos terminados (ex: adiados/cancelados/em andamento)
             this.bettingBlockedForRound = true;
             determinedMessage = `Apostas não disponíveis para a Rodada ${this.selectedRound} (jogos não agendados ou passados).`;
             determinedIsSuccess = false; // Cor vermelha para "não disponíveis"
             blockingReasonFound = true;
-            console.log('ApostarComponent: Apostas não disponíveis (status ambíguo).');
+            
         }
     }
 
@@ -207,8 +198,7 @@ export class ApostarComponent implements OnInit {
           return gameCopy;
         }).sort((a, b) => a.game_datetime.getTime() - b.game_datetime.getTime());
         
-        console.log('ApostarComponent: Jogos processados (games para exibição final):', this.games);
-        console.log('ApostarComponent: Tamanho de games para exibição final:', this.games.length);
+     
 
 
         this.isLoading = false;
@@ -219,25 +209,25 @@ export class ApostarComponent implements OnInit {
             if (gamesStillEligibleToBet.length === 0 && this.games.length > 0) { // Se não tem jogos para apostar, mas tem jogos na rodada (todos já apostados)
                 determinedMessage = `Você já apostou em todos os jogos elegíveis da Rodada ${this.selectedRound}.`;
                 determinedIsSuccess = true;
-                console.log('ApostarComponent: Todos os jogos elegíveis já apostados.');
+               
             } else if (gamesStillEligibleToBet.length > 0) { // Se há jogos para apostar e não foi bloqueado por prazo
                 determinedMessage = 'Preencha os placares dos jogos abertos e clique em "Registrar Todas as Apostas".';
                 determinedIsSuccess = true;
-                console.log('ApostarComponent: Rodada aberta para apostas.');
+                
             } else { // Caso fallback: não tem jogos para apostar (nem foi bloqueado por prazo) e talvez não tenha jogos na rodada (já coberto no início)
                 determinedMessage = `Nenhum jogo agendado para apostar na Rodada ${this.selectedRound}.`;
                 determinedIsSuccess = true;
-                console.log('ApostarComponent: Mensagem padrão: Nenhum jogo agendado para apostar.');
+                
             }
         }
         
         // Atribui a mensagem final e o status de sucesso
         this.message = determinedMessage;
         this.isSuccess = determinedIsSuccess;
-        console.log('ApostarComponent: Estado final de isLoading e message:', this.isLoading, this.message);
+        
       },
       error: (err) => {
-        console.error('ApostarComponent: Erro ao carregar apostas do usuário para a rodada:', err);
+      
         this.message = 'Erro ao carregar suas apostas. Tente novamente.';
         this.isSuccess = false;
         this.isLoading = false;
@@ -269,7 +259,7 @@ export class ApostarComponent implements OnInit {
 
     const incompleteBets = gamesToBetOn.filter(game => game.user_bet_home_score === null || game.user_bet_away_score === null);
     if (incompleteBets.length > 0) {
-      console.log('Formulário inválido. Preencha todos os placares para registrar suas apostas nos jogos futuros.');
+      
       this.message = 'Por favor, preencha todos os placares para registrar suas apostas nos jogos futuros.';
       return;
     }
@@ -287,17 +277,17 @@ export class ApostarComponent implements OnInit {
       away_score_bet: game.user_bet_away_score!,
     }));
 
-    console.log(`Apostas a serem enviadas para Rodada ${this.selectedRound}:`, betsToSubmit);
+
 
     this.betService.submitUserBets(betsToSubmit, token).subscribe({
       next: (response) => {
         this.message = 'Apostas registradas com sucesso!';
         this.isSuccess = true;
-        console.log('Resposta da API ao registrar apostas:', response);
+        
         this.onRoundChange();
       },
       error: (err) => {
-        console.error('Erro de API ao registrar apostas:', err);
+        
         this.isSuccess = false;
         let errorMessage = 'Ocorreu um erro ao registrar suas apostas. Tente novamente.';
         if (err.error && err.error.detail) {
