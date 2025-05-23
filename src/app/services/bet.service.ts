@@ -18,7 +18,7 @@ export interface UserBet {
   providedIn: 'root'
 })
 export class BetService {
-  private apiUrl = 'https://back-bolao-bdl-production.up.railway.app/api/v1/bets'; // <<< MUDE PARA A PORTA 8001
+  private apiUrl = 'https://back-bolao-bdl-production.up.railway.app/api/v1/bets/'; // <<< MUDE PARA A PORTA 8001
 
   constructor(private http: HttpClient) { }
 
