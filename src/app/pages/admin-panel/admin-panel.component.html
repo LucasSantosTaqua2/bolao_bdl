@@ -15,8 +15,8 @@
 
     <div class="mb-5 p-4 border rounded-lg bg-light animate__animated animate__fadeInUp" *ngIf="!isLoading">
       <h5 class="mb-4 text-secondary border-bottom pb-2">1. Inserir Novos Jogos por Rodada (Excel)</h5>
-      <div *ngIf="uploadMessage" class="alert mb-3" 
-           [class.alert-success]="isUploadSuccess" 
+      <div *ngIf="uploadMessage" class="alert mb-3"
+           [class.alert-success]="isUploadSuccess"
            [class.alert-danger]="!isUploadSuccess">
         {{ uploadMessage }}
       </div>
@@ -44,8 +44,8 @@
 
     <div class="mb-5 p-4 border rounded-lg bg-light animate__animated animate__fadeInUp" *ngIf="!isLoading">
       <h5 class="mb-4 text-secondary border-bottom pb-2">2. Gerar e Enviar Planilha de Resultados (Excel)</h5>
-      <div *ngIf="resultsUploadMessage" class="alert mb-3" 
-           [class.alert-success]="isResultsUploadSuccess" 
+      <div *ngIf="resultsUploadMessage" class="alert mb-3"
+           [class.alert-success]="isResultsUploadSuccess"
            [class.alert-danger]="!isResultsUploadSuccess">
         {{ resultsUploadMessage }}
       </div>
@@ -137,8 +137,8 @@
     <div *ngIf="!isLoading && !errorMessage" class="animate__animated animate__fadeInUp">
       <h5 class="mb-4 border-bottom pb-2 text-secondary">5. Todos os Jogos Cadastrados</h5>
 
-      <div *ngIf="saveResultMessage" class="alert mb-3" 
-           [class.alert-success]="isSaveResultSuccess" 
+      <div *ngIf="saveResultMessage" class="alert mb-3"
+           [class.alert-success]="isSaveResultSuccess"
            [class.alert-danger]="!isSaveResultSuccess">
         {{ saveResultMessage }}
       </div>
@@ -186,7 +186,7 @@
             </tr>
           </thead>
           <tbody class="fw-semibold">
-            <tr *ngFor="let game of paginatedGames">
+            <tr *ngFor="let game of paginatedGames; trackBy: trackByGameId">
               <td>{{ game.id }}</td>
               <td>{{ game.round_number }}</td>
               <td class="text-end pe-2">{{ game.home_team }}</td>
@@ -194,8 +194,8 @@
               <td>{{ game.game_datetime | date:'dd/MM/yyyy HH:mm':'America/Sao_Paulo' }}</td>
               <td>
                 <div *ngIf="game.status === GameStatus.SCHEDULED" class="d-flex align-items-center justify-content-center gap-1">
-                  <input type="number" class="form-control form-control-sm text-center" style="width: 55px;" 
-                         [(ngModel)]="game.editable_home_score" 
+                  <input type="number" class="form-control form-control-sm text-center" style="width: 55px;"
+                         [(ngModel)]="game.editable_home_score"
                          name="editable_home_score_{{game.id}}"
                          min="0" placeholder="H"
                          (ngModelChange)="$event === null ? game.editable_home_score = null : game.editable_home_score = +$event">
@@ -207,12 +207,12 @@
                          (ngModelChange)="$event === null ? game.editable_away_score = null : game.editable_away_score = +$event">
                 </div>
                 <div *ngIf="game.status !== GameStatus.SCHEDULED">
-                  {{ game.home_score !== null ? game.home_score : '-' }} x 
+                  {{ game.home_score !== null ? game.home_score : '-' }} x
                   {{ game.away_score !== null ? game.away_score : '-' }}
                 </div>
               </td>
               <td>
-                <span class="badge" 
+                <span class="badge"
                       [ngClass]="{
                         'bg-secondary': game.status === GameStatus.SCHEDULED,
                         'bg-success': game.status === GameStatus.FINISHED || game.status === GameStatus.COMPLETED,
@@ -222,9 +222,9 @@
                 </span>
               </td>
               <td class="text-nowrap">
-                <button *ngIf="game.status === GameStatus.SCHEDULED" 
-                        class="btn btn-success btn-sm me-1" 
-                        (click)="onSaveGameResult(game)" 
+                <button *ngIf="game.status === GameStatus.SCHEDULED"
+                        class="btn btn-success btn-sm me-1"
+                        (click)="onSaveGameResult(game)"
                         title="Salvar Resultado"
                         [disabled]="!(game.editable_home_score !== null && game.editable_home_score >= 0 && game.editable_away_score !== null && game.editable_away_score >= 0)">
                   <i class="bi bi-check-lg"></i> <span class="d-none d-md-inline">Salvar</span>
@@ -246,14 +246,14 @@
         <div *ngIf="totalPages > 0" class="d-flex flex-wrap justify-content-between align-items-center mt-4 gap-3">
             <div class="col-auto">
               <label for="itemsPerPageSelect" class="form-label form-label-sm me-2">Itens por página:</label>
-              <select id="itemsPerPageSelect" class="form-select form-select-sm d-inline-block w-auto" [ngModel]="itemsPerPage" (change)="onItemsPerPageChange($event)">
+              <select id="itemsPerPageSelect" class="form-select form-select-sm d-inline-block w-auto" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange($event)">
                 <option [value]="5">5</option>
                 <option [value]="10">10</option>
                 <option [value]="20">20</option>
                 <option [value]="50">50</option>
               </select>
             </div>
-  
+
             <nav aria-label="Page navigation" class="col-auto">
               <ul class="pagination justify-content-center mb-0">
                 <li class="page-item" [class.disabled]="currentPage === 1">
@@ -271,16 +271,16 @@
                 </li>
               </ul>
             </nav>
-  
+
             <div class="col-auto text-muted">
               Total: {{ totalItems }} jogo(s)
             </div>
           </div>
-      </div> 
+      </div>
       <div *ngIf="allGames.length === 0 && !isLoading" class="alert alert-info text-center my-4">
         Nenhum jogo cadastrado ainda.
       </div>
-    </div> 
+    </div>
     <hr *ngIf="!isLoading" class="my-5 border-secondary">
     <h5 class="text-center text-muted" *ngIf="!isLoading">Outras ferramentas de administração virão aqui...</h5>
   </div>
