@@ -5,12 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { UserProfile } from '../../models/user.model';
 import { GameService } from '../../services/game.service';
-import { GameRead, GameStatus } from '../../models/game.model'; // GameStatus já importado
+import { GameRead, GameStatus } from '../../models/game.model';
 
-// Interface para estender GameRead com campos editáveis para o admin
+// ATUALIZAÇÃO AQUI: Interface AdminEditableGame com campos não opcionais
 interface AdminEditableGame extends GameRead {
-  editable_home_score?: number | null;
-  editable_away_score?: number | null;
+  editable_home_score: number | null; // Removido '?'
+  editable_away_score: number | null; // Removido '?'
 }
 
 @Component({
@@ -22,55 +22,45 @@ interface AdminEditableGame extends GameRead {
 })
 export class AdminPanelComponent implements OnInit {
   allUsers: UserProfile[] = [];
-  // Tipagem atualizada para incluir campos editáveis
+  // Tipagem atualizada para AdminEditableGame
   allGames: AdminEditableGame[] = [];
   isLoading: boolean = true;
-  errorMessage: string | null = null; // Mensagens de erro geral
+  errorMessage: string | null = null;
 
-  // Propriedades para Inserir Jogos (Upload de Excel)
-  selectedRound: number = 1; // Rodada selecionada para upload
-  selectedFile: File | null = null; // Arquivo Excel para upload de CRIAÇÃO
-  uploadMessage: string | null = null; // Mensagem de feedback para upload de criação
-  isUploadSuccess: boolean = false; // Status do upload de criação
+  selectedRound: number = 1;
+  selectedFile: File | null = null;
+  uploadMessage: string | null = null;
+  isUploadSuccess: boolean = false;
 
-  // Propriedades para Excluir Jogos/Rodadas
   deleteRoundNumber: number = 1;
   deleteRoundMessage: string | null = null;
   isDeleteRoundSuccess: boolean = false;
 
-  // Propriedades para Gerar/Enviar Planilha de Resultados (Excel)
   downloadRoundNumber: number = 1;
   resultsFile: File | null = null;
   resultsUploadMessage: string | null = null;
   isResultsUploadSuccess: boolean = false;
 
-  rounds: number[] = Array.from({ length: 38 }, (_, i) => i + 1); // Array de 1 a 38 para selects de rodada
-  roundsWithGames: number[] = []; // Array de rodadas que possuem jogos
+  rounds: number[] = Array.from({ length: 38 }, (_, i) => i + 1);
+  roundsWithGames: number[] = [];
 
-  // --- PROPRIEDADES PARA FILTROS E PAGINAÇÃO DE JOGOS ---
-  // Tipagem atualizada para filtros e paginação
+  // Tipagem atualizada para AdminEditableGame
   filteredAndSortedGames: AdminEditableGame[] = [];
   paginatedGames: AdminEditableGame[] = [];
 
-  // Filtros
-  filterRound: number | '' = ''; // Usar '' para "Todas as Rodadas"
-  filterStatus: GameStatus | '' = ''; // Usar '' para "Todos os Status"
-  filterDate: string = ''; // Formato YYYY-MM-DD para o input date
+  filterRound: number | '' = '';
+  filterStatus: GameStatus | '' = '';
+  filterDate: string = '';
 
   availableStatuses: { value: GameStatus | ''; display: string }[] = [];
-  // roundsForFilter usará this.roundsWithGames no template
 
-  // Paginação
   currentPage: number = 1;
   itemsPerPage: number = 10;
   totalPages: number = 0;
   totalItems: number = 0;
-  // --- FIM DAS PROPRIEDADES PARA FILTROS E PAGINAÇÃO ---
 
-  // Para acessar GameStatus no template
-  public GameStatus = GameStatus;
+  public GameStatus = GameStatus; // Para acesso no template
 
-  // Mensagem específica para salvar resultado individual
   saveResultMessage: string | null = null;
   isSaveResultSuccess: boolean = false;
 
@@ -80,31 +70,26 @@ export class AdminPanelComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.isLoading = true; // Garante que o loading geral comece
-    this.loadAllUsers(); // Continua carregando usuários
-    this.loadAllGames(); // Carrega jogos (e também fará o isLoading = false ao final)
+    this.isLoading = true;
+    this.loadAllUsers();
+    this.loadAllGames();
     this.prepareFilterOptions();
   }
 
-  // Função auxiliar para parsear datas - pode não ser mais necessária para game_datetime
-  // Se UserProfile.created_at/updated_at já são objetos Date ou o pipe 'date' lida com a string
   private parseUserDateString(dateString: string): string {
     const utcString = dateString.endsWith('Z') ? dateString : dateString + 'Z';
     const dateObject = new Date(utcString);
-    return dateObject.toISOString(); // Retorna a string ISO formatada com 'Z'
+    return dateObject.toISOString();
   }
 
-  // Métodos de Carregamento de Dados Iniciais
   loadAllUsers(): void {
     this.errorMessage = null;
-
     this.authService.getAllUsersForAdmin().subscribe({
       next: (users) => {
         this.allUsers = users.sort((a, b) => a.id - b.id);
-        // Não mexe no isLoading aqui, pois loadAllGames ainda pode estar rodando
       },
       error: (err) => {
-        this.isLoading = false; // Se houver erro aqui e loadAllGames não rodar, paramos o loading
+        this.isLoading = false;
         if (err.status === 403) {
           this.errorMessage = 'Acesso negado. Você não tem permissão de administrador para este recurso.';
         } else {
@@ -118,16 +103,18 @@ export class AdminPanelComponent implements OnInit {
     const token = this.authService.getAccessToken();
     if (!token) {
       this.errorMessage = 'Não autenticado. Faça login para ver os jogos.';
-      this.isLoading = false; // Parar o loading se não houver token
+      this.isLoading = false;
       return;
     }
     this.gameService.getAllGamesAdmin(token).subscribe({
-      next: (games) => {
-        // Mapeia para AdminEditableGame e inicializa campos editáveis
-        this.allGames = games.map(g => ({
+      next: (games: GameRead[]) => { // Recebe GameRead[] do serviço
+        // ATUALIZAÇÃO AQUI: Mapeia para AdminEditableGame e garante inicialização
+        this.allGames = games.map((g: GameRead): AdminEditableGame => ({
           ...g, // game_datetime já é Date devido ao parseGameDates no service
-          editable_home_score: g.status === GameStatus.SCHEDULED ? null : g.home_score,
-          editable_away_score: g.status === GameStatus.SCHEDULED ? null : g.away_score,
+          // Se g.home_score/g.away_score do GameRead podem ser undefined, trate aqui.
+          // Assumindo que GameRead tem home_score/away_score como number | null.
+          editable_home_score: g.status === GameStatus.SCHEDULED ? null : (g.home_score !== undefined ? g.home_score : null),
+          editable_away_score: g.status === GameStatus.SCHEDULED ? null : (g.away_score !== undefined ? g.away_score : null),
         })).sort((a, b) => new Date(b.game_datetime).getTime() - new Date(a.game_datetime).getTime());
 
         this.roundsWithGames = [...new Set(this.allGames.map(game => game.round_number))].sort((a, b) => a - b);
@@ -136,24 +123,22 @@ export class AdminPanelComponent implements OnInit {
           this.downloadRoundNumber = this.roundsWithGames[0];
           this.deleteRoundNumber = this.roundsWithGames[0];
         }
-        this.applyFiltersAndPagination(); // Aplicar filtros e paginação após carregar
-        this.isLoading = false; // Loading principal termina aqui
+        this.applyFiltersAndPagination();
+        this.isLoading = false;
       },
       error: (err) => {
         this.errorMessage = 'Erro ao carregar todos os jogos. Tente novamente.';
-        this.isLoading = false; // Loading principal termina aqui em caso de erro
+        this.isLoading = false;
       }
     });
   }
 
-  // --- MÉTODOS PARA FILTROS E PAGINAÇÃO DE JOGOS ---
   prepareFilterOptions(): void {
     this.availableStatuses = [
       { value: '', display: 'Todos os Status' },
       { value: GameStatus.SCHEDULED, display: 'Agendado' },
       { value: GameStatus.FINISHED, display: 'Encerrado (Placar Preenchido)' },
       { value: GameStatus.COMPLETED, display: 'Completo (Apostas Processadas)' },
-      // Adicione outros status conforme seu enum GameStatus
     ];
   }
 
@@ -163,12 +148,10 @@ export class AdminPanelComponent implements OnInit {
     if (this.filterRound !== '') {
       result = result.filter(g => g.round_number === Number(this.filterRound));
     }
-
     if (this.filterStatus !== '') {
       result = result.filter(g => g.status === this.filterStatus);
     }
-
-    if (this.filterDate) { // filterDate é uma string 'YYYY-MM-DD'
+    if (this.filterDate) {
       result = result.filter(g => {
         const gameDate = new Date(g.game_datetime);
         const year = gameDate.getFullYear();
@@ -241,13 +224,9 @@ export class AdminPanelComponent implements OnInit {
     if (this.totalPages <= 0) return [];
     return new Array(this.totalPages).fill(0).map((_, index) => index + 1);
   }
-  // --- FIM DOS MÉTODOS PARA FILTROS E PAGINAÇÃO ---
 
-
-  // --- NOVO MÉTODO PARA SALVAR RESULTADO INDIVIDUAL ---
   onSaveGameResult(game: AdminEditableGame): void {
-    this.clearSaveResultMessage(); // Limpa mensagens anteriores
-
+    this.clearSaveResultMessage();
     if (game.editable_home_score === null || game.editable_home_score === undefined ||
         game.editable_away_score === null || game.editable_away_score === undefined) {
       this.showTemporaryMessage('Ambos os placares devem ser preenchidos.', false, 'saveResultMessage', 'isSaveResultSuccess');
@@ -264,32 +243,16 @@ export class AdminPanelComponent implements OnInit {
       return;
     }
 
-    this.isLoading = true; // Indica que uma operação está em andamento
+    this.isLoading = true;
     this.gameService.updateGameResult(game.id, game.editable_home_score, game.editable_away_score, token)
       .subscribe({
         next: (updatedGame) => {
           this.showTemporaryMessage(`Resultado do jogo ${updatedGame.home_team} x ${updatedGame.away_team} salvo com sucesso! As apostas serão processadas.`, true, 'saveResultMessage', 'isSaveResultSuccess');
-          // Atualiza o jogo na lista local para refletir o status imediatamente, se necessário,
-          // ou confia no loadAllGames para recarregar tudo.
-          // Para uma atualização mais imediata na UI sem recarregar tudo:
-          // const gameIndex = this.allGames.findIndex(g => g.id === updatedGame.id);
-          // if (gameIndex > -1) {
-          //   this.allGames[gameIndex] = {
-          //     ...updatedGame,
-          //     game_datetime: new Date(updatedGame.game_datetime), // Garante que é Date
-          //     editable_home_score: updatedGame.home_score,
-          //     editable_away_score: updatedGame.away_score
-          //   };
-          //   this.applyFiltersAndPagination(); // Re-aplica filtros e paginação com o jogo atualizado
-          // }
-          // this.isLoading = false;
-          // OU simplesmente recarregue tudo:
-          this.loadAllGames(); // Recarrega todos os jogos para refletir a mudança e re-aplica filtros/paginação
-                               // isLoading será definido como false dentro de loadAllGames
+          this.loadAllGames();
         },
         error: (err) => {
           this.showTemporaryMessage(`Erro ao salvar resultado: ${err.error?.detail || 'Tente novamente.'}`, false, 'saveResultMessage', 'isSaveResultSuccess');
-          this.isLoading = false; // Para o loading em caso de erro
+          this.isLoading = false;
         }
       });
   }
@@ -298,10 +261,7 @@ export class AdminPanelComponent implements OnInit {
     this.saveResultMessage = null;
     this.isSaveResultSuccess = false;
   }
-  // --- FIM DO NOVO MÉTODO ---
 
-
-  // Métodos para Inserir Jogos (Upload de Excel)
   onFileSelected(event: Event): void {
     const element = event.target as HTMLInputElement;
     if (element.files && element.files.length > 0) {
@@ -350,7 +310,6 @@ export class AdminPanelComponent implements OnInit {
     this.isUploadSuccess = false;
   }
 
-  // Métodos para Excluir Jogos/Rodadas
   onDeleteGame(gameId: number): void {
     if (!confirm('Tem certeza que deseja excluir este jogo?')) {
       return;
@@ -395,24 +354,20 @@ export class AdminPanelComponent implements OnInit {
     });
   }
 
-  // Função auxiliar para mensagens temporárias - ATUALIZADA
   private showTemporaryMessage(
     message: string,
     isSuccess: boolean,
-    targetMessageProperty: 'uploadMessage' | 'deleteRoundMessage' | 'resultsUploadMessage' | 'saveResultMessage', // Adicionado 'saveResultMessage'
-    isTargetSuccessProperty: 'isUploadSuccess' | 'isDeleteRoundSuccess' | 'isResultsUploadSuccess' | 'isSaveResultSuccess' // Adicionado 'isSaveResultSuccess'
+    targetMessageProperty: 'uploadMessage' | 'deleteRoundMessage' | 'resultsUploadMessage' | 'saveResultMessage',
+    isTargetSuccessProperty: 'isUploadSuccess' | 'isDeleteRoundSuccess' | 'isResultsUploadSuccess' | 'isSaveResultSuccess'
   ): void {
-    this.errorMessage = null; // Limpa erro geral
-
+    this.errorMessage = null;
     (this as any)[targetMessageProperty] = message;
     (this as any)[isTargetSuccessProperty] = isSuccess;
-
     setTimeout(() => {
       (this as any)[targetMessageProperty] = null;
     }, 5000);
   }
 
-  // Métodos para Gerar/Enviar Planilha de Resultados (Excel)
   onDownloadResultsTemplate(): void {
     const token = this.authService.getAccessToken();
     if (!token) {
