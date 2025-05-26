@@ -8,16 +8,13 @@
       </div>
       <p class="mt-2">Carregando dados...</p>
     </div>
-
     <div *ngIf="errorMessage && !isLoading" class="alert alert-danger text-center my-4">
       {{ errorMessage }}
     </div>
 
     <div class="mb-5 p-4 border rounded-lg bg-light animate__animated animate__fadeInUp" *ngIf="!isLoading">
       <h5 class="mb-4 text-secondary border-bottom pb-2">1. Inserir Novos Jogos por Rodada (Excel)</h5>
-      <div *ngIf="uploadMessage" class="alert mb-3" [ngClass]="{'alert-success': isUploadSuccess, 'alert-danger': !isUploadSuccess}">
-        {{ uploadMessage }}
-      </div>
+      <div *ngIf="uploadMessage" class="alert mb-3" [ngClass]="{'alert-success': isUploadSuccess, 'alert-danger': !isUploadSuccess}">{{ uploadMessage }}</div>
       <div class="mb-3">
         <label for="roundSelect" class="form-label fw-bold">Selecione a Rodada</label>
         <select id="roundSelect" class="form-select form-select-lg" [(ngModel)]="selectedRound" name="selectedRound">
@@ -27,14 +24,10 @@
       <div class="mb-4">
         <label for="excelFile" class="form-label fw-bold">Carregar Planilha Excel (.xlsx)</label>
         <input type="file" id="excelFile" class="form-control form-control-lg" accept=".xlsx" (change)="onFileSelected($event)" #excelFileInput />
-        <div class="form-text mt-2">
-          A planilha deve ter as colunas: "mandante", "visitante", "data_hora". A primeira linha será ignorada como cabeçalho.
-        </div>
+        <div class="form-text mt-2">A planilha deve ter as colunas: "mandante", "visitante", "data_hora". A primeira linha será ignorada como cabeçalho.</div>
       </div>
       <div class="text-center">
-        <button class="btn btn-primary btn-lg px-4" (click)="onUploadGames()" [disabled]="!selectedFile">
-          <i class="bi bi-upload me-2"></i> Enviar Jogos da Rodada
-        </button>
+        <button class="btn btn-primary btn-lg px-4" (click)="onUploadGames()" [disabled]="!selectedFile"><i class="bi bi-upload me-2"></i> Enviar Jogos da Rodada</button>
       </div>
     </div>
 
@@ -42,9 +35,7 @@
 
     <div class="mb-5 p-4 border rounded-lg bg-light animate__animated animate__fadeInUp" *ngIf="!isLoading">
       <h5 class="mb-4 text-secondary border-bottom pb-2">2. Gerar e Enviar Planilha de Resultados (Excel)</h5>
-      <div *ngIf="resultsUploadMessage" class="alert mb-3" [ngClass]="{'alert-success': isResultsUploadSuccess, 'alert-danger': !isResultsUploadSuccess}">
-        {{ resultsUploadMessage }}
-      </div>
+      <div *ngIf="resultsUploadMessage" class="alert mb-3" [ngClass]="{'alert-success': isResultsUploadSuccess, 'alert-danger': !isResultsUploadSuccess}">{{ resultsUploadMessage }}</div>
       <div class="mb-3">
         <label for="downloadRoundSelect" class="form-label fw-bold">Rodada para Gerar Planilha de Resultados</label>
         <select id="downloadRoundSelect" class="form-select form-select-lg" [(ngModel)]="downloadRoundNumber" name="downloadRoundNumber">
@@ -53,24 +44,16 @@
         </select>
       </div>
       <div class="text-center mb-4">
-        <button class="btn btn-info btn-lg px-4" (click)="onDownloadResultsTemplate()" [disabled]="roundsWithGames.length === 0">
-          <i class="bi bi-download me-2"></i> Baixar Modelo de Resultados
-        </button>
-        <div class="form-text mt-2">
-          Baixe o Excel, preencha os placares e use a próxima seção para enviar.
-        </div>
+        <button class="btn btn-info btn-lg px-4" (click)="onDownloadResultsTemplate()" [disabled]="roundsWithGames.length === 0"><i class="bi bi-download me-2"></i> Baixar Modelo de Resultados</button>
+        <div class="form-text mt-2">Baixe o Excel, preencha os placares e use a próxima seção para enviar.</div>
       </div>
       <div class="mb-4">
         <label for="resultsExcelFile" class="form-label fw-bold">Carregar Planilha de Resultados Preenchida</label>
         <input type="file" id="resultsExcelFile" class="form-control form-control-lg" accept=".xlsx" (change)="onResultsFileSelected($event)" #resultsExcelFileInput />
-        <div class="form-text mt-2">
-          Faça o upload do Excel com os placares preenchidos.
-        </div>
+        <div class="form-text mt-2">Faça o upload do Excel com os placares preenchidos.</div>
       </div>
       <div class="text-center">
-        <button class="btn btn-success btn-lg px-4" (click)="onUploadResults()" [disabled]="!resultsFile">
-          <i class="bi bi-upload me-2"></i> Enviar Resultados da Planilha
-        </button>
+        <button class="btn btn-success btn-lg px-4" (click)="onUploadResults()" [disabled]="!resultsFile"><i class="bi bi-upload me-2"></i> Enviar Resultados da Planilha</button>
       </div>
     </div>
 
@@ -78,9 +61,7 @@
 
     <div class="mb-5 p-4 border rounded-lg bg-light animate__animated animate__fadeInUp" *ngIf="!isLoading">
       <h5 class="mb-4 text-secondary border-bottom pb-2">3. Excluir Jogos por Rodada</h5>
-      <div *ngIf="deleteRoundMessage" class="alert mb-3" [ngClass]="{'alert-success': isDeleteRoundSuccess, 'alert-danger': !isDeleteRoundSuccess}">
-        {{ deleteRoundMessage }}
-      </div>
+      <div *ngIf="deleteRoundMessage" class="alert mb-3" [ngClass]="{'alert-success': isDeleteRoundSuccess, 'alert-danger': !isDeleteRoundSuccess}">{{ deleteRoundMessage }}</div>
       <div class="mb-3">
         <label for="deleteRoundSelect" class="form-label fw-bold">Selecione a Rodada para Excluir</label>
         <select id="deleteRoundSelect" class="form-select form-select-lg" [(ngModel)]="deleteRoundNumber" name="deleteRoundNumber">
@@ -89,9 +70,7 @@
         </select>
       </div>
       <div class="text-center">
-        <button class="btn btn-danger btn-lg px-4" (click)="onDeleteRoundGames()" [disabled]="roundsWithGames.length === 0">
-          <i class="bi bi-trash-fill me-2"></i> Excluir Todos da Rodada
-        </button>
+        <button class="btn btn-danger btn-lg px-4" (click)="onDeleteRoundGames()" [disabled]="roundsWithGames.length === 0"><i class="bi bi-trash-fill me-2"></i> Excluir Todos da Rodada</button>
       </div>
     </div>
 
@@ -102,22 +81,12 @@
       <table class="table table-striped table-bordered align-middle text-center bg-white rounded">
         <thead class="table-dark">
           <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Usuário</th>
-            <th scope="col">Pontos</th>
-            <th scope="col">Role</th>
-            <th scope="col">Cadastro</th>
-            <th scope="col">Última Alteração</th>
+            <th scope="col">ID</th><th scope="col">Usuário</th><th scope="col">Pontos</th><th scope="col">Role</th><th scope="col">Cadastro</th><th scope="col">Última Alteração</th>
           </tr>
         </thead>
         <tbody class="fw-semibold">
           <tr *ngFor="let user of allUsers">
-            <td>{{ user.id }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.points }}</td>
-            <td>{{ user.role | titlecase }}</td>
-            <td>{{ user.created_at | date:'dd/MM/yyyy HH:mm':'America/Sao_Paulo' }}</td>
-            <td>{{ user.updated_at | date:'dd/MM/yyyy HH:mm':'America/Sao_Paulo' }}</td>
+            <td>{{ user.id }}</td><td>{{ user.username }}</td><td>{{ user.points }}</td><td>{{ user.role | titlecase }}</td><td>{{ user.created_at | date:'dd/MM/yyyy HH:mm':'America/Sao_Paulo' }}</td><td>{{ user.updated_at | date:'dd/MM/yyyy HH:mm':'America/Sao_Paulo' }}</td>
           </tr>
         </tbody>
       </table>
@@ -208,13 +177,13 @@
                       [ngClass]="{
                         'bg-secondary': game.status === GameStatus.SCHEDULED,
                         'bg-success': game.status === GameStatus.FINISHED || game.status === GameStatus.COMPLETED,
-                        'bg-warning text-dark': game.status === GameStatus.POSTPONED,
-                        'bg-danger': game.status === GameStatus.CANCELED,
-                        'bg-info text-dark': game.status === GameStatus.IN_PLAY 
+                        'bg-danger': game.status === GameStatus.CANCELED
+                        // Removidas as referências a GameStatus.IN_PLAY e GameStatus.POSTPONED
+                        // Adicione-as de volta se elas existirem no seu enum GameStatus e você tiver classes para elas
                       }">
                   {{ game.status | titlecase }}
                 </span>
-              </td>
+                </td>
               <td class="text-nowrap">
                 <button *ngIf="game.status === GameStatus.SCHEDULED" 
                         class="btn btn-success btn-sm me-1" 
