@@ -7,10 +7,9 @@ import { UserProfile } from '../../models/user.model';
 import { GameService } from '../../services/game.service';
 import { GameRead, GameStatus } from '../../models/game.model';
 
-// ATUALIZAÇÃO AQUI: Interface AdminEditableGame com campos não opcionais
 interface AdminEditableGame extends GameRead {
-  editable_home_score: number | null; // Removido '?'
-  editable_away_score: number | null; // Removido '?'
+  editable_home_score: number | null;
+  editable_away_score: number | null;
 }
 
 @Component({
@@ -22,7 +21,6 @@ interface AdminEditableGame extends GameRead {
 })
 export class AdminPanelComponent implements OnInit {
   allUsers: UserProfile[] = [];
-  // Tipagem atualizada para AdminEditableGame
   allGames: AdminEditableGame[] = [];
   isLoading: boolean = true;
   errorMessage: string | null = null;
@@ -44,7 +42,6 @@ export class AdminPanelComponent implements OnInit {
   rounds: number[] = Array.from({ length: 38 }, (_, i) => i + 1);
   roundsWithGames: number[] = [];
 
-  // Tipagem atualizada para AdminEditableGame
   filteredAndSortedGames: AdminEditableGame[] = [];
   paginatedGames: AdminEditableGame[] = [];
 
@@ -59,7 +56,7 @@ export class AdminPanelComponent implements OnInit {
   totalPages: number = 0;
   totalItems: number = 0;
 
-  public GameStatus = GameStatus; // Para acesso no template
+  public GameStatus = GameStatus;
 
   saveResultMessage: string | null = null;
   isSaveResultSuccess: boolean = false;
@@ -73,7 +70,7 @@ export class AdminPanelComponent implements OnInit {
     this.isLoading = true;
     this.loadAllUsers();
     this.loadAllGames();
-    this.prepareFilterOptions();
+    this.prepareFilterOptions(); // Chamada aqui
   }
 
   private parseUserDateString(dateString: string): string {
@@ -107,12 +104,9 @@ export class AdminPanelComponent implements OnInit {
       return;
     }
     this.gameService.getAllGamesAdmin(token).subscribe({
-      next: (games: GameRead[]) => { // Recebe GameRead[] do serviço
-        // ATUALIZAÇÃO AQUI: Mapeia para AdminEditableGame e garante inicialização
+      next: (games: GameRead[]) => {
         this.allGames = games.map((g: GameRead): AdminEditableGame => ({
-          ...g, // game_datetime já é Date devido ao parseGameDates no service
-          // Se g.home_score/g.away_score do GameRead podem ser undefined, trate aqui.
-          // Assumindo que GameRead tem home_score/away_score como number | null.
+          ...g,
           editable_home_score: g.status === GameStatus.SCHEDULED ? null : (g.home_score !== undefined ? g.home_score : null),
           editable_away_score: g.status === GameStatus.SCHEDULED ? null : (g.away_score !== undefined ? g.away_score : null),
         })).sort((a, b) => new Date(b.game_datetime).getTime() - new Date(a.game_datetime).getTime());
@@ -139,6 +133,7 @@ export class AdminPanelComponent implements OnInit {
       { value: GameStatus.SCHEDULED, display: 'Agendado' },
       { value: GameStatus.FINISHED, display: 'Encerrado (Placar Preenchido)' },
       { value: GameStatus.COMPLETED, display: 'Completo (Apostas Processadas)' },
+      { value: GameStatus.CANCELED, display: 'Cancelado' } // Adicionado CANCELED
     ];
   }
 
