@@ -1,5 +1,5 @@
 // src/app/pages/admin-panel/admin-panel.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -61,6 +61,9 @@ export class AdminPanelComponent implements OnInit {
   saveResultMessage: string | null = null;
   isSaveResultSuccess: boolean = false;
 
+  // Descomente e ajuste o seletor se sua tabela estiver em um container com scroll próprio:
+  // @ViewChild('gamesTableContainer') gamesTableContainerRef!: ElementRef;
+
   constructor(
     private authService: AuthService,
     private gameService: GameService
@@ -73,7 +76,6 @@ export class AdminPanelComponent implements OnInit {
     this.prepareFilterOptions();
   }
 
-  // Função trackBy para otimizar o *ngFor da tabela de jogos
   trackByGameId(index: number, game: AdminEditableGame): number {
     return game.id;
   }
@@ -91,11 +93,14 @@ export class AdminPanelComponent implements OnInit {
         this.allUsers = users.sort((a, b) => a.id - b.id);
       },
       error: (err) => {
-        this.isLoading = false;
-        if (err.status === 403) {
-          this.errorMessage = 'Acesso negado. Você não tem permissão de administrador para este recurso.';
-        } else {
-          this.errorMessage = 'Erro ao carregar usuários. Tente novamente.';
+        // isLoading é tratado principalmente por loadAllGames ou no final de ngOnInit
+         if (this.isLoading) { // Apenas define erro se loadAllGames também falhar ou não rodar
+            if (err.status === 403) {
+                this.errorMessage = 'Acesso negado. Você não tem permissão de administrador para este recurso.';
+            } else {
+                this.errorMessage = 'Erro ao carregar usuários. Tente novamente.';
+            }
+            this.isLoading = false; // Garante que o loading pare se loadAllGames não for chamado ou falhar
         }
       }
     });
@@ -108,6 +113,7 @@ export class AdminPanelComponent implements OnInit {
       this.isLoading = false;
       return;
     }
+    // this.isLoading = true; // Já está true no ngOnInit ou antes da chamada desta função
     this.gameService.getAllGamesAdmin(token).subscribe({
       next: (games: GameRead[]) => {
         this.allGames = games.map((g: GameRead): AdminEditableGame => ({
@@ -118,6 +124,7 @@ export class AdminPanelComponent implements OnInit {
 
         this.roundsWithGames = [...new Set(this.allGames.map(game => game.round_number))].sort((a, b) => a - b);
 
+        // Garante que os selects de rodada tenham valores válidos
         if (this.roundsWithGames.length > 0) {
           if (!this.roundsWithGames.includes(this.downloadRoundNumber)) {
              this.downloadRoundNumber = this.roundsWithGames[0];
@@ -125,9 +132,9 @@ export class AdminPanelComponent implements OnInit {
           if (!this.roundsWithGames.includes(this.deleteRoundNumber)) {
             this.deleteRoundNumber = this.roundsWithGames[0];
           }
-        } else { // Se não há rodadas com jogos, reseta para um valor padrão ou desabilitado
-            this.downloadRoundNumber = 1; // Ou algum valor que indique desabilitado
-            this.deleteRoundNumber = 1;   // Ou algum valor que indique desabilitado
+        } else {
+            this.downloadRoundNumber = 1; // Valor padrão ou indicativo
+            this.deleteRoundNumber = 1;   // Valor padrão ou indicativo
         }
 
         this.applyFiltersAndPagination();
@@ -170,7 +177,8 @@ export class AdminPanelComponent implements OnInit {
       });
     }
 
-    this.filteredAndSortedGames = result.sort((a,b) => new Date(b.game_datetime).getTime() - new Date(a.game_datetime).getTime()); // Re-sort aqui
+    // Re-ordena a lista filtrada (a ordenação inicial em loadAllGames é para allGames)
+    this.filteredAndSortedGames = result.sort((a,b) => new Date(b.game_datetime).getTime() - new Date(a.game_datetime).getTime());
     this.totalItems = this.filteredAndSortedGames.length;
     this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
 
@@ -178,12 +186,9 @@ export class AdminPanelComponent implements OnInit {
       this.currentPage = this.totalPages;
     } else if (this.currentPage < 1 && this.totalPages > 0) {
       this.currentPage = 1;
-    } else if (this.totalPages === 0 && this.totalItems > 0) { // Havia jogos, mas o filtro limpou todos
-        this.currentPage = 1; // Reseta para a página 1
-    } else if (this.totalPages === 0 && this.totalItems === 0) { // Nenhum jogo ou filtro resultou em zero
+    } else if (this.totalPages === 0 ) {
         this.currentPage = 1;
     }
-
 
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
@@ -238,10 +243,9 @@ export class AdminPanelComponent implements OnInit {
 
   onSaveGameResult(game: AdminEditableGame): void {
     this.clearSaveResultMessage();
-    // As validações de placar já garantem que não são null/undefined aqui
     if (game.editable_home_score === null || game.editable_home_score < 0 ||
         game.editable_away_score === null || game.editable_away_score < 0) {
-      this.showTemporaryMessage('Ambos os placares devem ser preenchidos e não podem ser negativos.', false, 'saveResultMessage', 'isSaveResultSuccess');
+      this.showTemporaryMessage('Ambos os placares devem ser preenchidos com valores não negativos.', false, 'saveResultMessage', 'isSaveResultSuccess');
       return;
     }
 
@@ -251,29 +255,39 @@ export class AdminPanelComponent implements OnInit {
       return;
     }
 
+    const scrollY = window.scrollY;
+    // Se usar container específico:
+    // const scrollableContainer = this.gamesTableContainerRef?.nativeElement;
+    // const tableScrollTop = scrollableContainer ? scrollableContainer.scrollTop : 0;
+
     this.isLoading = true;
     this.gameService.updateGameResult(game.id, game.editable_home_score, game.editable_away_score, token)
       .subscribe({
-        next: (updatedGameFromApi) => { // Renomeado para clareza
+        next: (updatedGameFromApi) => {
           this.showTemporaryMessage(`Resultado do jogo ${updatedGameFromApi.home_team} x ${updatedGameFromApi.away_team} salvo com sucesso! As apostas serão processadas.`, true, 'saveResultMessage', 'isSaveResultSuccess');
 
           const index = this.allGames.findIndex(g => g.id === updatedGameFromApi.id);
           if (index !== -1) {
-            // Criar um novo objeto para o jogo atualizado
             const fullyUpdatedGame: AdminEditableGame = {
-              ...this.allGames[index], // Preserva propriedades locais não vindas da API
-              ...updatedGameFromApi,   // Sobrescreve com dados da API
-              game_datetime: new Date(updatedGameFromApi.game_datetime), // Garante que é um objeto Date
-              // Atualiza os campos 'editable_' com base no novo status/placar
+              ...this.allGames[index],
+              ...updatedGameFromApi,
+              game_datetime: new Date(updatedGameFromApi.game_datetime),
               editable_home_score: updatedGameFromApi.status === GameStatus.SCHEDULED ? null : updatedGameFromApi.home_score,
               editable_away_score: updatedGameFromApi.status === GameStatus.SCHEDULED ? null : updatedGameFromApi.away_score,
             };
             this.allGames[index] = fullyUpdatedGame;
-            this.allGames = [...this.allGames]; // Nova referência para o array this.allGames
+            this.allGames = [...this.allGames];
           }
 
-          this.applyFiltersAndPagination(); // Re-aplica filtros e paginação
-          this.isLoading = false;
+          this.applyFiltersAndPagination();
+
+          setTimeout(() => {
+            window.scrollTo(0, scrollY);
+            // if (scrollableContainer) {
+            //   scrollableContainer.scrollTop = tableScrollTop;
+            // }
+            this.isLoading = false;
+          }, 0);
         },
         error: (err) => {
           this.showTemporaryMessage(`Erro ao salvar resultado: ${err.error?.detail || 'Tente novamente.'}`, false, 'saveResultMessage', 'isSaveResultSuccess');
@@ -315,7 +329,7 @@ export class AdminPanelComponent implements OnInit {
         this.selectedFile = null;
         const fileInput = document.getElementById('excelFile') as HTMLInputElement;
         if (fileInput) fileInput.value = '';
-        this.loadAllGames(); // Recarrega todos os jogos após o upload bem-sucedido
+        this.loadAllGames();
       },
       error: (err) => {
         this.showTemporaryMessage(`Erro no upload: ${err.error?.detail || 'Verifique o console para mais detalhes.'}`, false, 'uploadMessage', 'isUploadSuccess');
@@ -338,15 +352,34 @@ export class AdminPanelComponent implements OnInit {
       this.showTemporaryMessage('Não autenticado. Faça login como admin para excluir jogos.', false, 'deleteRoundMessage', 'isDeleteRoundSuccess');
       return;
     }
+
+    const scrollY = window.scrollY;
     this.isLoading = true;
+
     this.gameService.deleteGame(gameId, token).subscribe({
-      next: () => { // Resposta de deleção geralmente é vazia ou uma mensagem de sucesso
+      next: () => {
         this.showTemporaryMessage('Jogo excluído com sucesso!', true, 'deleteRoundMessage', 'isDeleteRoundSuccess');
-        // Atualizar a lista localmente em vez de recarregar tudo
         this.allGames = this.allGames.filter(g => g.id !== gameId);
+        // Precisa garantir que roundsWithGames seja atualizado se a rodada ficou vazia
+        const remainingGamesInRound = this.allGames.filter(g => g.round_number === this.deleteRoundNumber); // Assumindo que deleteRoundNumber é relevante ou usar o round do jogo deletado
+        if(remainingGamesInRound.length === 0) {
+            this.roundsWithGames = [...new Set(this.allGames.map(game => game.round_number))].sort((a, b) => a - b);
+             // Reajustar deleteRoundNumber e downloadRoundNumber se a rodada atual deles foi esvaziada e não existe mais
+            if (this.roundsWithGames.length > 0) {
+                if (!this.roundsWithGames.includes(this.downloadRoundNumber)) { this.downloadRoundNumber = this.roundsWithGames[0]; }
+                if (!this.roundsWithGames.includes(this.deleteRoundNumber)) { this.deleteRoundNumber = this.roundsWithGames[0]; }
+            } else {
+                this.downloadRoundNumber = 1;
+                this.deleteRoundNumber = 1;
+            }
+        }
         this.allGames = [...this.allGames]; // Forçar detecção de mudança
         this.applyFiltersAndPagination();
-        this.isLoading = false;
+
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          this.isLoading = false;
+        }, 0);
       },
       error: (err) => {
         this.showTemporaryMessage(`Erro ao excluir jogo: ${err.error?.detail || 'Tente novamente.'}`, false, 'deleteRoundMessage', 'isDeleteRoundSuccess');
@@ -368,7 +401,7 @@ export class AdminPanelComponent implements OnInit {
     this.gameService.deleteRoundGames(this.deleteRoundNumber, token).subscribe({
       next: (response: any) => {
         this.showTemporaryMessage(response.message || `Todos os jogos da rodada ${this.deleteRoundNumber} foram excluídos com sucesso!`, true, 'deleteRoundMessage', 'isDeleteRoundSuccess');
-        this.loadAllGames(); // Recarrega todos os jogos, pois uma rodada inteira foi afetada
+        this.loadAllGames();
       },
       error: (err) => {
         this.showTemporaryMessage(`Erro ao excluir rodada: ${err.error?.detail || 'Tente novamente.'}`, false, 'deleteRoundMessage', 'isDeleteRoundSuccess');
@@ -383,7 +416,7 @@ export class AdminPanelComponent implements OnInit {
     targetMessageProperty: 'uploadMessage' | 'deleteRoundMessage' | 'resultsUploadMessage' | 'saveResultMessage',
     isTargetSuccessProperty: 'isUploadSuccess' | 'isDeleteRoundSuccess' | 'isResultsUploadSuccess' | 'isSaveResultSuccess'
   ): void {
-    this.errorMessage = null; // Limpa a mensagem de erro principal, se houver
+    this.errorMessage = null;
     (this as any)[targetMessageProperty] = message;
     (this as any)[isTargetSuccessProperty] = isSuccess;
     setTimeout(() => {
@@ -412,7 +445,7 @@ export class AdminPanelComponent implements OnInit {
         this.isLoading = false;
       },
       error: (err) => {
-        this.showTemporaryMessage(`Erro ao baixar planilha: ${err.error?.detail || 'Tente novamente.'}`, false, 'resultsUploadMessage', 'isResultsUploadSuccess');
+        this.showTemporaryMessage(`Erro ao baixar planilha: ${err.error?.detail || 'Verifique o console.'}`, false, 'resultsUploadMessage', 'isResultsUploadSuccess');
         this.isLoading = false;
       }
     });
@@ -446,7 +479,7 @@ export class AdminPanelComponent implements OnInit {
         this.resultsFile = null;
         const fileInput = document.getElementById('resultsExcelFile') as HTMLInputElement;
         if (fileInput) fileInput.value = '';
-        this.loadAllGames(); // Recarrega todos os jogos após o upload bem-sucedido
+        this.loadAllGames();
       },
       error: (err) => {
         this.showTemporaryMessage(`Erro no upload de resultados: ${err.error?.detail || 'Verifique o console.'}`, false, 'resultsUploadMessage', 'isResultsUploadSuccess');
