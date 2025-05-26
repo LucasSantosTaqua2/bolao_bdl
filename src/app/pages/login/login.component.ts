@@ -1,8 +1,10 @@
+// login.component.ts
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule, NgForm } from '@angular/forms'; // Importe NgForm
-import { Router, RouterLink } from '@angular/router'; // Importe Router
-import { AuthService } from '../../services/auth.service'; // Importe o AuthService
+import { FormsModule, NgForm } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService, UserRole } from '../../services/auth.service'; // Importe AuthService e UserRole
+import { take } from 'rxjs/operators'; // Importe o operador take
 
 @Component({
   selector: 'app-login',
@@ -10,7 +12,7 @@ import { AuthService } from '../../services/auth.service'; // Importe o AuthServ
   imports: [
     FormsModule,
     CommonModule,
-    RouterLink // Certifique-se que RouterLink está aqui
+    RouterLink
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
@@ -22,54 +24,55 @@ export class LoginComponent implements OnInit {
   showPassword = false;
   passwordFieldType: string = 'password';
 
-  // Propriedades para exibir mensagens de feedback da API
   apiMessage: string = '';
-  isSuccess: boolean = false; // true para sucesso (verde), false para erro (vermelho)
+  isSuccess: boolean = false;
 
   constructor(
-    private authService: AuthService, // Injete o AuthService
-    private router: Router // Injete o Router para redirecionamento
+    private authService: AuthService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
   }
 
-  // O método onSubmit agora recebe o formulário para validação
   onSubmit(loginForm: NgForm) {
-    this.apiMessage = ''; // Limpa mensagens anteriores
-    this.isSuccess = false; // Reseta o estado da mensagem
+    this.apiMessage = '';
+    this.isSuccess = false;
 
     if (loginForm.invalid) {
       this.apiMessage = 'Por favor, preencha o nome de usuário e a senha.';
-      // Marca todos os campos como 'touched' para exibir as mensagens de erro
       Object.values(loginForm.controls).forEach(control => {
         control.markAsTouched();
       });
-      return; // Impede a submissão se o formulário for inválido
+      return;
     }
 
-    // Chama o método login do AuthService
     this.authService.login({ username: this.username, password: this.password })
       .subscribe({
         next: (response) => {
-          // Callback para sucesso
-          this.apiMessage = 'Login realizado com sucesso! Você será redirecionado.';
-          this.isSuccess = true; // Define para sucesso
-          loginForm.resetForm(); // Opcional: limpa o formulário após o login
+          this.apiMessage = 'Login realizado com sucesso! Redirecionando...';
+          this.isSuccess = true;
+          // loginForm.resetForm(); // Opcional: limpar o formulário aqui ou deixar para o onDestroy/onNavigate
 
-          // Redireciona para a página principal ou dashboard após um pequeno atraso
-          setTimeout(() => {
-            this.router.navigate(['/']); // Redireciona para a rota /home
-          }, 2000); // Redireciona após 2 segundos
+          // ATUALIZAÇÃO AQUI: Redirecionamento baseado no papel do usuário
+          this.authService.currentUserRole$.pipe(
+            take(1) // Pega o valor atual e completa a subscrição
+          ).subscribe(role => {
+            // Pequeno atraso para o usuário ver a mensagem de sucesso
+            setTimeout(() => {
+              if (role === UserRole.ADMIN) { // Assumindo que UserRole.ADMIN está definido no seu enum
+                this.router.navigate(['/admin']);
+              } else {
+                this.router.navigate(['/']); // Redireciona para a home para outros usuários
+              }
+              loginForm.resetForm(); // Limpa o formulário após o redirecionamento
+            }, 1500); // Redireciona após 1.5 segundos (ajuste conforme necessário)
+          });
         },
         error: (error) => {
-          // Callback para erro
-
-          this.isSuccess = false; // Define para erro
-
-          // Exibe uma mensagem de erro mais específica, se disponível na resposta da API
+          this.isSuccess = false;
           if (error.status === 401 && error.error && error.error.detail) {
-            this.apiMessage = error.error.detail; // Por exemplo: "Credenciais inválidas"
+            this.apiMessage = error.error.detail;
           } else {
             this.apiMessage = 'Ocorreu um erro ao tentar fazer login. Tente novamente.';
           }
