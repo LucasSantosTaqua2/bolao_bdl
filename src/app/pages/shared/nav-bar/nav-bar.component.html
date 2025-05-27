@@ -1,11 +1,11 @@
 <div class="nav-bar">
   <div class="navbar-header-left">
-    <div class="menu-icon" (click)="toggleMenu()" [class.open]="isMenuOpen">
+    <div class="menu-icon" (click)="toggleMenu()" [class.open]="isMenuOpen" aria-label="Toggle menu" [attr.aria-expanded]="isMenuOpen">
       <div class="bar bar-top"></div>
       <div class="bar bar-middle"></div>
       <div class="bar bar-bottom"></div>
     </div>
-    <a routerLink="/" class="navbar-brand" (click)="isMenuOpen && isMobile ? toggleMenu() : null" title="Página Inicial">
+    <a routerLink="/" class="navbar-brand" (click)="isMenuOpen && isMobile ? toggleMenu() : null" title="Página Inicial do Bolão">
       <img src="assets/img/logo_bdl.png" alt="Logo Bolão Balde de Lixo" class="navbar-logo">
     </a>
   </div>
@@ -24,69 +24,68 @@
       <a routerLink="/profile" class="nav-item" title="Meu Perfil">
         <i class="bi bi-person-circle me-1"></i> <span class="link-text">Perfil ({{ currentUserUsername$ | async }})</span>
       </a>
-      <a *ngIf="isAdmin$ | async" routerLink="/admin" class="nav-item nav-item-admin" title="Painel Admin">
+      <a *ngIf="isAdmin$ | async" routerLink="/admin" class="nav-item nav-item-admin" title="Painel de Administração">
         <i class="bi bi-shield-lock-fill me-1"></i> <span class="link-text">Admin</span>
       </a>
     </ng-container>
     <ng-container *ngIf="!(isLoggedIn$ | async)">
-      <a routerLink="/login" class="nav-item">
+      <a routerLink="/login" class="nav-item" title="Entrar">
         <i class="bi bi-box-arrow-in-right me-1"></i> <span class="link-text">Entrar</span>
       </a>
-      <a routerLink="/register" class="nav-item">
+      <a routerLink="/register" class="nav-item" title="Registre-se">
         <i class="bi bi-person-plus-fill me-1"></i> <span class="link-text">Registre-se</span>
       </a>
     </ng-container>
   </div>
 
   <div class="desktop-right-actions" *ngIf="!isMobile">
-    <a (click)="toggleAppTheme()" class="nav-item theme-toggle-btn" title="Alterar Tema">
+    <a (click)="toggleAppTheme()" class="nav-item theme-toggle-btn" title="Alterar Tema" href="javascript:void(0)" role="button">
       <i class="bi" [ngClass]="{
         'bi-moon-stars-fill': themeService.getEffectiveTheme() === 'light',
         'bi-sun-fill': themeService.getEffectiveTheme() === 'dark'
       }"></i>
     </a>
-    <a *ngIf="isLoggedIn$ | async" (click)="onLogout()" class="nav-item logout-link" title="Sair">
+    <a *ngIf="isLoggedIn$ | async" (click)="onLogout()" class="nav-item logout-link" title="Sair" href="javascript:void(0)" role="button">
       <i class="bi bi-box-arrow-right me-1"></i> <span class="link-text">Sair</span>
     </a>
   </div>
 
-
   <div #navLinksMobileRef class="nav-links-mobile" [class.active]="isMenuOpen" *ngIf="isMobile">
     <ng-container *ngIf="isLoggedIn$ | async">
-      <a routerLink="/" (click)="toggleMenu()" class="nav-item">
+      <a routerLink="/" (click)="toggleMenu()" class="nav-item" title="Página Inicial">
         <i class="bi bi-house-fill me-2"></i> Página Inicial
       </a>
-      <a routerLink="/ranking" (click)="toggleMenu()" class="nav-item">
+      <a routerLink="/ranking" (click)="toggleMenu()" class="nav-item" title="Classificação">
         <i class="bi bi-trophy-fill me-2"></i> Classificação
       </a>
-      <a routerLink="/apostar" (click)="toggleMenu()" class="nav-item">
+      <a routerLink="/apostar" (click)="toggleMenu()" class="nav-item" title="Fazer Apostas">
         <i class="bi bi-pencil-square me-2"></i> Apostar
       </a>
-      <a routerLink="/profile" (click)="toggleMenu()" class="nav-item">
+      <a routerLink="/profile" (click)="toggleMenu()" class="nav-item" title="Meu Perfil">
         <i class="bi bi-person-circle me-2"></i> Perfil ({{ currentUserUsername$ | async }})
       </a>
-      <a *ngIf="isAdmin$ | async" routerLink="/admin" (click)="toggleMenu()" class="nav-item nav-item-admin">
+      <a *ngIf="isAdmin$ | async" routerLink="/admin" (click)="toggleMenu()" class="nav-item nav-item-admin" title="Painel de Administração">
         <i class="bi bi-shield-lock-fill me-2"></i> Admin
       </a>
     </ng-container>
     <ng-container *ngIf="!(isLoggedIn$ | async)">
-      <a routerLink="/login" (click)="toggleMenu()" class="nav-item">
+      <a routerLink="/login" (click)="toggleMenu()" class="nav-item" title="Entrar">
         <i class="bi bi-box-arrow-in-right me-2"></i> Entrar
       </a>
-      <a routerLink="/register" (click)="toggleMenu()" class="nav-item">
+      <a routerLink="/register" (click)="toggleMenu()" class="nav-item" title="Registre-se">
         <i class="bi bi-person-plus-fill me-2"></i> Registre-se
       </a>
     </ng-container>
 
-    <hr class="mobile-nav-divider" *ngIf="isLoggedIn$ | async">
-    <a (click)="toggleAppTheme()" class="nav-item" title="Alterar Tema">
+    <hr class="mobile-nav-divider">
+    <a (click)="toggleAppTheme()" class="nav-item" title="Alterar Tema" href="javascript:void(0)" role="button">
       <i class="bi" [ngClass]="{
         'bi-moon-stars-fill': themeService.getEffectiveTheme() === 'light',
         'bi-sun-fill': themeService.getEffectiveTheme() === 'dark'
       }"></i>
-      <span class="ms-2">Alterar Tema ({{ themeService.getCurrentThemeSetting() === 'auto' ? 'Auto' : (themeService.getEffectiveTheme() === 'light' ? 'Claro' : 'Escuro') }})</span>
+      <span class="ms-2">Tema ({{ themeService.getCurrentThemeSetting() === 'auto' ? 'Auto' : (themeService.getEffectiveTheme() === 'light' ? 'Claro' : 'Escuro') }})</span>
     </a>
-    <a *ngIf="isLoggedIn$ | async" (click)="onLogout(); toggleMenu()" class="nav-item logout-link">
+    <a *ngIf="isLoggedIn$ | async" (click)="onLogout(); toggleMenu()" class="nav-item logout-link" title="Sair" href="javascript:void(0)" role="button">
       <i class="bi bi-box-arrow-right me-2"></i> Sair
     </a>
   </div>
