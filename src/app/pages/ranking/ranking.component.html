@@ -1,26 +1,26 @@
 <div class="container py-5">
   <div class="bg-dark text-white p-4 rounded shadow-lg">
-    <h2 class="text-center mb-4">
+    <h2 class="text-center mb-4 ranking-title">
       🏆 Classificação Geral
     </h2>
 
-    <div *ngIf="isLoading" class="text-center my-4">
+    <div *ngIf="isLoading" class="text-center my-4 loading-message">
       <div class="spinner-border text-light" role="status">
         <span class="visually-hidden">Carregando...</span>
       </div>
       <p class="mt-2">Carregando ranking...</p>
     </div>
 
-    <div *ngIf="errorMessage" class="alert alert-danger text-center my-4">
+    <div *ngIf="errorMessage" class="alert alert-danger text-center my-4 error-message">
       {{ errorMessage }}
     </div>
 
-    <div *ngIf="!isLoading && !errorMessage && usersRanking.length === 0" class="alert alert-info text-center my-4">
+    <div *ngIf="!isLoading && !errorMessage && usersRanking.length === 0" class="alert alert-info text-center my-4 empty-message">
       Nenhum usuário no ranking ainda. Registre-se e comece a apostar!
     </div>
 
     <div *ngIf="!isLoading && !errorMessage && usersRanking.length > 0" class="table-responsive">
-      <table class="table table-hover table-bordered align-middle text-center bg-white rounded">
+      <table class="table table-hover table-bordered align-middle text-center bg-white rounded ranking-table">
         <thead class="table-dark">
           <tr>
             <th scope="col">Posição</th>
@@ -29,8 +29,9 @@
           </tr>
         </thead>
         <tbody class="fw-semibold">
-          <tr *ngFor="let user of usersRanking; let i = index">
-            <td>{{ i + 1 }}</td> <td>{{ user.username }}</td>
+          <tr *ngFor="let user of usersRanking; let i = index" class="ranking-row">
+            <td>{{ i + 1 }}</td>
+            <td>{{ user.username }}</td>
             <td>{{ user.points }}</td>
           </tr>
         </tbody>
