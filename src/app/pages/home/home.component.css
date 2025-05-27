@@ -1,76 +1,118 @@
 /* src/app/pages/home/home.component.css */
+.container {
+  /* Você pode adicionar estilos específicos para o container se necessário */
+}
+
 .content {
-    align-items: center;
-    background-color: #f8f9fa;
-    border-radius: 15px;
-    padding: 20px;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  background-color: #f8f9fa; /* Cor de fundo suave */
+  border-radius: 15px; /* Bordas arredondadas */
+  padding: 20px; /* Espaçamento interno */
+  max-width: 800px; /* Largura máxima do conteúdo */
+  margin-left: auto; /* Centralizar */
+  margin-right: auto; /* Centralizar */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra sutil */
 }
 
 .logo {
-    width: 150px;
-    height: 150px;
-    background-image: url('../../../assets/img/logo_bdl.png');
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    margin-bottom: 20px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+  width: 150px;
+  height: 150px;
+  background-image: url('../../../assets/img/logo_bdl.png'); /* Caminho para sua logo */
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin-bottom: 20px; /* Espaço abaixo do logo */
+  display: block; /* Para aplicar margens automáticas */
+  margin-left: auto;
+  margin-right: auto;
 
-    /* Animação de Pulsar (logo) */
-    animation: pulse 2s infinite alternate;
+  /* Animação de Pulsar (logo) */
+  animation: pulse 2s infinite alternate;
 }
 
 @keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-    100% {
-        transform: scale(1.1);
-    }
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.08); /* Leve aumento para o efeito de pulsar */
+  }
 }
 
 /* Estilo para o título principal (h1) */
 .welcome-title {
-    color: #212529; /* Cor preta padrão do Bootstrap */
-    font-weight: bold;
-    animation: fadeInScale 1s ease-out forwards; /* Aplica a animação ao h1 */
-    display: inline-block; /* Necessário para aplicar transform */
+  color: #212529; /* Cor preta padrão do Bootstrap */
+  font-weight: bold;
+  animation: fadeInScale 1s ease-out forwards;
+  display: inline-block; /* Necessário para aplicar transform */
+  margin-bottom: 1rem; /* Espaçamento abaixo do título */
 }
 
 /* Estilo para o nome de usuário dentro do título */
 .username-highlight {
-    color: #212529; /* Mantém preto */
-    font-weight: bold;
-    font-size: 1.1em; /* Levemente maior que o texto ao redor */
+  color: #212529; /* Mantém preto ou pode usar uma cor de destaque da sua paleta */
+  font-weight: bold;
+  font-size: 1.1em; /* Levemente maior que o texto ao redor */
 }
 
-/* NOVO: Estilo para destacar as regras */
+/* Estilo para destacar as regras */
 .rule-highlight {
-    font-weight: bold; /* Deixa o texto em negrito */
-    color: #495057; /* Uma cor um pouco mais escura que o texto normal para destaque, ou uma cor primária */
+  font-weight: bold;
+  color: #495057; /* Cor para destaque das regras */
 }
 
-/* NOVO: Estilo para o prazo limite, se quiser um destaque diferente */
+/* Estilo para o prazo limite */
 .rule-deadline {
-    color: #dc3545; /* Vermelho Bootstrap */
-    font-weight: bold;
+  color: #dc3545; /* Vermelho Bootstrap para prazos */
+  font-weight: bold;
 }
 
+/* Animações Globais */
+.animated {
+  animation-duration: 1s;
+  animation-fill-mode: both;
+}
 
 /* Animação de aparecer e escalar (reutilizada para o título) */
 @keyframes fadeInScale {
-    0% {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
+  0% {
+    opacity: 0;
+    transform: scale(0.9); /* Começa um pouco menor */
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animação de Fade In (para o card de Como Funciona) */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fadeIn {
+  animation-name: fadeIn;
+  animation-delay: 0.2s; /* Pequeno atraso para o card aparecer depois do título */
+}
+
+/* Animação de Slide In Left (para os botões) */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-80px); /* Começa um pouco mais para a esquerda */
+    opacity: 0; /* Começa invisível */
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1; /* Termina visível */
+  }
+}
+
+.slideInLeft {
+  animation-name: slideInLeft;
+  /* visibility: visible !important;  Não é estritamente necessário com opacity */
 }
