@@ -29,10 +29,7 @@
           </tr>
         </thead>
         <tbody class="fw-semibold">
-          <tr *ngFor="let user of usersRanking; let i = index;
-                      let isFirst = first;
-                      let isSecond = (i === 1);
-                      let isThird = (i === 2);"
+          <tr *ngFor="let user of usersRanking; let i = index; let isFirst = first; let isSecond = i === 1; let isThird = i === 2"
               class="ranking-row"
               [class.first-place]="isFirst"
               [class.second-place]="isSecond"
