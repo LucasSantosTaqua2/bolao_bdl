@@ -116,3 +116,25 @@
   animation-name: slideInLeft;
   /* visibility: visible !important;  Não é estritamente necessário com opacity */
 }
+
+/* NOVOS ESTILOS PARA O DASHBOARD E EMBLEMAS */
+.user-dashboard {
+  border: 1px solid #e0e0e0;
+  background-color: #f8f9fa; /* Um pouco diferente do fundo principal da página para destaque */
+  border-radius: .5rem; /* Adicionado para consistência com outros cards */
+}
+
+.user-dashboard .card {
+  border: none; /* Remover borda padrão do card dentro do dashboard */
+}
+
+.user-dashboard .card-title i {
+  font-size: 1.2em; /* Ajuste para ícones dentro dos cards do dashboard */
+}
+
+.escudo-icon {
+  width: 20px; /* Ou o tamanho que preferir */
+  height: 20px; /* Ou o tamanho que preferir */
+  vertical-align: middle;
+  object-fit: contain; /* Para garantir que a imagem não fique distorcida */
+}
