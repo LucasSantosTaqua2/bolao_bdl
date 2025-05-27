@@ -1,7 +1,7 @@
 <div class="container py-5">
   <div class="content text-center p-4 bg-white shadow rounded">
     <div class="logo mb-4">
-        </div>
+      </div>
 
     <h1 class="mb-3 welcome-title">
       <ng-container *ngIf="username; else defaultWelcome">
@@ -18,24 +18,23 @@
       Aqui, o que vale é a diversão, os palpites certeiros e a zoação com os amigos.
     </p>
 
-    <div class="card p-4 mb-4 bg-light text-start">
-        <h4 class="text-secondary mb-3 border-bottom pb-2">Como Funciona?</h4>
-        <ul class="list-unstyled">
-            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>A cada rodada do Brasileirão, você poderá <span class="rule-highlight">apostar nos resultados</span> das partidas.</li>
-            <li class="mb-2"><i class="bi bi-trophy-fill text-warning me-2"></i>Cada palpite com o <span class="rule-highlight">placar exato</span> vale <span class="rule-highlight">1 ponto</span> na classificação.</li>
-            <li class="mb-2"><i class="bi bi-clock-fill text-info me-2"></i>As apostas para cada rodada se encerram <span class="rule-highlight rule-deadline">30 minutos antes do início do PRIMEIRO jogo</span> daquela rodada. Fique ligado no calendário!</li>
-            <li class="mb-2"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Uma vez realizadas, as apostas <span class="rule-highlight">não poderão ser alteradas</span>. Pense bem antes de confirmar!</li>
-            <li class="mb-2"><i class="bi bi-question-circle-fill text-primary me-2"></i>Este é um bolão gratuito, focado na diversão e nos direitos de se gabar!</li>
-        </ul>
+    <div class="card p-4 mb-4 bg-light text-start animated fadeIn">
+      <h4 class="text-secondary mb-3 border-bottom pb-2">Como Funciona?</h4>
+      <ul class="list-unstyled">
+        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>A cada rodada do Brasileirão, você poderá <span class="rule-highlight">apostar nos resultados</span> das partidas.</li>
+        <li class="mb-2"><i class="bi bi-trophy-fill text-warning me-2"></i>Cada palpite com o <span class="rule-highlight">placar exato</span> vale <span class="rule-highlight">1 ponto</span> na classificação.</li>
+        <li class="mb-2"><i class="bi bi-clock-fill text-info me-2"></i>As apostas para cada rodada se encerram <span class="rule-highlight rule-deadline">30 minutos antes do início do PRIMEIRO jogo</span> daquela rodada. Fique ligado no calendário!</li>
+        <li class="mb-2"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Uma vez realizadas, as apostas <span class="rule-highlight">não poderão ser alteradas</span>. Pense bem antes de confirmar!</li>
+        <li class="mb-2"><i class="bi bi-question-circle-fill text-primary me-2"></i>Este é um bolão gratuito, focado na diversão e nos direitos de se gabar!</li>
+      </ul>
     </div>
 
-
     <div class="d-grid gap-3 col-md-8 mx-auto">
-      <button class="btn btn-primary btn-lg" (click)="goToApostar()">
+      <button class="btn btn-primary btn-lg animated slideInLeft" style="animation-delay: 0.3s;" (click)="goToApostar()">
         <i class="bi bi-controller me-2"></i> Fazer Minhas Apostas
       </button>
 
-      <button *ngIf="isAdmin" class="btn btn-warning btn-lg" (click)="goToAdminPanel()">
+      <button *ngIf="isAdmin" class="btn btn-warning btn-lg animated slideInLeft" style="animation-delay: 0.5s;" (click)="goToAdminPanel()">
         <i class="bi bi-gear-fill me-2"></i> Painel de Administração
       </button>
     </div>
