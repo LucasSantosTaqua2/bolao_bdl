@@ -1,177 +1,56 @@
-/* --- Variáveis de Cor e Animação --- */
-:root {
-  --gold-color: #ffd700;
-  --silver-color: #c0c0c0;
-  --bronze-color: #cd7f32;
-  /* --winner-glow-start: rgba(255, 215, 0, 0.3); /* Não usado se firstPlaceShine for removido */
-  /* --winner-glow-end: rgba(255, 215, 0, 0.6);   /* Não usado se firstPlaceShine for removido */
-  --animation-duration-fast: 0.5s;
-  --animation-duration-medium: 0.8s;
-  --animation-duration-slow: 1.2s; /* Usado apenas para delays, não mais para medalFloat */
-}
+/* ranking.component.css - VERSÃO SUPER SIMPLIFICADA PARA TESTE DE VISIBILIDADE */
+/* Este CSS é para ser usado com o HTML que tem [class.winner-row]="isFirst" e <span *ngIf="isFirst" class="winner-icon">👑</span> */
 
 .ranking-container {
   position: relative;
-  overflow: hidden;
 }
 
 .ranking-title {
-  font-size: 2.5rem;
-  opacity: 0;
-  transform: translateY(-30px);
-  animation: titleEnter var(--animation-duration-medium) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-  animation-delay: 0.2s;
-  color: #fff;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
-}
-
-.ranking-title .trophy-icon {
-  display: inline-block;
-  animation: trophyPulse 2s infinite ease-in-out;
-}
-
-.ranking-title .trophy-icon:first-of-type { animation-delay: 0s; }
-.ranking-title .trophy-icon:last-of-type { animation-delay: 0.3s; }
-
-@keyframes titleEnter {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes trophyPulse {
-  0%, 100% {
-    transform: scale(1);
-    /* text-shadow: 0 0 5px var(--gold-color); /* Simplificado/Removido do estado base */
-  }
-  50% {
-    transform: scale(1.1);
-    text-shadow: 0 0 10px var(--gold-color), 0 0 20px #fff;
-  }
+  color: #fff; /* Garante que o título seja visível no fundo escuro */
+  opacity: 1; /* Garante visibilidade */
 }
 
 .loading-message,
 .error-message,
 .empty-message {
-  opacity: 0;
-  transform: scale(0.9);
-  animation: messageAppear var(--animation-duration-fast) ease-out forwards;
-  animation-delay: 0.5s;
-}
-
-@keyframes messageAppear {
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  opacity: 1; /* Garante visibilidade */
 }
 
 .ranking-table {
-  opacity: 0;
-  transform: translateY(40px);
-  animation: tableFadeInUp var(--animation-duration-medium) cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
-  animation-delay: 0.7s;
-}
-
-@keyframes tableFadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  opacity: 1; /* Garante visibilidade */
 }
 
 .ranking-row {
-  opacity: 0;
-  transform: translateX(-50px);
-  animation: rowSlideIn var(--animation-duration-fast) cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  opacity: 1; /* Garante visibilidade */
+  /* Removemos transformações e animações de entrada por enquanto */
 }
 
-.ranking-row:nth-child(1)  { animation-delay: 1.2s; }
-.ranking-row:nth-child(2)  { animation-delay: 1.3s; }
-.ranking-row:nth-child(3)  { animation-delay: 1.4s; }
-.ranking-row:nth-child(4)  { animation-delay: 1.5s; }
-.ranking-row:nth-child(5)  { animation-delay: 1.6s; }
-.ranking-row:nth-child(6)  { animation-delay: 1.7s; }
-.ranking-row:nth-child(7)  { animation-delay: 1.8s; }
-.ranking-row:nth-child(8)  { animation-delay: 1.9s; }
-.ranking-row:nth-child(9)  { animation-delay: 2.0s; }
-.ranking-row:nth-child(10) { animation-delay: 2.1s; }
-
-@keyframes rowSlideIn {
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+/* Estilo básico para a linha vencedora e ícone, sem animações complexas */
+.winner-row {
+  background-color: rgba(255, 215, 0, 0.15); /* Amarelo sutil para o vencedor */
+  font-weight: bold;
 }
 
-.rank-icon-container {
-  display: inline-block;
+.winner-icon {
+  color: #ffd700; /* Cor dourada para a coroa */
   margin-right: 0.5em;
-  min-width: 1.5em;
-  text-align: left;
+  font-size: 1.2em;
+  display: inline-block; /* Garante que seja exibido */
+  opacity: 1; /* Garante visibilidade */
 }
 
-.rank-icon {
-  display: inline-block;
-  font-size: 1.3em;
-  transform: scale(0);
-  opacity: 0;
-  animation: medalAppear var(--animation-duration-fast) cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  animation-delay: inherit; /* Herda delay da linha pai para entrada sincronizada */
-}
-
-@keyframes medalAppear {
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.gold-medal { color: var(--gold-color); }
-.silver-medal { color: var(--silver-color); }
-.bronze-medal { color: var(--bronze-color); }
-
-/* Destaques do Pódio */
-.first-place {
-  background: rgba(255,215,0,0.18); /* Cor sólida ouro com alpha */
-  animation-name: rowSlideIn; /* Apenas a animação de entrada */
-  /* animation-duration, timing-function, fill-mode são herdados ou definidos em .ranking-row */
-  animation-delay: 1.0s !important; /* Destaque no delay de entrada */
-  border-left: 5px solid var(--gold-color);
-  position: relative;
-}
-
-.second-place {
-  background: rgba(192,192,192,0.18); /* Cor sólida prata com alpha */
-  border-left: 5px solid var(--silver-color);
-  animation-delay: 1.15s !important;
-}
-
-.third-place {
-  background: rgba(205,127,50,0.18); /* Cor sólida bronze com alpha */
-  border-left: 5px solid var(--bronze-color);
-  animation-delay: 1.30s !important;
-}
-
-/* Ajustes de Hover */
-.table-hover tbody tr:not(.first-place):not(.second-place):not(.third-place):hover {
-  background-color: #3a3f44 !important;
-  color: #fff;
-  transform: scale(1.01);
-  transition: transform 0.2s ease-out, background-color 0.2s ease-out;
-}
-
-.first-place:hover, .second-place:hover, .third-place:hover {
-  filter: brightness(1.1);
-  transition: filter 0.2s ease-out;
-}
-
-/* Estilos Gerais da Tabela */
+/* Estilos gerais da tabela para manter a aparência básica */
 .table th, .table td {
   vertical-align: middle;
   padding: 0.85rem 0.75rem;
 }
-
 .table-bordered { border-color: #454d55; }
 .spinner-border.text-light { width: 3rem; height: 3rem; border-width: .3em; }
+.bg-dark.text-white.p-4.rounded.shadow-lg {
+  background-color: #212529 !important;
+  border: 1px solid #343a40;
+}
+.table-hover tbody tr:not(.winner-row):hover {
+  background-color: #3a3f44 !important;
+  color: #fff;
+}
