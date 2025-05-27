@@ -30,3 +30,20 @@ body {
 /* Remova o estilo .main-content-wrapper se ele estiver apenas empurrando o conteúdo */
 /* Caso contrário, se .main-content-wrapper é um container estrutural, ele não deve ter padding-top */
 /* e o padding-top deve ficar no body ou em um container mais alto, como aqui */
+
+
+/* Fundo da página (mantido) */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-image: url(../public/img/background.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.5;
+  z-index: -1;
+}
