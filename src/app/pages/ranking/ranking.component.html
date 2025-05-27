@@ -29,17 +29,13 @@
           </tr>
         </thead>
         <tbody class="fw-semibold">
-          <tr *ngFor="let user of usersRanking; let i = index; let isFirst = first; let isSecond = i === 1; let isThird = i === 2"
+          <tr *ngFor="let user of usersRanking; let i = index; let isFirst = first"
               class="ranking-row"
               [class.first-place]="isFirst"
-              [class.second-place]="isSecond"
-              [class.third-place]="isThird">
-            <td>
+              [class.second-place]="i === 1" [class.third-place]="i === 2">  <td>
               <span class="rank-icon-container">
                 <span *ngIf="isFirst" class="rank-icon gold-medal">🥇</span>
-                <span *ngIf="isSecond" class="rank-icon silver-medal">🥈</span>
-                <span *ngIf="isThird" class="rank-icon bronze-medal">🥉</span>
-              </span>
+                <span *ngIf="i === 1" class="rank-icon silver-medal">🥈</span> <span *ngIf="i === 2" class="rank-icon bronze-medal">🥉</span> </span>
               {{ i + 1 }}
             </td>
             <td>{{ user.username }}</td>
