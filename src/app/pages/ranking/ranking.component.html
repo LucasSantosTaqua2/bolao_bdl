@@ -1,6 +1,5 @@
 <div class="container py-5">
-  <div class="bg-dark text-white p-4 rounded shadow-lg">
-    <h2 class="text-center mb-4 ranking-title">
+  <div class="bg-dark text-white p-4 rounded shadow-lg ranking-container"> <h2 class="text-center mb-4 ranking-title">
       🏆 Classificação Geral
     </h2>
 
@@ -29,8 +28,13 @@
           </tr>
         </thead>
         <tbody class="fw-semibold">
-          <tr *ngFor="let user of usersRanking; let i = index" class="ranking-row">
-            <td>{{ i + 1 }}</td>
+          <tr *ngFor="let user of usersRanking; let i = index; let isFirst = first"
+              [class.winner-row]="isFirst"
+              class="ranking-row">
+            <td>
+              <span *ngIf="isFirst" class="winner-icon">👑</span>
+              {{ i + 1 }}
+            </td>
             <td>{{ user.username }}</td>
             <td>{{ user.points }}</td>
           </tr>
