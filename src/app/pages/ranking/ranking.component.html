@@ -1,41 +1,34 @@
 <div class="container py-5">
-  <div class="bg-dark text-white p-4 rounded shadow-lg ranking-container">
-    <h2 class="text-center mb-4 ranking-title">
-      <span class="trophy-icon">🏆</span> Classificação Geral <span class="trophy-icon">🏆</span>
+  <div class="bg-dark text-white p-4 rounded shadow-lg ranking-container"> <h2 class="text-center mb-4 ranking-title">
+      🏆 Classificação Geral
     </h2>
-
     <div *ngIf="isLoading" class="text-center my-4 loading-message">
       <div class="spinner-border text-light" role="status">
         <span class="visually-hidden">Carregando...</span>
       </div>
       <p class="mt-2">Carregando ranking...</p>
     </div>
-
     <div *ngIf="errorMessage" class="alert alert-danger text-center my-4 error-message">
       {{ errorMessage }}
     </div>
-
     <div *ngIf="!isLoading && !errorMessage && usersRanking.length === 0" class="alert alert-info text-center my-4 empty-message">
       Nenhum usuário no ranking ainda. Registre-se e comece a apostar!
     </div>
-
     <div *ngIf="!isLoading && !errorMessage && usersRanking.length > 0" class="table-responsive">
       <table class="table table-hover table-bordered align-middle text-center bg-white rounded ranking-table">
         <thead class="table-dark">
           <tr>
-            <th scope="col" class="col-position">Posição</th>
-            <th scope="col" class="col-name">Nome</th>
-            <th scope="col" class="col-points">Pontos</th>
+            <th scope="col">Posição</th>
+            <th scope="col">Nome</th>
+            <th scope="col">Pontos</th>
           </tr>
         </thead>
         <tbody class="fw-semibold">
           <tr *ngFor="let user of usersRanking; let i = index; let isFirst = first"
-              class="ranking-row"
-              [class.first-place]="isFirst"
-              [class.second-place]="i === 1" [class.third-place]="i === 2">  <td>
-              <span class="rank-icon-container">
-                <span *ngIf="isFirst" class="rank-icon gold-medal">🥇</span>
-                <span *ngIf="i === 1" class="rank-icon silver-medal">🥈</span> <span *ngIf="i === 2" class="rank-icon bronze-medal">🥉</span> </span>
+              [class.winner-row]="isFirst"
+              class="ranking-row">
+            <td>
+              <span *ngIf="isFirst" class="winner-icon">👑</span>
               {{ i + 1 }}
             </td>
             <td>{{ user.username }}</td>
