@@ -1,79 +1,122 @@
-<div *ngIf="isLoggedIn && !isLoadingDashboard && dashboardData">
-  <div class="card shadow-sm mb-5 p-4 bg-light user-dashboard animated fadeIn">
-    <h3 class="mb-3 text-primary">Seu Resumo, {{ username }}!</h3>
-    <div class="row">
-      <div class="col-md-4 mb-3 mb-md-0">
-        <div class="card text-center h-100">
-          <div class="card-body">
-            <h5 class="card-title"><i class="bi bi-award-fill text-warning me-2"></i>Pontuação</h5>
-            <p class="card-text fs-4 fw-bold">{{ dashboardData.userProfile?.points || 0 }}</p>
-            <a routerLink="/profile" class="btn btn-sm btn-outline-secondary">Ver Perfil</a>
+<div class="container py-5">
+  <ng-container *ngIf="isLoggedIn && !isLoadingDashboard && dashboardData">
+    <div class="card shadow-sm mb-5 p-4 bg-light user-dashboard animated fadeIn">
+      <h3 class="mb-3 text-primary">Seu Resumo, {{ username }}!</h3>
+      <div class="row">
+        <div class="col-md-4 mb-3 mb-md-0">
+          <div class="card text-center h-100">
+            <div class="card-body">
+              <h5 class="card-title"><i class="bi bi-award-fill text-warning me-2"></i>Pontuação</h5>
+              <p class="card-text fs-4 fw-bold">{{ dashboardData.userProfile?.points || 0 }}</p>
+              <a routerLink="/profile" class="btn btn-sm btn-outline-secondary">Ver Perfil</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-3 mb-md-0">
+          <div class="card text-center h-100">
+            <div class="card-body">
+              <h5 class="card-title"><i class="bi bi-trophy-fill text-success me-2"></i>Ranking</h5>
+              <p class="card-text fs-4 fw-bold" *ngIf="dashboardData.rank; else noRank">
+                {{ dashboardData.rank }}º
+              </p>
+              <ng-template #noRank><p class="card-text fs-4 fw-bold">-</p></ng-template>
+              <a routerLink="/ranking" class="btn btn-sm btn-outline-secondary">Ver Classificação</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card text-center h-100">
+            <div class="card-body">
+              <h5 class="card-title"><i class="bi bi-calendar-event-fill text-info me-2"></i>Próxima Rodada</h5>
+              <p class="card-text fs-4 fw-bold" *ngIf="dashboardData.currentRoundForBetting; else noUpcomingRound">
+                Rodada {{ dashboardData.currentRoundForBetting }}
+              </p>
+              <ng-template #noUpcomingRound><p class="card-text fs-4 fw-bold">-</p></ng-template>
+              <button
+                *ngIf="dashboardData.currentRoundForBetting"
+                class="btn btn-sm btn-primary"
+                (click)="goToApostar(dashboardData.currentRoundForBetting)">
+                Apostar Agora
+              </button>
+              <p *ngIf="!dashboardData.currentRoundForBetting && dashboardData.nextGames.length === 0" class="mt-2 small text-muted">
+                Nenhuma rodada com jogos abertos para aposta no momento.
+              </p>
+            </div>
           </div>
         </div>
       </div>
-      <div class="col-md-4 mb-3 mb-md-0">
-        <div class="card text-center h-100">
-          <div class="card-body">
-            <h5 class="card-title"><i class="bi bi-trophy-fill text-success me-2"></i>Ranking</h5>
-            <p class="card-text fs-4 fw-bold" *ngIf="dashboardData.rank; else noRank">
-              {{ dashboardData.rank }}º
-            </p>
-            <ng-template #noRank><p class="card-text fs-4 fw-bold">-</p></ng-template>
-            <a routerLink="/ranking" class="btn btn-sm btn-outline-secondary">Ver Classificação</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card text-center h-100">
-          <div class="card-body">
-            <h5 class="card-title"><i class="bi bi-calendar-event-fill text-info me-2"></i>Próxima Rodada</h5>
-            <p class="card-text fs-4 fw-bold" *ngIf="dashboardData.currentRoundForBetting; else noUpcomingRound">
-              Rodada {{ dashboardData.currentRoundForBetting }}
-            </p>
-            <ng-template #noUpcomingRound><p class="card-text fs-4 fw-bold">-</p></ng-template>
-            <button
-              *ngIf="dashboardData.currentRoundForBetting"
-              class="btn btn-sm btn-primary"
-              (click)="goToApostar(dashboardData.currentRoundForBetting)">
-              Apostar Agora
+
+      <div *ngIf="dashboardData.nextGames && dashboardData.nextGames.length > 0" class="mt-4">
+        <h5 class="text-secondary">Jogos da Rodada {{ dashboardData.currentRoundForBetting }}:</h5>
+        <ul class="list-group list-group-flush">
+          <li *ngFor="let game of dashboardData.nextGames; trackBy: trackByGameId" class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+              <img
+                [src]="'assets/emblemas/' + (game.home_team | teamNameToFileName)"
+                [alt]="game.home_team"
+                onError="this.src='assets/emblemas/default_emblema.png'; this.alt='Escudo não encontrado'"
+                class="escudo-icon me-2">
+              {{ game.home_team }} vs
+              <img
+                [src]="'assets/emblemas/' + (game.away_team | teamNameToFileName)"
+                [alt]="game.away_team"
+                onError="this.src='assets/emblemas/default_emblema.png'; this.alt='Escudo não encontrado'"
+                class="escudo-icon ms-2 me-2">
+              {{ game.away_team }}
+            </span>
+            <span class="badge bg-secondary rounded-pill">{{ game.game_datetime | date:'dd/MM HH:mm':'America/Sao_Paulo' }}</span>
+          </li>
+        </ul>
+        <div class="text-center mt-3">
+            <button class="btn btn-primary" (click)="goToApostar(dashboardData.currentRoundForBetting)">
+                <i class="bi bi-controller me-2"></i> Ver todos os jogos da Rodada {{ dashboardData.currentRoundForBetting }}
             </button>
-            <p *ngIf="!dashboardData.currentRoundForBetting && dashboardData.nextGames.length === 0" class="mt-2 small text-muted">
-              Nenhuma rodada com jogos abertos para aposta no momento.
-            </p>
-          </div>
         </div>
       </div>
+       <div *ngIf="dashboardData.currentRoundForBetting && dashboardData.nextGames.length === 0 && !isLoadingDashboard" class="mt-4 alert alert-info">
+          Todos os jogos da Rodada {{ dashboardData.currentRoundForBetting }} já podem ter o prazo de aposta encerrado ou não há jogos futuros agendados para ela.
+        </div>
+    </div>
+  </ng-container>
+
+  <div *ngIf="isLoadingDashboard" class="text-center my-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Carregando resumo...</span>
+    </div>
+    <p class="mt-2">Carregando seu resumo...</p>
+  </div>
+
+  <div *ngIf="dashboardError && !isLoadingDashboard" class="alert alert-warning text-center my-4">
+    {{ dashboardError }}
+  </div>
+
+
+  <div class="content text-center p-4 bg-white shadow rounded">
+    <div class="logo mb-4">
+      </div>
+
+    <h1 class="mb-3 welcome-title">
+      <ng-container *ngIf="username; else defaultWelcome">
+        Olá, <span class="username-highlight">{{ username }}</span>! </ng-container>
+      <ng-template #defaultWelcome>
+        Bem-Vindo ao Bolão Balde de Lixo! </ng-template>
+    </h1>
+
+    <p class="lead text-muted mb-4">
+      Prepare-se para mais uma temporada de emoção, rivalidade e muita resenha com os amigos!
+      Este é o nosso bolão do Brasileirão — 100% gratuito e feito só pela zoeira e paixão pelo futebol. Aqui, o que vale é a diversão, os palpites certeiros e a zoação com os amigos. </p>
+
+    <div class="card p-4 mb-4 bg-light text-start animated fadeIn"> <h4 class="text-secondary mb-3 border-bottom pb-2">Como Funciona?</h4> <ul class="list-unstyled">
+        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>A cada rodada do Brasileirão, você poderá <span class="rule-highlight">apostar nos resultados</span> das partidas.</li> <li class="mb-2"><i class="bi bi-trophy-fill text-warning me-2"></i>Cada palpite com o <span class="rule-highlight">placar exato</span> vale <span class="rule-highlight">1 ponto</span> na classificação.</li> <li class="mb-2"><i class="bi bi-clock-fill text-info me-2"></i>As apostas para cada rodada se encerram <span class="rule-highlight rule-deadline">30 minutos antes do início do PRIMEIRO jogo</span> daquela rodada. Fique ligado no calendário!</li> <li class="mb-2"><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Uma vez realizadas, as apostas <span class="rule-highlight">não poderão ser alteradas</span>. Pense bem antes de confirmar!</li> <li class="mb-2"><i class="bi bi-question-circle-fill text-primary me-2"></i>Este é um bolão gratuito, focado na diversão e nos direitos de se gabar!</li> </ul>
     </div>
 
-    <div *ngIf="dashboardData.nextGames && dashboardData.nextGames.length > 0" class="mt-4">
-      <h5 class="text-secondary">Jogos da Rodada {{ dashboardData.currentRoundForBetting }}:</h5>
-      <ul class="list-group list-group-flush">
-        <li *ngFor="let game of dashboardData.nextGames" class="list-group-item d-flex justify-content-between align-items-center">
-          <span>
-            <img
-              [src]="'assets/emblemas/' + (game.home_team | teamNameToFileName)"  
-              [alt]="game.home_team"
-              onError="this.src='assets/emblemas/default_emblema.png'; this.alt='Escudo não encontrado'"
-              class="escudo-icon me-2">
-            {{ game.home_team }} vs
-            <img
-              [src]="'assets/emblemas/' + (game.away_team | teamNameToFileName)"  
-              [alt]="game.away_team"
-              onError="this.src='assets/emblemas/default_emblema.png'; this.alt='Escudo não encontrado'"
-              class="escudo-icon ms-2 me-2">
-            {{ game.away_team }}
-          </span>
-          <span class="badge bg-secondary rounded-pill">{{ game.game_datetime | date:'dd/MM HH:mm':'America/Sao_Paulo' }}</span>
-        </li>
-      </ul>
-      <div class="text-center mt-3">
-          <button class="btn btn-primary" (click)="goToApostar(dashboardData.currentRoundForBetting)">
-              <i class="bi bi-controller me-2"></i> Ver todos os jogos da Rodada {{ dashboardData.currentRoundForBetting }}
-          </button>
-      </div>
+    <div class="d-grid gap-3 col-md-8 mx-auto">
+      <button class="btn btn-primary btn-lg animated slideInLeft" style="animation-delay: 0.3s;" (click)="goToApostar(dashboardData?.currentRoundForBetting)"> <i class="bi bi-controller me-2"></i>
+        <span *ngIf="dashboardData?.currentRoundForBetting">Apostar na Rodada {{ dashboardData?.currentRoundForBetting }}</span>
+        <span *ngIf="!dashboardData?.currentRoundForBetting">Fazer Minhas Apostas</span>
+      </button>
+
+      <button *ngIf="isAdmin" class="btn btn-warning btn-lg animated slideInLeft" style="animation-delay: 0.5s;" (click)="goToAdminPanel()"> <i class="bi bi-gear-fill me-2"></i> Painel de Administração </button>
     </div>
-     <div *ngIf="dashboardData.currentRoundForBetting && dashboardData.nextGames.length === 0 && !isLoadingDashboard" class="mt-4 alert alert-info">
-        Todos os jogos da Rodada {{ dashboardData.currentRoundForBetting }} já podem ter o prazo de aposta encerrado ou não há jogos futuros agendados para ela.
-      </div>
   </div>
 </div>
