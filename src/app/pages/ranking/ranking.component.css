@@ -1,13 +1,21 @@
-/* Animação para o título do ranking */
+/* Animação de fundo sutil para o container do ranking */
+.ranking-container {
+  position: relative;
+  overflow: hidden; /* Para conter as partículas, se adicionadas */
+}
+
+/* Animação para o título do ranking - Mais festiva */
 .ranking-title {
-  animation: fadeInDown 0.8s ease-out forwards;
-  opacity: 0; /* Começa invisível */
+  animation: fadeInDown 0.8s ease-out forwards,
+             titleShine 2.5s infinite linear 1s; /* Shine começa após o fadeIn */
+  opacity: 0;
+  position: relative; /* Para pseudo-elementos de faíscas */
 }
 
 @keyframes fadeInDown {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(-30px);
   }
   to {
     opacity: 1;
@@ -15,28 +23,77 @@
   }
 }
 
+@keyframes titleShine {
+  0%, 100% {
+    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #ffd700, 0 0 20px #ffd700;
+  }
+  50% {
+    text-shadow: 0 0 10px #fff, 0 0 20px #ffd700, 0 0 30px #ffd700, 0 0 40px #f0e68c;
+  }
+}
+
+/* Adicionando faíscas ao título (opcional, mais complexo) */
+.ranking-title::before,
+.ranking-title::after {
+  content: '✨';
+  position: absolute;
+  font-size: 1.2em;
+  opacity: 0;
+  animation: sparks 1.5s infinite ease-out;
+}
+
+.ranking-title::before {
+  top: -10px;
+  left: 20%;
+  animation-delay: 0.5s;
+}
+
+.ranking-title::after {
+  top: 0px;
+  right: 20%;
+  animation-delay: 1s;
+}
+
+@keyframes sparks {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-15px) scale(1.2);
+  }
+  75% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.5);
+  }
+}
+
+
 /* Animação para as mensagens de loading, erro e vazio */
 .loading-message,
 .error-message,
 .empty-message {
-  animation: fadeIn 0.5s ease-out forwards;
+  animation: fadeInMessage 0.6s ease-out forwards;
   opacity: 0;
 }
 
-@keyframes fadeIn {
+@keyframes fadeInMessage {
   from {
     opacity: 0;
+    transform: scale(0.95);
   }
   to {
     opacity: 1;
+    transform: scale(1);
   }
 }
 
-/* Animação para a tabela e suas linhas */
+/* Animação para a tabela */
 .ranking-table {
-  animation: fadeInUpTable 0.8s ease-out forwards;
+  animation: fadeInUpTable 0.8s ease-out 0.5s forwards; /* Atraso para após o título */
   opacity: 0;
-  transform: translateY(20px); /* Começa um pouco abaixo */
+  transform: translateY(20px);
 }
 
 @keyframes fadeInUpTable {
@@ -50,61 +107,85 @@
   }
 }
 
+/* Estilo e Animação para todas as linhas do ranking */
 .ranking-row {
-  opacity: 0; /* Começa invisível */
-  transform: translateY(20px); /* Começa um pouco abaixo */
-  animation: slideInUpRow 0.5s ease-out forwards;
+  opacity: 0;
+  transform: translateX(-30px); /* Começa da esquerda */
+  animation: slideInRow 0.6s ease-out forwards;
 }
 
-/* Aplicando delay para cada linha da tabela */
-/* Você pode ajustar o número de filhos (tr) se espera mais ou menos linhas visíveis inicialmente */
-.ranking-row:nth-child(1) { animation-delay: 0.1s; }
-.ranking-row:nth-child(2) { animation-delay: 0.2s; }
-.ranking-row:nth-child(3) { animation-delay: 0.3s; }
-.ranking-row:nth-child(4) { animation-delay: 0.4s; }
-.ranking-row:nth-child(5) { animation-delay: 0.5s; }
-.ranking-row:nth-child(6) { animation-delay: 0.6s; }
-.ranking-row:nth-child(7) { animation-delay: 0.7s; }
-.ranking-row:nth-child(8) { animation-delay: 0.8s; }
-.ranking-row:nth-child(9) { animation-delay: 0.9s; }
-.ranking-row:nth-child(10) { animation-delay: 1s; }
-/* Adicione mais .ranking-row:nth-child(X) { animation-delay: Ys; } se necessário */
+/* Aplicando delay para cada linha da tabela para efeito cascata */
+/* O delay base será aplicado pela animação da tabela e o winner-row terá um tratamento especial */
+.ranking-row:nth-child(1) { animation-delay: 1.0s; } /* Atraso após a tabela */
+.ranking-row:nth-child(2) { animation-delay: 1.15s; }
+.ranking-row:nth-child(3) { animation-delay: 1.30s; }
+.ranking-row:nth-child(4) { animation-delay: 1.45s; }
+.ranking-row:nth-child(5) { animation-delay: 1.60s; }
+/* Adicione mais conforme necessário */
 
-
-@keyframes slideInUpRow {
+@keyframes slideInRow {
   from {
     opacity: 0;
-    transform: translateY(25px);
+    transform: translateX(-30px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
 }
 
-/* Estilos adicionais para melhorar a aparência (opcional) */
-.container.py-5 {
-  padding-top: 3rem !important;
-  padding-bottom: 3rem !important;
+/* Estilos e Animação ESPECIAL para a LINHA VENCEDORA */
+.winner-row {
+  background-color: #28a74520; /* Verde sutil - Bootstrap success com alpha */
+  /* border: 2px solid #ffd700; Ouro para a borda */
+  animation: slideInRow 0.6s ease-out forwards, winnerGlow 2s infinite alternate 1.5s; /* Glow começa depois da entrada */
+  animation-delay: 0.8s; /* Vencedor entra um pouco antes ou com destaque */
+  position: relative; /* Para o ícone da coroa se posicionado absolutamente */
 }
 
+.winner-icon {
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 1.2em; /* Ajuste o tamanho da coroa */
+  color: #ffd700; /* Cor dourada */
+  animation: crownBob 1.5s infinite ease-in-out;
+}
+
+@keyframes crownBob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes winnerGlow {
+  from {
+    box-shadow: 0 0 5px #ffd70060, 0 0 10px #ffd70040;
+    background-color: #28a74520; /* Verde sutil */
+  }
+  to {
+    box-shadow: 0 0 15px #ffd700a0, 0 0 25px #ffd70080;
+    background-color: #28a74540; /* Verde um pouco mais forte */
+  }
+}
+
+
+/* Estilos gerais (mantidos e ajustados) */
 .bg-dark.text-white.p-4.rounded.shadow-lg {
-  background-color: #212529 !important; /* Um tom de escuro mais profundo */
-  border: 1px solid #333;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important; /* Sombra mais pronunciada */
+  background-color: #212529 !important;
+  border: 1px solid #343a40;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
 }
 
-.table-hover tbody tr:hover {
-  background-color: #3a3f44 !important; /* Cor de hover mais sutil no tema escuro */
+.table-hover tbody tr:not(.winner-row):hover {
+  background-color: #3a3f44 !important;
   color: #fff;
 }
 
 .table-bordered {
-  border-color: #454d55; /* Cor da borda da tabela */
-}
-
-.table th, .table td {
-  vertical-align: middle;
+  border-color: #454d55;
 }
 
 .spinner-border.text-light {
