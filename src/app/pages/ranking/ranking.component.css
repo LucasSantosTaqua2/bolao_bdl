@@ -1,195 +1,237 @@
-/* Animação de fundo sutil para o container do ranking */
+/* --- Variáveis de Cor e Animação --- */
+:root {
+  --gold-color: #ffd700;
+  --silver-color: #c0c0c0;
+  --bronze-color: #cd7f32;
+  --winner-glow-start: rgba(255, 215, 0, 0.3);
+  --winner-glow-end: rgba(255, 215, 0, 0.6);
+  --animation-duration-fast: 0.5s;
+  --animation-duration-medium: 0.8s;
+  --animation-duration-slow: 1.2s;
+}
+
+/* --- Animação de Fundo Sutil para o Container --- */
 .ranking-container {
   position: relative;
-  overflow: hidden; /* Para conter as partículas, se adicionadas */
+  overflow: hidden;
+  /* background: linear-gradient(315deg, #212529, #343a40, #212529);
+  background-size: 400% 400%;
+  animation: subtleGradientBG 15s ease infinite; */
 }
 
-/* Animação para o título do ranking - Mais festiva */
+/* @keyframes subtleGradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+} */
+
+/* --- Título Mais Impactante --- */
 .ranking-title {
-  animation: fadeInDown 0.8s ease-out forwards,
-             titleShine 2.5s infinite linear 1s; /* Shine começa após o fadeIn */
+  font-size: 2.5rem; /* Um pouco maior */
   opacity: 0;
-  position: relative; /* Para pseudo-elementos de faíscas */
+  transform: translateY(-30px);
+  animation: titleEnter var(--animation-duration-medium) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: 0.2s;
+  color: #fff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
 }
 
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
+.ranking-title .trophy-icon {
+  display: inline-block;
+  animation: trophyPulse 2s infinite ease-in-out;
+}
+
+.ranking-title .trophy-icon:first-of-type { animation-delay: 0s; }
+.ranking-title .trophy-icon:last-of-type { animation-delay: 0.3s; }
+
+@keyframes titleEnter {
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-@keyframes titleShine {
+@keyframes trophyPulse {
   0%, 100% {
-    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #ffd700, 0 0 20px #ffd700;
+    transform: scale(1);
+    text-shadow: 0 0 10px var(--gold-color), 0 0 20px var(--gold-color);
   }
   50% {
-    text-shadow: 0 0 10px #fff, 0 0 20px #ffd700, 0 0 30px #ffd700, 0 0 40px #f0e68c;
+    transform: scale(1.15);
+    text-shadow: 0 0 15px var(--gold-color), 0 0 30px #fff, 0 0 45px var(--gold-color);
   }
 }
 
-/* Adicionando faíscas ao título (opcional, mais complexo) */
-.ranking-title::before,
-.ranking-title::after {
-  content: '✨';
-  position: absolute;
-  font-size: 1.2em;
-  opacity: 0;
-  animation: sparks 1.5s infinite ease-out;
-}
-
-.ranking-title::before {
-  top: -10px;
-  left: 20%;
-  animation-delay: 0.5s;
-}
-
-.ranking-title::after {
-  top: 0px;
-  right: 20%;
-  animation-delay: 1s;
-}
-
-@keyframes sparks {
-  0%, 100% {
-    opacity: 0;
-    transform: translateY(0) scale(0.5);
-  }
-  50% {
-    opacity: 0.8;
-    transform: translateY(-15px) scale(1.2);
-  }
-  75% {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.5);
-  }
-}
-
-
-/* Animação para as mensagens de loading, erro e vazio */
+/* --- Mensagens (Loading, Erro, Vazio) --- */
 .loading-message,
 .error-message,
 .empty-message {
-  animation: fadeInMessage 0.6s ease-out forwards;
   opacity: 0;
+  transform: scale(0.9);
+  animation: messageAppear var(--animation-duration-fast) ease-out forwards;
+  animation-delay: 0.5s; /* Após o título */
 }
 
-@keyframes fadeInMessage {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
+@keyframes messageAppear {
   to {
     opacity: 1;
     transform: scale(1);
   }
 }
 
-/* Animação para a tabela */
+/* --- Animação Base da Tabela --- */
 .ranking-table {
-  animation: fadeInUpTable 0.8s ease-out 0.5s forwards; /* Atraso para após o título */
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(40px);
+  animation: tableFadeInUp var(--animation-duration-medium) cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+  animation-delay: 0.7s; /* Após mensagens */
 }
 
-@keyframes fadeInUpTable {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
+@keyframes tableFadeInUp {
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* Estilo e Animação para todas as linhas do ranking */
+/* --- Animação Base das Linhas do Ranking --- */
 .ranking-row {
   opacity: 0;
-  transform: translateX(-30px); /* Começa da esquerda */
-  animation: slideInRow 0.6s ease-out forwards;
+  transform: translateX(-50px); /* Começa mais da esquerda */
+  animation: rowSlideIn var(--animation-duration-fast) cubic-bezier(0.23, 1, 0.32, 1) forwards;
 }
 
-/* Aplicando delay para cada linha da tabela para efeito cascata */
-/* O delay base será aplicado pela animação da tabela e o winner-row terá um tratamento especial */
-.ranking-row:nth-child(1) { animation-delay: 1.0s; } /* Atraso após a tabela */
-.ranking-row:nth-child(2) { animation-delay: 1.15s; }
-.ranking-row:nth-child(3) { animation-delay: 1.30s; }
-.ranking-row:nth-child(4) { animation-delay: 1.45s; }
-.ranking-row:nth-child(5) { animation-delay: 1.60s; }
-/* Adicione mais conforme necessário */
+/* Delays para efeito cascata (após a tabela aparecer) */
+/* Os Top 3 terão seus próprios delays mais pronunciados */
+.ranking-row:not(.first-place):not(.second-place):not(.third-place) {
+  /* O delay é calculado no Nth-child geral */
+}
 
-@keyframes slideInRow {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
+/* Delay para todas as linhas, começando após a tabela */
+/* (1s da tabela + 0.2s de margem) */
+.ranking-row:nth-child(1)  { animation-delay: 1.2s; }
+.ranking-row:nth-child(2)  { animation-delay: 1.3s; } /* Será sobrescrito por .second-place se aplicável */
+.ranking-row:nth-child(3)  { animation-delay: 1.4s; } /* Será sobrescrito por .third-place se aplicável */
+.ranking-row:nth-child(4)  { animation-delay: 1.5s; }
+.ranking-row:nth-child(5)  { animation-delay: 1.6s; }
+.ranking-row:nth-child(6)  { animation-delay: 1.7s; }
+.ranking-row:nth-child(7)  { animation-delay: 1.8s; }
+.ranking-row:nth-child(8)  { animation-delay: 1.9s; }
+.ranking-row:nth-child(9)  { animation-delay: 2.0s; }
+.ranking-row:nth-child(10) { animation-delay: 2.1s; }
+/* Ajuste/adicione mais conforme o número de usuários */
+
+
+@keyframes rowSlideIn {
   to {
     opacity: 1;
     transform: translateX(0);
   }
 }
 
-/* Estilos e Animação ESPECIAL para a LINHA VENCEDORA */
-.winner-row {
-  background-color: #28a74520; /* Verde sutil - Bootstrap success com alpha */
-  /* border: 2px solid #ffd700; Ouro para a borda */
-  animation: slideInRow 0.6s ease-out forwards, winnerGlow 2s infinite alternate 1.5s; /* Glow começa depois da entrada */
-  animation-delay: 0.8s; /* Vencedor entra um pouco antes ou com destaque */
-  position: relative; /* Para o ícone da coroa se posicionado absolutamente */
-}
-
-.winner-icon {
+/* --- Estilos e Animações para o Pódio (Top 3) --- */
+.rank-icon-container {
   display: inline-block;
-  margin-right: 8px;
-  font-size: 1.2em; /* Ajuste o tamanho da coroa */
-  color: #ffd700; /* Cor dourada */
-  animation: crownBob 1.5s infinite ease-in-out;
+  margin-right: 0.5em;
+  /* ALTERAÇÃO AQUI: Ajustado para um ícone */
+  min-width: 1.5em; /* Espaço para 🥇 (ajuste conforme necessário) */
+  text-align: left;
 }
 
-@keyframes crownBob {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-3px);
+.rank-icon {
+  display: inline-block;
+  font-size: 1.3em;
+  transform: scale(0); /* Começa invisível/pequeno */
+  opacity: 0;
+  animation: medalAppear var(--animation-duration-fast) cubic-bezier(0.34, 1.56, 0.64, 1) forwards; /* Efeito "pop" */
+}
+
+@keyframes medalAppear {
+  to {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
-@keyframes winnerGlow {
+/* Animações de medalha individuais */
+.gold-medal { animation-delay: inherit; /* Herda o delay da linha */ color: var(--gold-color); }
+.silver-medal { animation-delay: inherit; color: var(--silver-color); }
+.bronze-medal { animation-delay: inherit; color: var(--bronze-color); }
+
+/* Animação de flutuação sutil para os ícones do pódio após aparecerem */
+.first-place .rank-icon,
+.second-place .rank-icon,
+.third-place .rank-icon {
+  animation: medalAppear var(--animation-duration-fast) cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+             medalFloat 3s infinite ease-in-out var(--animation-duration-slow); /* Flutuação começa depois */
+}
+
+@keyframes medalFloat {
+  0%, 100% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.05) translateY(-3px); }
+}
+
+
+/* --- Destaque para o Primeiro Lugar --- */
+.first-place {
+  background: linear-gradient(135deg, rgba(255,235,153,0.15) 0%, rgba(255,215,0,0.25) 100%);
+  animation-name: rowSlideIn, firstPlaceShine; /* Múltiplas animações */
+  animation-duration: var(--animation-duration-fast), 3s;
+  animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1), infinite alternate;
+  animation-delay: 1.0s; /* Primeiro lugar entra com destaque */
+  border-left: 5px solid var(--gold-color);
+  position: relative; /* Para pseudo-elementos se necessário */
+}
+.first-place .rank-icon { /* A medalha de ouro */
+    text-shadow: 0 0 5px rgba(255,215,0,0.7);
+}
+
+@keyframes firstPlaceShine {
   from {
-    box-shadow: 0 0 5px #ffd70060, 0 0 10px #ffd70040;
-    background-color: #28a74520; /* Verde sutil */
+    box-shadow: 0 0 5px -2px var(--winner-glow-start), inset 0 0 10px -5px var(--winner-glow-start);
   }
   to {
-    box-shadow: 0 0 15px #ffd700a0, 0 0 25px #ffd70080;
-    background-color: #28a74540; /* Verde um pouco mais forte */
+    box-shadow: 0 0 15px 0px var(--winner-glow-end), inset 0 0 20px -5px var(--winner-glow-end);
   }
 }
 
-
-/* Estilos gerais (mantidos e ajustados) */
-.bg-dark.text-white.p-4.rounded.shadow-lg {
-  background-color: #212529 !important;
-  border: 1px solid #343a40;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
+/* --- Destaque para o Segundo Lugar --- */
+.second-place {
+  background: linear-gradient(135deg, rgba(210,210,210,0.1) 0%, rgba(192,192,192,0.2) 100%);
+  border-left: 5px solid var(--silver-color);
+  animation-delay: 1.15s !important; /* Garante que entre após o primeiro */
+}
+.second-place .rank-icon {
+    text-shadow: 0 0 5px rgba(192,192,192,0.7);
 }
 
-.table-hover tbody tr:not(.winner-row):hover {
+/* --- Destaque para o Terceiro Lugar --- */
+.third-place {
+  background: linear-gradient(135deg, rgba(205,127,50,0.1) 0%, rgba(184,115,51,0.2) 100%);
+  border-left: 5px solid var(--bronze-color);
+  animation-delay: 1.30s !important; /* Garante que entre após o segundo */
+}
+.third-place .rank-icon {
+    text-shadow: 0 0 5px rgba(205,127,50,0.7);
+}
+
+/* --- Estilos Gerais da Tabela (Pequenos Ajustes) --- */
+.table-hover tbody tr:not(.first-place):not(.second-place):not(.third-place):hover {
   background-color: #3a3f44 !important;
   color: #fff;
+  transform: scale(1.01); /* Leve zoom no hover para linhas normais */
+  transition: transform 0.2s ease-out, background-color 0.2s ease-out;
 }
 
-.table-bordered {
-  border-color: #454d55;
+.first-place:hover, .second-place:hover, .third-place:hover {
+    filter: brightness(1.1); /* Leve brilho no hover para o pódio */
+    transition: filter 0.2s ease-out;
 }
 
-.spinner-border.text-light {
-  width: 3rem;
-  height: 3rem;
-  border-width: .3em;
+.table th, .table td {
+  vertical-align: middle;
+  padding: 0.85rem 0.75rem; /* Ajuste de padding */
 }
+
+.table-bordered { border-color: #454d55; }
+.spinner-border.text-light { width: 3rem; height: 3rem; border-width: .3em; }
