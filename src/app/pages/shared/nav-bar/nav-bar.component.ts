@@ -1,7 +1,10 @@
+// src/app/nav-bar/nav-bar.component.ts
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostBinding } from '@angular/core'; // <--- Importe ViewChild e ElementRef
+import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { AuthService } from '../../../services/auth.service';
-
 
 interface NavLink {
   path?: string;
@@ -21,12 +24,9 @@ interface NavLink {
 export class NavBarComponent implements OnInit, OnDestroy {
   isLoggedIn$: BehaviorSubject<boolean>;
   currentUserUsername$: BehaviorSubject<string | null>;
-
   private subscriptions: Subscription = new Subscription();
-
   isMobile: boolean;
   private _mobileQueryListener: () => void;
-
   @ViewChild('navLinksMobileRef') navLinksMobileElement!: ElementRef; // Updated ViewChild name if needed, though not directly manipulated in this version
   isMenuOpen: boolean = false;
 
@@ -37,16 +37,13 @@ export class NavBarComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private mediaMatcher: MediaMatcher
-
   ) {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
     this.currentUserUsername$ = this.authService.currentUserUsername$;
 
-
     const mobileQuery = mediaMatcher.matchMedia('(max-width: 768px)');
     this.isMobile = mobileQuery.matches;
     this._mobileQueryListener = () => {
-
       this.isMobile = mobileQuery.matches;
       // this.updateNavLinks(); // This call isn't strictly necessary if HTML drives link visibility
       if (!this.isMobile && this.isMenuOpen) { // Close mobile menu if resizing to desktop
@@ -54,11 +51,6 @@ export class NavBarComponent implements OnInit, OnDestroy {
       }
     };
     mobileQuery.addEventListener('change', this._mobileQueryListener);
-
-
-
-
-
   }
 
   ngOnInit(): void {
@@ -71,19 +63,12 @@ export class NavBarComponent implements OnInit, OnDestroy {
       })
     );
     // this.updateNavLinks(); // Initial call isn't strictly necessary
-
-
-
-
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
     // Ensure to use the same query object for removing the listener
     this.mediaMatcher.matchMedia('(max-width: 768px)').removeEventListener('change', this._mobileQueryListener);
-
-
-
   }
 
   // private updateNavLinks(): void { ... } // This method is not used by the HTML for rendering links.
