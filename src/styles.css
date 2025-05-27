@@ -1,211 +1,22 @@
-/* src/styles.css */
-
-html,
-body {
-  height: 100%;
-  margin: 0;
-  overflow-x: hidden;
-  /* Evita rolagem horizontal indesejada */
-}
-
 /* Estilo para o componente raiz, app-root, que engloba tudo */
 app-root {
   display: flex;
+  /* Para que seus filhos (navbar e main-content) se comportem bem */
   flex-direction: column;
+  /* Coloca os filhos em coluna */
   min-height: 100vh;
+  /* Faz com que o app-root ocupe a altura mínima da viewport */
 }
 
+/* MUDANÇA CRÍTICA: Ajusta o padding-top do body para empurrar todo o conteúdo */
+/* Adiciona overflow-y para garantir que a barra de rolagem vertical funcione corretamente */
 body {
   padding-top: 75px;
+  /* Ajuste este valor para ser um pouco maior que a altura máxima da sua navbar (60px desktop, 70px mobile) */
   overflow-y: auto;
+  /* Garante que a barra de rolagem vertical apareça no body quando necessário */
 }
 
-/* ======================================== */
-/* DEFINIÇÃO DE VARIÁVEIS DE TEMA         */
-/* ======================================== */
-:root {
-  /* Tema Claro (Padrão) */
-  --bdl-body-bg: #ffffff;
-  --bdl-body-color: #212529;
-  --bdl-secondary-bg: #f8f9fa; /* bg-light do Bootstrap */
-  --bdl-card-bg: #ffffff;
-  --bdl-card-border-color: #dee2e6;
-  --bdl-text-muted: #6c757d;
-  --bdl-link-color: #0d6efd;
-  --bdl-link-hover-color: #0a58ca;
-  --bdl-primary-color: #0d6efd; /* Cor primária do Bootstrap */
-  --bdl-secondary-color: #6c757d; /* Cor secundária do Bootstrap */
-  --bdl-welcome-title-color: #212529;
-  --bdl-rule-highlight-color: #495057;
-  --bdl-rule-deadline-color: #dc3545;
-  --bdl-logo-filter: none;
-  --bdl-body-before-opacity: 0.5;
-  --bdl-table-striped-bg: #f2f2f2; /* Cor de listra para tabelas no modo claro */
-  --bdl-table-hover-bg: #e9ecef;   /* Cor de hover para tabelas no modo claro */
-  --bdl-form-control-bg: #ffffff;
-  --bdl-form-control-color: #212529;
-  --bdl-form-control-border: #ced4da;
-  --bdl-form-control-placeholder: #6c757d;
-  --bs-border-color-translucent: rgba(0, 0, 0, 0.175); /* Padrão Bootstrap para referência */
-}
-
-[data-bs-theme="dark"] {
-  /* Tema Escuro */
-  --bdl-body-bg: #212529;        /* Ex: bg-dark do Bootstrap */
-  --bdl-body-color: #dee2e6;        /* Ex: text-light */
-  --bdl-secondary-bg: #343a40; /* Um cinza mais escuro */
-  --bdl-card-bg: #2b3035;    /* Cor de card para modo escuro */
-  --bdl-card-border-color: #495057;
-  --bdl-text-muted: #adb5bd;
-  --bdl-link-color: #69a9f1; /* Um azul mais claro */
-  --bdl-link-hover-color: #8cbcf3;
-  --bdl-primary-color: #4dabf7; /* Um azul mais claro para contraste */
-  --bdl-secondary-color: #adb5bd;
-  --bdl-welcome-title-color: #f8f9fa;
-  --bdl-rule-highlight-color: #ced4da;
-  --bdl-rule-deadline-color: #ff7887; /* Um vermelho mais claro */
-  --bdl-logo-filter: grayscale(20%) brightness(1.2);
-  --bdl-body-before-opacity: 0.2;
-  --bdl-table-striped-bg: #2c3034;
-  --bdl-table-hover-bg: #32383e;
-  --bdl-form-control-bg: #2c3136;
-  --bdl-form-control-color: #dee2e6;
-  --bdl-form-control-border: #495057;
-  --bdl-form-control-placeholder: #6c757d;
-  --bs-border-color-translucent: rgba(255, 255, 255, 0.15); /* Padrão Bootstrap para referência no escuro */
-}
-
-/* ======================================== */
-/* ESTILOS GLOBAIS USANDO VARIÁVEIS       */
-/* ======================================== */
-
-body {
-  background-color: var(--bdl-body-bg) !important; /* !important para garantir prioridade sobre Bootstrap */
-  color: var(--bdl-body-color);
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Fundo da página */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background-image: url(../public/img/background.png);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: var(--bdl-body-before-opacity);
-  z-index: -1;
-  transition: opacity 0.3s ease;
-}
-
-a {
-  color: var(--bdl-link-color);
-}
-a:hover {
-  color: var(--bdl-link-hover-color);
-}
-
-/* Classes utilitárias de texto do Bootstrap adaptadas */
-.text-primary { color: var(--bdl-primary-color) !important; }
-.text-secondary { color: var(--bdl-secondary-color) !important; }
-.text-muted { color: var(--bdl-text-muted) !important; }
-
-
-/* Estilos para Cards e Fundos Claros */
-.card { /* Estilo genérico para cards, pode precisar de mais especificidade */
-  background-color: var(--bdl-card-bg);
-  border-color: var(--bdl-card-border-color);
-  color: var(--bdl-body-color); /* Garante que o texto dentro do card use a cor do tema */
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-}
-
-.bg-light { /* Adapta a classe .bg-light do Bootstrap */
-  background-color: var(--bdl-secondary-bg) !important;
-  transition: background-color 0.3s ease;
-}
-[data-bs-theme="dark"] .bg-light {
-    color: var(--bdl-body-color) !important; /* Garante que texto em .bg-light no modo escuro seja legível */
-}
-
-
-/* Estilos para Tabelas */
-.table {
-  --bs-table-color: var(--bdl-body-color);
-  --bs-table-bg: var(--bdl-card-bg); /* Fundo da tabela */
-  --bs-table-border-color: var(--bdl-card-border-color);
-  --bs-table-striped-color: var(--bdl-body-color);
-  --bs-table-striped-bg: var(--bdl-table-striped-bg);
-  --bs-table-active-color: var(--bdl-body-color);
-  /* --bs-table-active-bg: ; bootstrap default */
-  --bs-table-hover-color: var(--bdl-body-color);
-  --bs-table-hover-bg: var(--bdl-table-hover-bg);
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
-
-/* Ajustes para cabeçalho escuro da tabela no tema claro */
-:root .table-dark {
-  --bs-table-color: #fff;
-  --bs-table-bg: #212529;
-  --bs-table-border-color: #373b3e;
-}
-/* Ajustes para cabeçalho escuro da tabela no tema escuro */
-[data-bs-theme="dark"] .table-dark {
-  --bs-table-color: #fff; /* Ou var(--bdl-body-bg) para texto claro em fundo escuro */
-  --bs-table-bg: #495057; /* Um cinza mais escuro para o cabeçalho no modo escuro */
-  --bs-table-border-color: #545b62;
-}
-
-
-/* Estilos para Formulários */
-.form-control,
-.form-select {
-  background-color: var(--bdl-form-control-bg);
-  color: var(--bdl-form-control-color);
-  border-color: var(--bdl-form-control-border);
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-}
-.form-control::placeholder {
-  color: var(--bdl-form-control-placeholder);
-}
-.form-control:focus,
-.form-select:focus {
-  background-color: var(--bdl-form-control-bg);
-  color: var(--bdl-form-control-color);
-  border-color: var(--bdl-link-color); /* Usar a cor do link para o foco */
-  box-shadow: 0 0 0 0.25rem rgba(var(--bs-link-color-rgb), .25); /* Usar a cor do link do Bootstrap para o shadow */
-}
-/* Para garantir que o texto dentro dos inputs de formulário também mude de cor */
-[data-bs-theme="dark"] .form-control,
-[data-bs-theme="dark"] .form-select {
-  color: var(--bdl-body-color); /* Cor de texto do tema escuro */
-}
-
-
-/* Adaptação para botões, se necessário além do Bootstrap */
-/* Exemplo: .btn-primary */
-.btn-primary {
-    --bs-btn-color: #fff;
-    --bs-btn-bg: var(--bdl-primary-color);
-    --bs-btn-border-color: var(--bdl-primary-color);
-    --bs-btn-hover-color: #fff;
-    --bs-btn-hover-bg: color-mix(in srgb, var(--bdl-primary-color) 85%, black);
-    --bs-btn-hover-border-color: color-mix(in srgb, var(--bdl-primary-color) 80%, black);
-    /* ... outros estados ... */
-}
-/* Você pode precisar de ajustes similares para .btn-secondary, .btn-success, etc.,
-   ou confiar nas adaptações do Bootstrap para data-bs-theme="dark" */
-
-/* Ajuste para os alertas, se necessário */
-.alert-success {
-    /* Bootstrap já deve lidar bem, mas se precisar: */
-    /* background-color: var(--bs-success-bg-subtle); */
-    /* color: var(--bs-success-text); */
-}
-.alert-danger {
-    /* background-color: var(--bs-danger-bg-subtle); */
-    /* color: var(--bs-danger-text); */
-}
+/* Remova o estilo .main-content-wrapper se ele estiver apenas empurrando o conteúdo */
+/* Caso contrário, se .main-content-wrapper é um container estrutural, ele não deve ter padding-top */
+/* e o padding-top deve ficar no body ou em um container mais alto, como aqui */
