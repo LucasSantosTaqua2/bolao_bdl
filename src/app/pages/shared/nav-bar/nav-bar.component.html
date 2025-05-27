@@ -1,6 +1,6 @@
 <div class="nav-bar">
   <div class="navbar-header-left">
-    <div class="menu-icon" (click)="toggleMenu()" [class.open]="isMenuOpen" aria-label="Toggle menu" [attr.aria-expanded]="isMenuOpen">
+    <div class="menu-icon" (click)="toggleMenu()" [class.open]="isMenuOpen" aria-label="Alternar menu" [attr.aria-expanded]="isMenuOpen">
       <div class="bar bar-top"></div>
       <div class="bar bar-middle"></div>
       <div class="bar bar-bottom"></div>
@@ -39,13 +39,13 @@
   </div>
 
   <div class="desktop-right-actions" *ngIf="!isMobile">
-    <a (click)="toggleAppTheme()" class="nav-item theme-toggle-btn" title="Alterar Tema" href="javascript:void(0)" role="button">
+    <a (click)="toggleAppTheme()" class="nav-item theme-toggle-btn" title="Alterar Tema" href="javascript:void(0);" role="button" aria-label="Alterar tema claro ou escuro">
       <i class="bi" [ngClass]="{
         'bi-moon-stars-fill': themeService.getEffectiveTheme() === 'light',
         'bi-sun-fill': themeService.getEffectiveTheme() === 'dark'
       }"></i>
     </a>
-    <a *ngIf="isLoggedIn$ | async" (click)="onLogout()" class="nav-item logout-link" title="Sair" href="javascript:void(0)" role="button">
+    <a *ngIf="isLoggedIn$ | async" (click)="onLogout()" class="nav-item logout-link" title="Sair" href="javascript:void(0);" role="button">
       <i class="bi bi-box-arrow-right me-1"></i> <span class="link-text">Sair</span>
     </a>
   </div>
@@ -78,14 +78,14 @@
     </ng-container>
 
     <hr class="mobile-nav-divider">
-    <a (click)="toggleAppTheme()" class="nav-item" title="Alterar Tema" href="javascript:void(0)" role="button">
+    <a (click)="toggleAppTheme()" class="nav-item" title="Alterar Tema" href="javascript:void(0);" role="button">
       <i class="bi" [ngClass]="{
         'bi-moon-stars-fill': themeService.getEffectiveTheme() === 'light',
         'bi-sun-fill': themeService.getEffectiveTheme() === 'dark'
       }"></i>
       <span class="ms-2">Tema ({{ themeService.getCurrentThemeSetting() === 'auto' ? 'Auto' : (themeService.getEffectiveTheme() === 'light' ? 'Claro' : 'Escuro') }})</span>
     </a>
-    <a *ngIf="isLoggedIn$ | async" (click)="onLogout(); toggleMenu()" class="nav-item logout-link" title="Sair" href="javascript:void(0)" role="button">
+    <a *ngIf="isLoggedIn$ | async" (click)="onLogout(); toggleMenu()" class="nav-item logout-link" title="Sair" href="javascript:void(0);" role="button">
       <i class="bi bi-box-arrow-right me-2"></i> Sair
     </a>
   </div>
