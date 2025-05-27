@@ -1,77 +1,62 @@
-/* --- Variáveis de Cor e Animação --- */
+/* ranking.component.css - Pódio com medalhas e animações de entrada leves */
 :root {
   --gold-color: #ffd700;
   --silver-color: #c0c0c0;
   --bronze-color: #cd7f32;
-  /* --winner-glow-start: rgba(255, 215, 0, 0.3); /* Não usado se firstPlaceShine for removido */
-  /* --winner-glow-end: rgba(255, 215, 0, 0.6);   /* Não usado se firstPlaceShine for removido */
-  --animation-duration-fast: 0.5s;
-  --animation-duration-medium: 0.8s;
-  --animation-duration-slow: 1.2s; /* Usado apenas para delays, não mais para medalFloat */
+  --animation-duration-entry: 0.5s; /* Duração para animações de entrada */
 }
 
 .ranking-container {
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden; /* Para evitar scrollbar horizontal das animações de entrada */
 }
 
 .ranking-title {
-  font-size: 2.5rem;
-  opacity: 0;
-  transform: translateY(-30px);
-  animation: titleEnter var(--animation-duration-medium) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-  animation-delay: 0.2s;
+  font-size: 2.2rem;
   color: #fff;
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+  opacity: 0; /* Começa invisível para animar */
+  transform: translateY(-20px);
+  animation: titleFadeInDown 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: 0.1s;
 }
 
 .ranking-title .trophy-icon {
   display: inline-block;
-  animation: trophyPulse 2s infinite ease-in-out;
+  animation: subtleTrophyPulse 2.5s infinite ease-in-out;
+}
+.ranking-title .trophy-icon:last-of-type {
+  animation-delay: 0.2s; /* Pequeno delay para o segundo troféu */
 }
 
-.ranking-title .trophy-icon:first-of-type { animation-delay: 0s; }
-.ranking-title .trophy-icon:last-of-type { animation-delay: 0.3s; }
-
-@keyframes titleEnter {
+@keyframes titleFadeInDown {
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-@keyframes trophyPulse {
-  0%, 100% {
-    transform: scale(1);
-    /* text-shadow: 0 0 5px var(--gold-color); /* Simplificado/Removido do estado base */
-  }
-  50% {
-    transform: scale(1.1);
-    text-shadow: 0 0 10px var(--gold-color), 0 0 20px #fff;
-  }
+@keyframes subtleTrophyPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); text-shadow: 0 0 8px var(--gold-color); }
 }
 
 .loading-message,
 .error-message,
 .empty-message {
   opacity: 0;
-  transform: scale(0.9);
-  animation: messageAppear var(--animation-duration-fast) ease-out forwards;
-  animation-delay: 0.5s;
+  animation: fadeInSimple 0.6s ease-out forwards;
+  animation-delay: 0.3s; /* Após título */
 }
 
-@keyframes messageAppear {
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+@keyframes fadeInSimple {
+  to { opacity: 1; }
 }
 
 .ranking-table {
   opacity: 0;
-  transform: translateY(40px);
-  animation: tableFadeInUp var(--animation-duration-medium) cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
-  animation-delay: 0.7s;
+  transform: translateY(20px);
+  animation: tableFadeInUp 0.7s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+  animation-delay: 0.4s; /* Após mensagens */
 }
 
 @keyframes tableFadeInUp {
@@ -81,22 +66,22 @@
   }
 }
 
+/* Animação de entrada para TODAS as linhas */
 .ranking-row {
   opacity: 0;
-  transform: translateX(-50px);
-  animation: rowSlideIn var(--animation-duration-fast) cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  transform: translateX(-40px); /* Começa da esquerda */
+  animation: rowSlideIn var(--animation-duration-entry) cubic-bezier(0.23, 1, 0.32, 1) forwards;
 }
 
-.ranking-row:nth-child(1)  { animation-delay: 1.2s; }
-.ranking-row:nth-child(2)  { animation-delay: 1.3s; }
-.ranking-row:nth-child(3)  { animation-delay: 1.4s; }
-.ranking-row:nth-child(4)  { animation-delay: 1.5s; }
-.ranking-row:nth-child(5)  { animation-delay: 1.6s; }
-.ranking-row:nth-child(6)  { animation-delay: 1.7s; }
-.ranking-row:nth-child(7)  { animation-delay: 1.8s; }
-.ranking-row:nth-child(8)  { animation-delay: 1.9s; }
-.ranking-row:nth-child(9)  { animation-delay: 2.0s; }
-.ranking-row:nth-child(10) { animation-delay: 2.1s; }
+/* Delays escalonados para as linhas (baseados no delay da tabela + entrada) */
+.ranking-row:nth-child(1)  { animation-delay: 0.9s; } /* Este é o .first-place */
+.ranking-row:nth-child(2)  { animation-delay: 1.0s; } /* Este é o .second-place */
+.ranking-row:nth-child(3)  { animation-delay: 1.1s; } /* Este é o .third-place */
+.ranking-row:nth-child(4)  { animation-delay: 1.2s; }
+.ranking-row:nth-child(5)  { animation-delay: 1.3s; }
+.ranking-row:nth-child(6)  { animation-delay: 1.4s; }
+/* Adicione mais se geralmente tiver mais de 6-7 usuários visíveis */
+
 
 @keyframes rowSlideIn {
   to {
@@ -105,27 +90,39 @@
   }
 }
 
+/* Ícones e seus containers */
 .rank-icon-container {
   display: inline-block;
-  margin-right: 0.5em;
-  min-width: 1.5em;
+  margin-right: 0.4em;
+  min-width: 1.3em;
   text-align: left;
-
+  line-height: 1;
 }
 
 .rank-icon {
   display: inline-block;
-  font-size: 1.3em;
-  transform: scale(0);
-  opacity: 0;
-  animation: medalAppear var(--animation-duration-fast) cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  animation-delay: inherit; /* Herda delay da linha pai para entrada sincronizada */
+  font-size: 1.2em;
+  opacity: 0; /* Começa invisível */
+  transform: scale(0.7); /* Começa um pouco menor */
+  animation: iconPopIn var(--animation-duration-entry) cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  /* O delay da animação do ícone será o mesmo da sua linha pai (ranking-row) devido ao 'inherit' implícito ou pode ser setado explicitamente se precisar de mais controle */
+  /* animation-delay: inherit; não é uma propriedade válida, o delay virá do pai ou do próprio elemento */
 }
+/* Para que o ícone anime junto com a linha, o animation-delay de .rank-icon
+   deve ser o mesmo de sua .ranking-row pai. Como a animação é curta,
+   pode-se definir um pequeno delay adicional para o ícone após a linha estar quase visível.
+   Por exemplo, adicionando .2s ao delay da linha.
+   No entanto, para simplicidade e economia, vamos deixar que ele herde o timing da entrada da linha.
+*/
+.first-place .rank-icon  { animation-delay: 1.0s; } /* (0.9s da linha + 0.1s) */
+.second-place .rank-icon { animation-delay: 1.1s; } /* (1.0s da linha + 0.1s) */
+.third-place .rank-icon  { animation-delay: 1.2s; } /* (1.1s da linha + 0.1s) */
 
-@keyframes medalAppear {
+
+@keyframes iconPopIn {
   to {
-    transform: scale(1);
     opacity: 1;
+    transform: scale(1);
   }
 }
 
@@ -135,44 +132,36 @@
 
 /* Destaques do Pódio */
 .first-place {
-  background: rgba(255,215,0,0.18); /* Cor sólida ouro com alpha */
-  animation-name: rowSlideIn; /* Apenas a animação de entrada */
-  /* animation-duration, timing-function, fill-mode são herdados ou definidos em .ranking-row */
-  animation-delay: 1.0s !important; /* Destaque no delay de entrada */
-  border-left: 5px solid var(--gold-color);
-  position: relative;
+  background-color: rgba(255, 215, 0, 0.12); /* Ouro translúcido - mais sutil */
+  border-left: 4px solid var(--gold-color);
+  font-weight: bold;
 }
 
 .second-place {
-  background: rgba(192,192,192,0.18); /* Cor sólida prata com alpha */
-  border-left: 5px solid var(--silver-color);
-  animation-delay: 1.15s !important;
+  background-color: rgba(192, 192, 192, 0.12); /* Prata translúcido - mais sutil */
+  border-left: 4px solid var(--silver-color);
 }
 
 .third-place {
-  background: rgba(205,127,50,0.18); /* Cor sólida bronze com alpha */
-  border-left: 5px solid var(--bronze-color);
-  animation-delay: 1.30s !important;
-}
-
-/* Ajustes de Hover */
-.table-hover tbody tr:not(.first-place):not(.second-place):not(.third-place):hover {
-  background-color: #3a3f44 !important;
-  color: #fff;
-  transform: scale(1.01);
-  transition: transform 0.2s ease-out, background-color 0.2s ease-out;
-}
-
-.first-place:hover, .second-place:hover, .third-place:hover {
-  filter: brightness(1.1);
-  transition: filter 0.2s ease-out;
+  background-color: rgba(205, 127, 50, 0.12); /* Bronze translúcido - mais sutil */
+  border-left: 4px solid var(--bronze-color);
 }
 
 /* Estilos Gerais da Tabela */
 .table th, .table td {
   vertical-align: middle;
-  padding: 0.85rem 0.75rem;
+  padding: 0.8rem 0.7rem;
 }
-
 .table-bordered { border-color: #454d55; }
-.spinner-border.text-light { width: 3rem; height: 3rem; border-width: .3em; }
+.bg-dark.text-white.p-4.rounded.shadow-lg {
+  background-color: #212529 !important;
+  border: 1px solid #343a40;
+}
+.table-hover tbody tr:not(.first-place):not(.second-place):not(.third-place):hover {
+  background-color: #3a3f44 !important;
+  color: #fff;
+}
+.first-place:hover, .second-place:hover, .third-place:hover {
+  filter: brightness(1.15); /* Um pouco mais de brilho no hover */
+}
+.spinner-border.text-light { width: 2.5rem; height: 2.5rem; border-width: .25em; }
