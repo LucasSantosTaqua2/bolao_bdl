@@ -1,3 +1,13 @@
+/* src/styles.css */
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+  /* Evita rolagem horizontal indesejada */
+}
+
 /* Estilo para o componente raiz, app-root, que engloba tudo */
 app-root {
   display: flex;
