@@ -14,29 +14,28 @@
 .escudo-icon-apostar {
   width: 18px;
   height: 18px;
-  vertical-align: middle;
   object-fit: contain;
+  flex-shrink: 0; /* Impede que o escudo encolha se o nome do time for longo */
 }
 
-/* Aplica margem à direita do escudo do time da casa */
 td.text-end .escudo-icon-apostar {
   margin-right: 5px;
 }
 
-/* Aplica margem à esquerda do escudo do time visitante */
 td.text-start .escudo-icon-apostar {
   margin-left: 5px;
 }
 
+/* Estilos gerais para células da tabela */
 .table > tbody > tr > td {
   vertical-align: middle;
 }
 
+/* Células específicas dos times */
 .table > tbody > tr > td.text-end.fw-bold,
 .table > tbody > tr > td.text-start.fw-bold {
   display: flex;
   align-items: center;
-  height: 100%; /* Ajuda se a altura da linha for definida por outras células mais altas */
 }
 
 .table > tbody > tr > td.text-end.fw-bold {
@@ -47,6 +46,22 @@ td.text-start .escudo-icon-apostar {
   justify-content: flex-start;
 }
 
+/*
+  Garante que as células dos times tenham o fundo listrado correto.
+  Estas regras assumem um tema claro do Bootstrap.
+  Se você tiver um tema escuro, precisará de variáveis ou cores diferentes.
+*/
+.table-striped > tbody > tr:nth-of-type(odd) > td.text-end.fw-bold,
+.table-striped > tbody > tr:nth-of-type(odd) > td.text-start.fw-bold {
+  background-color: var(--bs-table-striped-bg, #f2f2f2); /* Cor listrada padrão do Bootstrap claro */
+}
+
+.table-striped > tbody > tr:nth-of-type(even) > td.text-end.fw-bold,
+.table-striped > tbody > tr:nth-of-type(even) > td.text-start.fw-bold {
+  background-color: var(--bs-table-bg, #fff); /* Cor normal padrão do Bootstrap claro */
+}
+
+/* Responsividade da Tabela */
 @media (max-width: 767.98px) {
   .table-responsive-mobile {
     overflow-x: auto;
@@ -64,18 +79,35 @@ td.text-start .escudo-icon-apostar {
   .table-responsive-mobile table th,
   .table-responsive-mobile table td {
     font-size: 0.85em;
-    padding: 0.4rem;
+    padding: 0.5rem 0.4rem; /* Padding vertical para alinhar com inputs */
     white-space: nowrap;
+  }
+
+  .table-responsive-mobile table td.text-end.fw-bold,
+  .table-responsive-mobile table td.text-start.fw-bold {
+    display: flex;
+    align-items: center;
+  }
+
+  .table-responsive-mobile table td.text-end.fw-bold {
+    justify-content: flex-end;
+  }
+
+  .table-responsive-mobile table td.text-start.fw-bold {
+    justify-content: flex-start;
   }
 
   .table-responsive-mobile table input[type="number"] {
     width: 50px;
-    padding: 0.2rem;
+    padding: 0.3rem 0.2rem;
+    font-size: 0.9em;
+    height: auto; /* Permite que o padding defina a altura, para melhor correspondência com o padding da célula */
+    line-height: normal; /* Garante que a altura do texto do input seja considerada */
   }
 
-  .table-responsive-mobile table td.text-center.fw-bold {
-    padding: 0.2rem;
-    width: 20px;
+  .table-responsive-mobile table td.text-center.fw-bold { /* Célula do "X" */
+    padding: 0.5rem 0.2rem;
+    width: auto;
   }
 
   .table-responsive-mobile .escudo-icon-apostar {
