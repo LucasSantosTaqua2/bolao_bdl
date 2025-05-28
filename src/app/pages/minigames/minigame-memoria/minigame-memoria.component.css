@@ -1,0 +1,145 @@
+.minigame-container {
+  max-width: 700px; /* Um pouco mais largo para acomodar o grid */
+  margin: 20px auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.minigame-container h3 {
+  font-weight: 600;
+  color: #0dcaf0; /* Azul ciano para o título */
+}
+
+.game-stats {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.cards-grid {
+  display: grid;
+  /* Ajuste o número de colunas conforme o numberOfPairsToSelect * 2 */
+  /* Para 8 pares (16 cartas), 4 colunas pode ser bom */
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  perspective: 1000px; /* Necessário para o efeito 3D de virar a carta */
+}
+
+.card-container {
+  background-color: transparent;
+  width: 100%; /* Ocupa o espaço da célula do grid */
+  aspect-ratio: 1 / 1; /* Mantém as cartas quadradas */
+  cursor: pointer;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border-radius: 8px;
+}
+
+.card-container:hover .card-inner:not(.is-flipped):not(.is-matched) {
+  transform: scale(1.03); /* Leve aumento no hover se não estiver virada/combinada */
+}
+
+.card-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.card-face--front {
+  background-color: #007bff; /* Azul para o verso da carta */
+  color: white;
+  border: 2px solid #0056b3;
+}
+
+.card-back-img { /* Estilo para a imagem no verso da carta */
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+}
+
+
+.card-face--back {
+  background-color: #f8f9fa; /* Fundo claro para a face com o emblema */
+  color: black;
+  transform: rotateY(180deg);
+  border: 2px solid #ccc;
+}
+
+.emblem-img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+.card-inner.is-matched .card-face--back {
+  border-color: #28a745; /* Borda verde para pares encontrados */
+  opacity: 0.7; /* Levemente apagado para indicar que foi encontrado */
+}
+.card-inner.is-matched .card-face--front {
+  /* Pode-se mudar o fundo do verso também se desejar após match */
+  background-color: #d4edda; /* Um verde claro */
+  border-color: #c3e6cb;
+}
+.card-inner.is-matched .card-back-img {
+    opacity: 0.5;
+}
+
+
+.game-won-message {
+  margin-top: 20px;
+}
+
+.game-won-message h4 {
+  font-size: 1.8rem;
+}
+
+.cards-grid.game-won-grid .card-inner {
+    /* Exemplo: um leve efeito quando o jogo é ganho */
+    /* box-shadow: 0 0 15px rgba(40, 167, 69, 0.5); */
+}
+
+
+@media (max-width: 768px) {
+  .cards-grid {
+    /* Para 8 pares (16 cartas), talvez 4 colunas ainda funcione,
+       mas se tiver mais, pode precisar ajustar para 3 ou menos */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+}
+@media (max-width: 576px) {
+  .cards-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 colunas em telas menores */
+    gap: 8px;
+  }
+  .minigame-container h3 {
+    font-size: 1.5rem;
+  }
+  .game-stats span {
+    font-size: 0.9rem;
+  }
+}
+@media (max-width: 400px) {
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas em telas muito pequenas */
+    gap: 6px;
+  }
+}

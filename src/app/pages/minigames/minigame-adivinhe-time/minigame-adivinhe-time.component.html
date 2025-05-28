@@ -1,0 +1,63 @@
+<div class="minigame-container p-4 bg-light rounded shadow-sm text-center">
+  <h3 class="mb-3 text-success">Quem é este Time?</h3>
+
+  <div *ngIf="gameInProgress; else gameFinishedOrNotStarted">
+    <p class="lead mb-3">Tente adivinhar o time pelo escudo distorcido!</p>
+    <p class="small text-muted" *ngIf="!challengeRevealed && attemptsThisChallenge > 0 && attemptsThisChallenge < maxAttemptsPerChallenge">
+      Tentativa {{ attemptsThisChallenge }} de {{ maxAttemptsPerChallenge }}. O blur diminuiu!
+    </p>
+     <p class="small text-muted" *ngIf="!challengeRevealed && attemptsThisChallenge === 0">
+      Você tem {{maxAttemptsPerChallenge}} tentativas para este escudo.
+    </p>
+
+
+    <div class="distorted-emblem-container my-4">
+      <img [src]="correctEmblemUrl"
+           alt="Emblema Distorcido"
+           class="distorted-emblem"
+           [style.filter]="'blur(' + currentDistortion + 'px)'"
+           onError="this.src='assets/emblemas/default_emblema.png'; this.alt='Erro ao carregar emblema'">
+    </div>
+
+    <div class="name-options-grid mb-4">
+      <button *ngFor="let option of nameOptions"
+              class="btn btn-lg option-button"
+              (click)="guessName(option)"
+              [disabled]="option.isDisabled || challengeRevealed"
+              [ngClass]="{
+                'btn-success chosen-correct': option.isChosen && option.isCorrect && challengeRevealed,
+                'btn-danger chosen-incorrect': option.isChosen && !option.isCorrect,
+                'btn-outline-success actual-correct': !option.isChosen && option.isActualCorrect && challengeRevealed,
+                'btn-outline-primary': !option.isDisabled && !challengeRevealed,
+                'btn-outline-secondary disabled-option': option.isDisabled && !option.isCorrect && !option.isChosen
+              }">
+        {{ option.name }}
+      </button>
+    </div>
+
+    <div *ngIf="showFeedback"
+         class="feedback-message alert mt-3"
+         [ngClass]="{'alert-success': isCorrectGuess, 'alert-danger': !isCorrectGuess && attemptsThisChallenge < maxAttemptsPerChallenge, 'alert-warning': !isCorrectGuess && attemptsThisChallenge >= maxAttemptsPerChallenge}">
+      {{ feedbackMessage }}
+    </div>
+
+    <div class="score-board mt-4">
+      <h5>Pontuação: {{ score }}</h5>
+      <h6>Desafios: {{ totalChallenges }}</h6>
+    </div>
+
+    <button *ngIf="challengeRevealed" class="btn btn-info mt-3" (click)="proceedToNextChallenge()">
+        <i class="bi bi-arrow-right-circle-fill me-2"></i>Próximo Desafio
+    </button>
+  </div>
+
+  <ng-template #gameFinishedOrNotStarted>
+    <div class="game-message alert alert-info">
+      <p class="mb-2">{{ feedbackMessage || 'Jogo finalizado ou não iniciado!' }}</p>
+      <p *ngIf="totalChallenges > 0">Sua pontuação final foi: {{ score }} em {{ totalChallenges -1 }} desafios.</p>
+      <button class="btn btn-lg btn-success mt-3" (click)="restartGame()">
+        <i class="bi bi-play-circle-fill me-2"></i>{{ totalChallenges > 0 ? 'Jogar Novamente' : 'Iniciar Jogo' }}
+      </button>
+    </div>
+  </ng-template>
+</div>

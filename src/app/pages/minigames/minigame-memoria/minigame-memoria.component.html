@@ -1,0 +1,37 @@
+<div class="minigame-container p-4 bg-light rounded shadow-sm text-center">
+  <h3 class="mb-2 text-info">Jogo da Memória dos Emblemas!</h3>
+  <p class="text-muted small mb-3">Encontre todos os pares de escudos.</p>
+
+  <div class="game-stats mb-3 d-flex justify-content-around">
+    <span>Movimentos: {{ moves }}</span>
+    <span>Pares Encontrados: {{ matchedPairs }} / {{ totalPairs }}</span>
+  </div>
+
+  <div class="cards-grid mb-4" [class.game-won-grid]="gameWon">
+    <div *ngFor="let card of cards; trackBy: trackByCardId"
+         class="card-container"
+         (click)="flipCard(card)">
+      <div class="card-inner" [class.is-flipped]="card.isFlipped || card.isMatched">
+        <div class="card-face card-face--front">
+          <img src="assets/emblemas/default_emblema.png" alt="Verso da Carta" class="card-back-img"
+               onError="this.alt='?'; this.src=''; this.style.backgroundColor='#007bff'; this.style.border='1px solid #fff'; this.style.borderRadius='5px';">
+        </div>
+        <div class="card-face card-face--back">
+          <img [src]="card.emblemUrl"
+               [alt]="card.teamName"
+               class="emblem-img"
+               onError="this.src='assets/emblemas/default_emblema.png'; this.alt='Emblema não disponível'">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="gameWon" class="game-won-message alert alert-success text-center">
+    <h4>Parabéns! 🎉</h4>
+    <p>Você encontrou todos os pares em {{ moves }} movimentos!</p>
+  </div>
+
+  <button class="btn btn-primary btn-lg mt-2" (click)="restartGame()">
+    <i class="bi bi-arrow-clockwise me-2"></i>Reiniciar Jogo
+  </button>
+</div>

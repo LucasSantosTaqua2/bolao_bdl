@@ -1,0 +1,98 @@
+.minigame-container {
+  max-width: 600px;
+  margin: 20px auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.minigame-container h3 {
+  font-weight: 600;
+  color: #0056b3; /* Azul mais escuro */
+}
+
+.current-team-name {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  letter-spacing: 1px;
+}
+
+.emblem-options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Grid responsivo */
+  gap: 15px;
+  justify-content: center;
+}
+
+.emblem-option {
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  background-color: #fff;
+  padding: 10px; /* Espaçamento interno para a imagem */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.emblem-option:hover:not(.disabled) {
+  transform: scale(1.05);
+  border-color: #007bff; /* Azul ao passar o mouse */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.emblem-option.disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.emblem-option img {
+  width: 100%; /* Garante que a imagem preencha o card */
+  height: 80px; /* Altura fixa para os emblemas */
+  object-fit: contain; /* Mantém a proporção do emblema */
+}
+
+.feedback-message {
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 10px;
+}
+
+.score-board h5 {
+  color: #555;
+  font-size: 1.2rem;
+}
+
+.game-over-message p {
+    font-size: 1.1rem;
+}
+
+/* Animação sutil para o feedback */
+.feedback-message.alert-success {
+  animation: feedback-pop 0.5s ease-out;
+}
+.feedback-message.alert-danger {
+  animation: feedback-shake 0.5s ease-out;
+}
+
+@keyframes feedback-pop {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  70% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes feedback-shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+
+@media (max-width: 576px) {
+  .emblem-options-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas em telas pequenas */
+    gap: 10px;
+  }
+  .emblem-option img {
+    height: 60px;
+  }
+  .current-team-name {
+    font-size: 1.5rem;
+  }
+}

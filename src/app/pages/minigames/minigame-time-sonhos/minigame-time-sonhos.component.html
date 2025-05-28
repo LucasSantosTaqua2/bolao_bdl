@@ -1,0 +1,121 @@
+<div class="minigame-container p-3 p-md-4 bg-light rounded shadow-sm text-center">
+  <h3 class="mb-2 text-info">Monte seu Time dos Sonhos (4-3-3)!</h3>
+  <p class="text-muted small mb-3">{{ gameMessage }}</p>
+
+  <div class="row g-3 main-layout">
+    <div class="col-lg-3 col-md-12 order-lg-last available-teams-column mb-3 mb-lg-0">
+      <h5 class="text-secondary small text-uppercase mb-2">Times Disponíveis</h5>
+      <div [id]="availableTeamsListId" cdkDropList
+           [cdkDropListData]="availableTeams"
+           [cdkDropListConnectedTo]="allDropListIds"
+           (cdkDropListDropped)="onDrop($event)"
+           class="available-teams-list p-2 border rounded bg-white shadow-sm">
+        <div *ngIf="availableTeams.length === 0" class="text-muted p-3 small">
+          Todos os times foram escalados!
+        </div>
+        <div *ngFor="let team of availableTeams; trackBy: trackByFn"
+             cdkDrag [cdkDragData]="team"
+             class="available-team-item p-2 mb-2 border rounded bg-light d-flex align-items-center justify-content-center shadow-sm">
+          <img [src]="team.emblemUrl" [alt]="team.name" class="available-emblem me-2" onError="this.style.display='none'">
+          <span class="small team-name-available">{{ team.name }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-9 col-md-12 order-lg-first field-and-coach-column">
+      <div #dreamTeamFieldToCapture class="dream-team-field-wrapper d-flex">
+        <div class="dream-team-field flex-grow-1 p-2 p-md-3 rounded shadow-sm">
+          <div class="field-row gk-row justify-content-center">
+            <div *ngFor="let pos of playerPositions.slice(0, 1)"
+                 [id]="pos.id" cdkDropList [cdkDropListData]="pos.items" [cdkDropListConnectedTo]="allDropListIds" (cdkDropListDropped)="onDrop($event)" [cdkDropListEnterPredicate]="canDropIntoSlot"
+                 class="field-position-wrapper gk-position">
+              <div class="field-position-inner">
+                <div *ngIf="pos.items.length > 0" cdkDrag [cdkDragData]="pos.items[0]" [cdkDragDisabled]="pos.items.length === 0" class="team-on-field">
+                  <img [src]="pos.items[0].emblemUrl" [alt]="pos.items[0].name" onError="this.style.display='none'">
+                  <span class="team-name-on-field small">{{ pos.items[0].name }}</span>
+                  <button class="btn btn-sm btn-danger clear-pos-btn" (click)="clearPosition(pos)" title="Remover">&times;</button>
+                  <div cdkDragHandle class="field-drag-handle"><i class="bi bi-arrows-move"></i></div>
+                </div>
+                <span *ngIf="pos.items.length === 0" class="position-placeholder-text">{{pos.placeholderText}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="field-row defense-row">
+            <div *ngFor="let pos of playerPositions.slice(1, 5)"
+                 [id]="pos.id" cdkDropList [cdkDropListData]="pos.items" [cdkDropListConnectedTo]="allDropListIds" (cdkDropListDropped)="onDrop($event)" [cdkDropListEnterPredicate]="canDropIntoSlot"
+                 class="field-position-wrapper defense-position">
+              <div class="field-position-inner">
+                <div *ngIf="pos.items.length > 0" cdkDrag [cdkDragData]="pos.items[0]" [cdkDragDisabled]="pos.items.length === 0" class="team-on-field">
+                  <img [src]="pos.items[0].emblemUrl" [alt]="pos.items[0].name" onError="this.style.display='none'">
+                  <span class="team-name-on-field small">{{ pos.items[0].name }}</span>
+                  <button class="btn btn-sm btn-danger clear-pos-btn" (click)="clearPosition(pos)" title="Remover">&times;</button>
+                  <div cdkDragHandle class="field-drag-handle"><i class="bi bi-arrows-move"></i></div>
+                </div>
+                <span *ngIf="pos.items.length === 0" class="position-placeholder-text">{{pos.placeholderText}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="field-row midfield-row">
+            <div *ngFor="let pos of playerPositions.slice(5, 8)"
+                 [id]="pos.id" cdkDropList [cdkDropListData]="pos.items" [cdkDropListConnectedTo]="allDropListIds" (cdkDropListDropped)="onDrop($event)" [cdkDropListEnterPredicate]="canDropIntoSlot"
+                 class="field-position-wrapper midfield-position">
+              <div class="field-position-inner">
+                <div *ngIf="pos.items.length > 0" cdkDrag [cdkDragData]="pos.items[0]" [cdkDragDisabled]="pos.items.length === 0" class="team-on-field">
+                  <img [src]="pos.items[0].emblemUrl" [alt]="pos.items[0].name" onError="this.style.display='none'">
+                  <span class="team-name-on-field small">{{ pos.items[0].name }}</span>
+                  <button class="btn btn-sm btn-danger clear-pos-btn" (click)="clearPosition(pos)" title="Remover">&times;</button>
+                  <div cdkDragHandle class="field-drag-handle"><i class="bi bi-arrows-move"></i></div>
+                </div>
+                <span *ngIf="pos.items.length === 0" class="position-placeholder-text">{{pos.placeholderText}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="field-row attack-row">
+            <div *ngFor="let pos of playerPositions.slice(8, 11)" [id]="pos.id" cdkDropList [cdkDropListData]="pos.items" [cdkDropListConnectedTo]="allDropListIds" (cdkDropListDropped)="onDrop($event)" [cdkDropListEnterPredicate]="canDropIntoSlot"
+                 class="field-position-wrapper attack-position">
+              <div class="field-position-inner">
+                <div *ngIf="pos.items.length > 0" cdkDrag [cdkDragData]="pos.items[0]" [cdkDragDisabled]="pos.items.length === 0" class="team-on-field">
+                  <img [src]="pos.items[0].emblemUrl" [alt]="pos.items[0].name" onError="this.style.display='none'">
+                  <span class="team-name-on-field small">{{ pos.items[0].name }}</span>
+                  <button class="btn btn-sm btn-danger clear-pos-btn" (click)="clearPosition(pos)" title="Remover">&times;</button>
+                  <div cdkDragHandle class="field-drag-handle"><i class="bi bi-arrows-move"></i></div>
+                </div>
+                <span *ngIf="pos.items.length === 0" class="position-placeholder-text">{{pos.placeholderText}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="coachPosition" class="coach-area ms-md-3 mt-3 mt-md-0 text-center">
+          <h6 class="text-muted small text-uppercase mb-2">Técnico</h6>
+          <div [id]="coachPosition.id" cdkDropList [cdkDropListData]="coachPosition.items" [cdkDropListConnectedTo]="allDropListIds" (cdkDropListDropped)="onDrop($event)" [cdkDropListEnterPredicate]="canDropIntoSlot"
+               class="field-position-wrapper coach-position mx-auto">
+             <div class="field-position-inner">
+                <div *ngIf="coachPosition.items.length > 0" cdkDrag [cdkDragData]="coachPosition.items[0]" [cdkDragDisabled]="coachPosition.items.length === 0" class="team-on-field">
+                <img [src]="coachPosition.items[0].emblemUrl" [alt]="coachPosition.items[0].name" onError="this.style.display='none'">
+                <span class="team-name-on-field small">{{ coachPosition.items[0].name }}</span>
+                <button class="btn btn-sm btn-danger clear-pos-btn" (click)="clearPosition(coachPosition)" title="Remover">&times;</button>
+                <div cdkDragHandle class="field-drag-handle"><i class="bi bi-arrows-move"></i></div>
+                </div>
+                <span *ngIf="coachPosition.items.length === 0" class="position-placeholder-text">{{coachPosition.placeholderText}}</span>
+            </div>
+          </div>
+        </div>
+      </div> </div>
+  </div>
+
+  <div class="actions-bar mt-4 d-flex flex-wrap justify-content-center gap-2">
+    <button class="btn btn-success" (click)="saveDreamTeam()">
+      <i class="bi bi-save me-1"></i> Salvar Time
+    </button>
+    <button class="btn btn-info" (click)="downloadDreamTeamAsImage()">
+      <i class="bi bi-image me-1"></i> Baixar Imagem
+    </button>
+    <button class="btn btn-danger" (click)="clearAllField()">
+      <i class="bi bi-trash3 me-1"></i> Limpar Tudo
+    </button>
+  </div>
+  <div *ngIf="showSaveConfirmation" class="alert alert-info mt-3 small p-2">
+    {{ gameMessage }}
+  </div>
+</div>

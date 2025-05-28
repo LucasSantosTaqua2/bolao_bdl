@@ -12,6 +12,13 @@ import { adminGuard } from './guards/admin.guard'; // Se você criar uma rota pa
 import { ProfileComponent } from './pages/profile/profile.component';
 import { AdminPanelComponent } from './pages/admin-panel/admin-panel.component';
 import { ApostarComponent } from './pages/apostar/apostar.component';
+import { MinigameComponent } from './pages/minigame/minigame.component';
+import { MinigameAcerteEscudoComponent } from './pages/minigames/minigame-acerte-escudo/minigame-acerte-escudo.component';
+import { MinigameMemoriaComponent } from './pages/minigames/minigame-memoria/minigame-memoria.component';
+import { MinigameAdivinheTimeComponent } from './pages/minigames/minigame-adivinhe-time/minigame-adivinhe-time.component';
+import { MinigameMonteRankingComponent } from './pages/minigames/minigame-monte-ranking/minigame-monte-ranking.component';
+import { MinigameCacaEmblemasComponent } from './pages/minigames/minigame-caca-emblemas/minigame-caca-emblemas.component';
+import { MinigameTimeSonhosComponent } from './pages/minigames/minigame-time-sonhos/minigame-time-sonhos.component';
 
 
 export const routes: Routes = [
@@ -40,6 +47,41 @@ export const routes: Routes = [
     path: 'apostar',
     component: ApostarComponent,
     canActivate: [authGuard] // <--- Protegido pelo AuthGuard
+  },
+  {
+    path: 'minigames',
+    component: MinigameComponent,
+    // canActivate: [authGuard] // <--- Protegido pelo AuthGuard
+  },
+  {
+    path: 'minigames/acerte-o-escudo',
+    component: MinigameAcerteEscudoComponent,
+    // canActivate: [authGuard] // <--- Protegido pelo AuthGuard
+  },
+  {
+    path: 'minigames/memoria',
+    component: MinigameMemoriaComponent,
+    // canActivate: [authGuard] // <--- Protegido pelo AuthGuard
+  },
+  {
+    path: 'minigames/adivinhe-time',
+    component: MinigameAdivinheTimeComponent,
+    // canActivate: [authGuard] // <--- Protegido pelo AuthGuard
+  },
+  {
+    path: 'minigames/monte-ranking',
+    component: MinigameMonteRankingComponent,
+    // canActivate: [authGuard] // <--- Protegido pelo AuthGuard
+  },
+  {
+    path: 'minigames/caca-emblemas',
+    component: MinigameCacaEmblemasComponent,
+    // canActivate: [authGuard] // <--- Protegido pelo AuthGuard
+  },
+  {
+    path: 'minigames/time-sonhos',
+    component: MinigameTimeSonhosComponent,
+    // canActivate: [authGuard] // <--- Protegido pelo AuthGuard
   },
   {
     path: 'profile', // <--- Nova rota para o perfil

@@ -1,0 +1,37 @@
+<div class="minigame-container p-4 bg-dark text-white rounded shadow-lg text-center">
+  <h3 class="mb-3 text-warning">🎯 Caça-Emblemas! 🎯</h3>
+
+  <div *ngIf="!gameInProgress && !gameOver" class="text-center my-4">
+    <p class="lead">{{ gameMessage }}</p>
+    <button class="btn btn-lg btn-success" (click)="startGame()">
+      <i class="bi bi-play-circle-fill me-2"></i>Iniciar Jogo
+    </button>
+  </div>
+
+  <div *ngIf="gameInProgress">
+    <div class="game-info d-flex justify-content-between align-items-center mb-3 p-2 bg-secondary rounded">
+      <span>Pontos: <span class="fw-bold">{{ score }}</span></span>
+      <span class="target-announcement">{{ gameMessage }}</span>
+      <span>Vidas: <span class="fw-bold">{{ lives }}</span> | Tempo: <span class="fw-bold">{{ timeLeftInRound }}s</span></span>
+    </div>
+
+    <div #gameArea class="game-area rounded p-2">
+      <div *ngFor="let emblem of activeEmblems"
+           class="target-emblem"
+           [ngClass]="emblem.animationClass || ''"
+           [style]="getEmblemStyle(emblem)"
+           (click)="onEmblemClick(emblem)">
+        <img [src]="emblem.emblemUrl" [alt]="emblem.teamName"
+             onError="this.style.display='none';">
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="gameOver" class="text-center my-4 p-3 bg-secondary rounded">
+    <h4 class="text-danger">Fim de Jogo!</h4>
+    <p class="lead">{{ gameMessage }}</p>
+    <button class="btn btn-lg btn-info mt-3" (click)="startGame()">
+      <i class="bi bi-arrow-clockwise me-2"></i>Jogar Novamente
+    </button>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+<div class="minigame-container p-4 bg-light rounded shadow-sm text-center">
+  <h3 class="mb-2 text-warning">Monte Seu Ranking!</h3>
+  <p class="text-muted small mb-3">{{ gameMessage }}</p>
+
+  <div *ngIf="teamsToRank.length > 0; else noTeamsMessage">
+    <div #rankingListToCapture cdkDropList class="ranking-list p-3 border rounded bg-white" (cdkDropListDropped)="onDrop($event)">
+      <div *ngFor="let team of teamsToRank; let i = index; trackBy: trackByTeamId" cdkDrag class="team-item d-flex align-items-center p-2 mb-2 border rounded bg-light shadow-sm">
+        <div class="rank-position me-3 fw-bold">{{ i + 1 }}º</div>
+        <img [src]="team.emblemUrl" [alt]="team.name" class="team-emblem me-3" onError="this.src='assets/emblemas/default_emblema.png';">
+        <div class="team-name flex-grow-1 text-start">{{ team.name }}</div>
+        <div cdkDragHandle class="drag-handle ms-auto p-2">
+          <i class="bi bi-grip-vertical"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions-bar mt-4">
+      <button class="btn btn-success me-2" (click)="saveRanking()">
+        <i class="bi bi-save me-1"></i> Salvar Ordem
+      </button>
+      <button class="btn btn-info me-2" (click)="downloadRankingAsImage()">
+        <i class="bi bi-image me-1"></i> Baixar como Imagem
+      </button>
+      <button class="btn btn-outline-secondary" (click)="resetRanking()">
+        <i class="bi bi-arrow-repeat me-1"></i> Resetar/Novos Times
+      </button>
+    </div>
+    <div *ngIf="showSaveConfirmation" class="alert alert-success mt-3 small p-2">
+      {{ gameMessage }} </div>
+
+  </div>
+
+  <ng-template #noTeamsMessage>
+    <div class="alert alert-warning">{{ gameMessage }}</div>
+  </ng-template>
+</div>

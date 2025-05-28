@@ -54,11 +54,15 @@
       <button class="btn btn-primary btn-lg animated slideInLeft" style="animation-delay: 0.3s;" (click)="goToApostar()">
         <i class="bi bi-controller me-2"></i> Fazer Minhas Apostas
       </button>
+
+      <a routerLink="/minigames" class="btn btn-info btn-lg animated slideInLeft" style="animation-delay: 0.4s;">
+        <i class="bi bi-joystick me-2"></i> Central de Minigames
+      </a>
+
       <button *ngIf="isAdmin" class="btn btn-warning btn-lg animated slideInLeft" style="animation-delay: 0.5s;" (click)="goToAdminPanel()">
         <i class="bi bi-gear-fill me-2"></i> Painel de Administração
       </button>
     </div>
-
     <div class="team-roulette-section mt-5 pt-4 border-top">
       <h4 class="mb-3 text-secondary">🎲 Roleta de Times 🎲</h4>
       <p class="text-muted small">Descubra qual time a sorte reserva para você!</p>

@@ -1,0 +1,142 @@
+.minigame-container {
+  max-width: 550px;
+  margin: 20px auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.minigame-container h3 {
+  font-weight: 600;
+  color: #198754; /* Verde Bootstrap */
+}
+
+.distorted-emblem-container {
+  width: 150px;
+  height: 150px;
+  margin: 20px auto;
+  border: 2px dashed #ccc;
+  background-color: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
+}
+
+.distorted-emblem {
+  max-width: 95%;
+  max-height: 95%;
+  object-fit: contain;
+  transition: filter 0.5s cubic-bezier(0.25, 0.1, 0.25, 1); /* Transição mais suave e responsiva */
+}
+
+.name-options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.option-button {
+  padding: 12px 15px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  border-width: 2px;
+}
+
+.option-button.chosen-correct,
+.option-button.chosen-correct:hover:disabled { /* Mantém estilo quando desabilitado e correto */
+  background-color: #198754 !important;
+  color: white !important;
+  border-color: #198754 !important;
+  transform: scale(1.05);
+}
+
+.option-button.chosen-incorrect,
+.option-button.chosen-incorrect:hover:disabled { /* Mantém estilo quando desabilitado e incorreto */
+  background-color: #dc3545 !important;
+  color: white !important;
+  border-color: #dc3545 !important;
+  /* transform: scale(1.05); /* Opcional manter o scale no erro */
+}
+
+.option-button.actual-correct,
+.option-button.actual-correct:hover:disabled {
+  background-color: #d1e7dd !important;
+  color: #0f5132 !important;
+  border-color: #28a745 !important;
+  font-weight: bold; /* Destaca a correta */
+}
+
+.option-button.disabled-option {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+    color: #adb5bd;
+    text-decoration: line-through;
+    pointer-events: none; /* Para garantir que não haja hover effect */
+}
+
+
+.option-button:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.feedback-message {
+  font-size: 1.1rem;
+  font-weight: 500;
+  padding: 10px;
+  min-height: 60px; /* Para evitar pulo de layout */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.alert-warning { /* Para feedback de fim de tentativas */
+    color: #664d03;
+    background-color: #fff3cd;
+    border-color: #ffecb5;
+}
+
+.score-board h5, .score-board h6 {
+  color: #555;
+  font-size: 1.1rem;
+  margin-bottom: 0.3rem;
+}
+
+.game-message p {
+    font-size: 1.1rem;
+}
+
+.feedback-message.alert-success {
+  animation: feedback-pop 0.5s ease-out;
+}
+.feedback-message.alert-danger,
+.feedback-message.alert-warning {
+  animation: feedback-shake 0.5s ease-out;
+}
+
+@keyframes feedback-pop {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  70% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes feedback-shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+
+@media (max-width: 576px) {
+  .distorted-emblem-container {
+    width: 120px;
+    height: 120px;
+  }
+  .name-options-grid {
+    grid-template-columns: 1fr;
+  }
+  .minigame-container h3 {
+    font-size: 1.6rem;
+  }
+}

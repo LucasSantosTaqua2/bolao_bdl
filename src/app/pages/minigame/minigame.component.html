@@ -1,0 +1,23 @@
+<div class="container minigame-menu-container py-5">
+  <div class="text-center mb-5">
+    <h1 class="display-5 fw-bold text-primary">Central de Minigames</h1>
+    <p class="lead text-muted">Divirta-se com nossos desafios e teste seus conhecimentos sobre futebol!</p>
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div *ngFor="let game of minigameList" class="col">
+      <div class="card minigame-card h-100 shadow-sm">
+        <div class="card-body text-center">
+          <div class="icon-wrapper mb-3">
+            <i class="bi {{ game.iconClass }} display-3 text-secondary"></i>
+          </div>
+          <h5 class="card-title fw-bold">{{ game.name }}</h5>
+          <p class="card-text small text-muted">{{ game.description }}</p>
+          <a [routerLink]="game.route" class="btn btn-primary stretched-link">
+            <i class="bi bi-play-circle-fill me-2"></i>Jogar Agora
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,82 @@
+.minigame-menu-container {
+  max-width: 960px; /* Para centralizar o conteúdo e limitar a largura */
+}
+
+.minigame-menu-container .display-5 {
+  color: #007bff; /* Cor primária do seu tema, se diferente */
+}
+
+.minigame-card {
+  border: none; /* Remove a borda padrão do card */
+  border-radius: 15px; /* Bordas mais arredondadas */
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.minigame-card:hover {
+  transform: translateY(-10px) scale(1.03); /* Efeito de levantar e aumentar no hover */
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.minigame-card .card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem; /* Mais padding interno */
+}
+
+.minigame-card .icon-wrapper {
+  margin-bottom: 1.5rem; /* Mais espaço para o ícone */
+}
+
+.minigame-card .icon-wrapper i {
+  font-size: 3.5rem; /* Ícones maiores */
+  color: #6c757d; /* Cor secundária, ajuste conforme seu tema */
+  transition: color 0.3s ease;
+}
+
+.minigame-card:hover .icon-wrapper i {
+  color: #007bff; /* Ícone muda de cor no hover do card */
+}
+
+.minigame-card .card-title {
+  color: #343a40; /* Cor escura para o título */
+  margin-bottom: 0.75rem;
+}
+
+.minigame-card .card-text {
+  font-size: 0.9rem;
+  flex-grow: 1; /* Faz a descrição ocupar espaço disponível */
+  margin-bottom: 1.5rem;
+}
+
+.minigame-card .btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  font-weight: 500;
+  padding: 0.6rem 1.2rem; /* Botão um pouco maior */
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.minigame-card:hover .btn-primary {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+/* Ajustes para responsividade, se necessário */
+@media (max-width: 768px) {
+  .minigame-menu-container .display-5 {
+    font-size: 2.5rem;
+  }
+  .minigame-card .icon-wrapper i {
+    font-size: 3rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .minigame-menu-container .display-5 {
+    font-size: 2rem;
+  }
+  .minigame-menu-container .lead {
+    font-size: 1rem;
+  }
+}

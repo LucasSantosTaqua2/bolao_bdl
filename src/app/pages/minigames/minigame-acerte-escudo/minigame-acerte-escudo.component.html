@@ -1,0 +1,45 @@
+<div class="minigame-container p-4 bg-light rounded shadow-sm text-center">
+  <h3 class="mb-4 text-primary">Acerte o Escudo!</h3>
+
+  <div *ngIf="gameInProgress; else gameFinished">
+    <p class="lead mb-3">Qual é o escudo do time abaixo?</p>
+    <h4 class="current-team-name mb-4 p-2 bg-white border rounded">{{ currentQuestionTeamName }}</h4>
+
+    <div class="emblem-options-grid mb-4">
+      <div *ngFor="let option of emblemOptions"
+           class="emblem-option card"
+           (click)="selectEmblem(option)"
+           [class.disabled]="showFeedback">
+        <img [src]="option.emblemUrl"
+             [alt]="'Opção ' + option.teamName"
+             class="img-fluid rounded"
+             onError="this.src='assets/img/logo_bdl_shield.png'; this.alt='Escudo não disponível'">
+      </div>
+    </div>
+
+    <div *ngIf="showFeedback"
+         class="feedback-message alert mt-3"
+         [ngClass]="{'alert-success': isCorrectAttempt, 'alert-danger': !isCorrectAttempt}">
+      {{ feedbackMessage }}
+    </div>
+
+    <div class="score-board mt-4">
+      <h5>Pontuação: {{ score }} / {{ attempts }}</h5>
+    </div>
+  </div>
+
+  <ng-template #gameFinished>
+    <div class="game-over-message alert alert-info">
+      <p class="mb-2">{{ feedbackMessage || 'Jogo finalizado!' }}</p>
+      <p>Sua pontuação final foi: {{ score }} de {{ attempts }} tentativas.</p>
+      <button class="btn btn-lg btn-success mt-3" (click)="restartGame()">
+        <i class="bi bi-arrow-clockwise me-2"></i>Jogar Novamente
+      </button>
+    </div>
+  </ng-template>
+
+  <button *ngIf="!gameInProgress && attempts > 0 && feedbackMessage !== 'Não há times suficientes para continuar o jogo.'"
+          class="btn btn-primary mt-3" (click)="restartGame()">
+    <i class="bi bi-play-fill me-2"></i>Reiniciar Jogo
+  </button>
+</div>
