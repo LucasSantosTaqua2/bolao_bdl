@@ -7,11 +7,12 @@ import { BetService, UserBet } from '../../services/bet.service';
 import { GameRead, GameStatus } from '../../models/game.model';
 import { AuthService } from '../../services/auth.service';
 import { BetRead } from '../../models/bet.model';
+import { TeamNameToFileNamePipe } from '../../utils/team-name-to-file-name.pipe';
 
 @Component({
   selector: 'app-apostar',
   standalone: true,
-  imports: [CommonModule, FormsModule, DatePipe],
+  imports: [CommonModule, FormsModule, DatePipe, TeamNameToFileNamePipe ],
   templateUrl: './apostar.component.html',
   styleUrl: './apostar.component.css'
 })

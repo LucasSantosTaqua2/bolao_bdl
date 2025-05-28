@@ -17,6 +17,25 @@
     /* padding: 10px 0; Removido, se o h2 já tem mb-4, não precisa de padding extra */
     margin-bottom: 20px;
   }
+  .escudo-icon-apostar {
+  width: 18px; /* Ajuste o tamanho conforme necessário para a tabela */
+  height: 18px; /* Ajuste o tamanho conforme necessário para a tabela */
+  vertical-align: middle;
+  object-fit: contain;
+}
+
+/* Ajustes para garantir alinhamento na célula da tabela, se necessário */
+td.text-end, td.text-start {
+  display: flex;
+  align-items: center;
+}
+td.text-end {
+  justify-content: flex-end;
+}
+td.text-start {
+  justify-content: flex-start;
+}
+
   
   /* Responsividade da Tabela (mantido como está) */
   @media (max-width: 767.98px) {
