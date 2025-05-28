@@ -1,70 +1,85 @@
 /* src/app/pages/apostar/apostar.component.css */
 
-/* Ajuste para o contêiner principal da página de apostas */
-.aposta-container {
-    /* Aumentar padding-top ou adicionar margin-top para empurrar o conteúdo abaixo da navbar */
-    padding-top: 100px; /* Aumenta o padding para garantir espaço */
-    /* margin-top: 20px; */ /* Opcional: Adicionar margin-top se o padding não for suficiente */
-    padding-bottom: 20px;
-  }
-  
-  /* Estilo para o título principal "Realizar Apostas" */
-  .aposta-title {
-    position: relative; /* Mantém a posição relativa para o z-index */
-    z-index: 1; /* Garante que o título esteja acima de outros elementos na camada */
-    /* Se a navbar tiver um z-index muito alto, este pode precisar ser ajustado */
-    /* background-color: #f8f9fa; Removido, pois o título está dentro de um div com background */
-    /* padding: 10px 0; Removido, se o h2 já tem mb-4, não precisa de padding extra */
-    margin-bottom: 20px;
-  }
-  .escudo-icon-apostar {
-  width: 18px; /* Ajuste o tamanho conforme necessário para a tabela */
-  height: 18px; /* Ajuste o tamanho conforme necessário para a tabela */
+.apostar-container {
+  padding-top: 100px;
+  padding-bottom: 20px;
+}
+
+.apostar-title {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 20px;
+}
+
+.escudo-icon-apostar {
+  width: 18px;
+  height: 18px;
   vertical-align: middle;
   object-fit: contain;
 }
 
-/* Ajustes para garantir alinhamento na célula da tabela, se necessário */
-td.text-end, td.text-start {
+/* Aplica margem à direita do escudo do time da casa */
+td.text-end .escudo-icon-apostar {
+  margin-right: 5px;
+}
+
+/* Aplica margem à esquerda do escudo do time visitante */
+td.text-start .escudo-icon-apostar {
+  margin-left: 5px;
+}
+
+.table > tbody > tr > td {
+  vertical-align: middle;
+}
+
+.table > tbody > tr > td.text-end.fw-bold,
+.table > tbody > tr > td.text-start.fw-bold {
   display: flex;
   align-items: center;
+  height: 100%; /* Ajuda se a altura da linha for definida por outras células mais altas */
 }
-td.text-end {
+
+.table > tbody > tr > td.text-end.fw-bold {
   justify-content: flex-end;
 }
-td.text-start {
+
+.table > tbody > tr > td.text-start.fw-bold {
   justify-content: flex-start;
 }
 
-  
-  /* Responsividade da Tabela (mantido como está) */
-  @media (max-width: 767.98px) {
-    .table-responsive-mobile {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      margin-top: 20px;
-      border: 1px solid #dee2e6;
-      border-radius: 0.25rem;
-    }
-  
-    .table-responsive-mobile table {
-      width: 100%;
-      min-width: 700px; /* Ajuste este valor se a tabela ainda estiver apertada */
-    }
-  
-    .table-responsive-mobile table th,
-    .table-responsive-mobile table td {
-      font-size: 0.85em;
-      padding: 0.4rem;
-      white-space: nowrap;
-    }
-  
-    .table-responsive-mobile table input[type="number"] {
-      width: 50px;
-      padding: 0.2rem;
-    }
-    .table-responsive-mobile table td.text-center.fw-bold {
-        padding: 0.2rem;
-        width: 20px;
-    }
+@media (max-width: 767.98px) {
+  .table-responsive-mobile {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
   }
+
+  .table-responsive-mobile table {
+    width: 100%;
+    min-width: 700px;
+  }
+
+  .table-responsive-mobile table th,
+  .table-responsive-mobile table td {
+    font-size: 0.85em;
+    padding: 0.4rem;
+    white-space: nowrap;
+  }
+
+  .table-responsive-mobile table input[type="number"] {
+    width: 50px;
+    padding: 0.2rem;
+  }
+
+  .table-responsive-mobile table td.text-center.fw-bold {
+    padding: 0.2rem;
+    width: 20px;
+  }
+
+  .table-responsive-mobile .escudo-icon-apostar {
+    width: 16px;
+    height: 16px;
+  }
+}
