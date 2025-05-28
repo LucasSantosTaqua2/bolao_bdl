@@ -1,22 +1,10 @@
 // src/app/pages/home/home.component.ts
-import { Component, OnInit, OnDestroy, AfterViewInit, Renderer2, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core'; // Adicionado ChangeDetectorRef
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService, UserRole } from '../../services/auth.service';
 import { TeamNameToFileNamePipe } from '../../utils/team-name-to-file-name.pipe';
-
-interface FloatingEmblemConfig {
-  teamName: string;
-  initialTop: string; // Ex: '10%', 'calc(50% - 25px)'
-  initialLeft: string; // Ex: '5%', 'calc(100% - 55px)'
-  animationName: string;
-  animationDuration: string;
-  animationDelay?: string;
-  size: string; // Ex: '50px'
-  opacity?: number;
-  zIndex?: number;
-}
 
 @Component({
   selector: 'app-home',
@@ -24,9 +12,9 @@ interface FloatingEmblemConfig {
   imports: [CommonModule, RouterLink, TeamNameToFileNamePipe],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-  providers: [TeamNameToFileNamePipe]
+  providers: [TeamNameToFileNamePipe] // Adicionar o pipe aos providers para injeção
 })
-export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
+export class HomeComponent implements OnInit, OnDestroy {
   username: string | null = null;
   isAdmin: boolean = false;
   private authSubscription: Subscription | undefined;
@@ -37,34 +25,19 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     'Cruzeiro', 'Vasco', 'Mirassol', 'Bahia', 'EC Vitória'
   ];
 
-  // Configuração para os emblemas flutuantes/orbitais
-  // As posições são relativas ao '.home-page-wrapper'
-  // Ajuste 'initialTop' e 'initialLeft' para posicionar "ao redor" do .content
-  // Idealmente, isso seria mais dinâmico com base nas dimensões do .content
-  orbitingEmblemsConfig: FloatingEmblemConfig[] = [
-    // Emblemas acima do .content (aproximado)
-    { teamName: 'Internacional', initialTop: 'calc(25% - 60px)', initialLeft: '30%', animationName: 'orbitPath1', animationDuration: '20s', size: '40px', animationDelay: '0s', opacity: 0.3, zIndex: 0 },
-    { teamName: 'Grêmio', initialTop: 'calc(25% - 70px)', initialLeft: '70%', animationName: 'orbitPath2', animationDuration: '22s', size: '45px', animationDelay: '2s', opacity: 0.3, zIndex: 0 },
-
-    // Emblemas abaixo do .content (aproximado) - Ajustar 'top' conforme altura do .content
-    // Essas posições 'top' para baixo precisarão de ajuste fino visual ou cálculo dinâmico.
-    // Por ora, valores fixos para demonstração.
-    { teamName: 'Santos', initialTop: 'calc(75% + 50px)', initialLeft: '20%', animationName: 'orbitPath3', animationDuration: '24s', size: '38px', animationDelay: '1s', opacity: 0.3, zIndex: 0 },
-    { teamName: 'Mirassol', initialTop: 'calc(75% + 60px)', initialLeft: '80%', animationName: 'orbitPath4', animationDuration: '26s', size: '42px', animationDelay: '3s', opacity: 0.3, zIndex: 0 },
-
-    // Emblemas nas laterais (aproximado)
-    { teamName: 'Fluminense', initialTop: '50%', initialLeft: 'calc(15% - 50px)', animationName: 'orbitPathVertical1', animationDuration: '18s', size: '40px', animationDelay: '0.5s', opacity: 0.3, zIndex: 0 },
-    { teamName: 'Botafogo', initialTop: '60%', initialLeft: 'calc(85% + 50px)', animationName: 'orbitPathVertical2', animationDuration: '20s', size: '43px', animationDelay: '1.5s', opacity: 0.3, zIndex: 0 },
-  ];
-
-  @ViewChild('orbitingEmblemsHost', { static: false }) orbitingEmblemsHostRef!: ElementRef;
-  private createdOrbitingEmblems: HTMLElement[] = [];
+  // --- Propriedades da Roleta de Times ---
+  rouletteTeams: string[] = [];
+  currentRouletteDisplayTeamName: string = 'Clique em "Sortear"!';
+  currentRouletteDisplayEmblem: string = 'assets/img/logo_bdl_shield.png'; // Um escudo genérico ou logo
+  isSpinning: boolean = false;
+  private spinTimeout: any;
+  // --- Fim das Propriedades da Roleta ---
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private renderer: Renderer2,
-    private teamNameToFileName: TeamNameToFileNamePipe
+    private teamNamePipe: TeamNameToFileNamePipe, // Injetar o pipe
+    private cdr: ChangeDetectorRef // Injetar ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -77,62 +50,66 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         this.isAdmin = role === UserRole.ADMIN;
       })
     );
-  }
 
-  ngAfterViewInit(): void {
-    if (this.orbitingEmblemsHostRef) {
-      this.generateOrbitingEmblems();
+    // Inicializar times para a roleta
+    this.rouletteTeams = [...this.teamNamesForParade];
+    // Definir um emblema inicial visível se logo_bdl_shield.png não existir
+    if (this.rouletteTeams.length > 0 && this.currentRouletteDisplayEmblem === 'assets/img/logo_bdl_shield.png') {
+        // Opcional: usar o primeiro time da lista como placeholder se logo_bdl_shield não for ideal
+        // this.currentRouletteDisplayEmblem = `assets/emblemas/${this.teamNamePipe.transform(this.rouletteTeams[0])}`;
     }
   }
 
-  private generateOrbitingEmblems(): void {
-    if (!this.orbitingEmblemsHostRef || !this.orbitingEmblemsHostRef.nativeElement) {
+  // --- Métodos da Roleta de Times ---
+  startRoulette(): void {
+    if (this.isSpinning || this.rouletteTeams.length === 0) {
       return;
     }
 
-    this.createdOrbitingEmblems.forEach(emblem => {
-        if (emblem.parentNode) {
-            this.renderer.removeChild(emblem.parentNode, emblem);
+    this.isSpinning = true;
+    this.currentRouletteDisplayTeamName = 'Sorteando...';
+    clearTimeout(this.spinTimeout); // Limpar timeout anterior, se houver
+
+    let spinCount = 0;
+    const maxVisualSpins = 20 + Math.floor(Math.random() * 10); // Total de mudanças visuais, com alguma variação
+    const initialDelay = 50; // ms - velocidade inicial
+    const finalDelayMultiplier = 1.5; // Multiplicador para desacelerar
+
+    const spinEffect = () => {
+      spinCount++;
+      const randomIndex = Math.floor(Math.random() * this.rouletteTeams.length);
+      const randomTeamName = this.rouletteTeams[randomIndex];
+      this.currentRouletteDisplayEmblem = `assets/emblemas/${this.teamNamePipe.transform(randomTeamName)}`;
+      this.cdr.detectChanges(); // Forçar detecção de mudanças para atualizar a UI rapidamente
+
+      if (spinCount < maxVisualSpins) {
+        // Calcula o delay para o próximo passo, aumentando progressivamente
+        const progress = spinCount / maxVisualSpins;
+        let currentDelay = initialDelay;
+        if (progress > 0.6) { // Começa a desacelerar após 60% dos spins
+            currentDelay = initialDelay + (initialDelay * finalDelayMultiplier * ((progress - 0.6) / 0.4));
         }
-    });
-    this.createdOrbitingEmblems = [];
-
-    this.orbitingEmblemsConfig.forEach(config => {
-      const imgElement = this.renderer.createElement('img');
-      const fileName = this.teamNameToFileName.transform(config.teamName);
-
-      this.renderer.setAttribute(imgElement, 'src', `assets/emblemas/${fileName}`);
-      this.renderer.setAttribute(imgElement, 'alt', config.teamName);
-      this.renderer.addClass(imgElement, 'orbiting-emblem');
-
-      this.renderer.setStyle(imgElement, 'top', config.initialTop);
-      this.renderer.setStyle(imgElement, 'left', config.initialLeft);
-      this.renderer.setStyle(imgElement, 'width', config.size);
-      this.renderer.setStyle(imgElement, 'height', config.size);
-      this.renderer.setStyle(imgElement, 'opacity', (config.opacity || 0.3).toString());
-      this.renderer.setStyle(imgElement, 'animation-name', config.animationName);
-      this.renderer.setStyle(imgElement, 'animation-duration', config.animationDuration);
-      this.renderer.setStyle(imgElement, 'animation-delay', config.animationDelay || '0s');
-      if (config.zIndex !== undefined) {
-        this.renderer.setStyle(imgElement, 'z-index', config.zIndex.toString());
+        this.spinTimeout = setTimeout(spinEffect, currentDelay);
+      } else {
+        // Sorteio final
+        const finalTeamIndex = Math.floor(Math.random() * this.rouletteTeams.length);
+        const finalTeamName = this.rouletteTeams[finalTeamIndex];
+        this.currentRouletteDisplayEmblem = `assets/emblemas/${this.teamNamePipe.transform(finalTeamName)}`;
+        this.currentRouletteDisplayTeamName = finalTeamName;
+        this.isSpinning = false;
+        this.cdr.detectChanges();
       }
+    };
 
-
-      this.renderer.appendChild(this.orbitingEmblemsHostRef.nativeElement, imgElement);
-      this.createdOrbitingEmblems.push(imgElement);
-    });
+    spinEffect(); // Inicia o primeiro "giro"
   }
+  // --- Fim dos Métodos da Roleta ---
 
   ngOnDestroy(): void {
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
     }
-    this.createdOrbitingEmblems.forEach(emblem => {
-      if (emblem.parentNode) {
-        this.renderer.removeChild(emblem.parentNode, emblem);
-      }
-    });
-    this.createdOrbitingEmblems = [];
+    clearTimeout(this.spinTimeout); // Limpar timeout ao destruir componente
   }
 
   goToApostar(): void {

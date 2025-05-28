@@ -3,201 +3,23 @@
   /* Você pode adicionar estilos específicos para o container se necessário */
 }
 
-.home-page-wrapper {
-  position: relative;
-  /* Garante que o wrapper tenha alguma altura para que o posicionamento absoluto funcione,
-     ou use position:fixed para o orbiting-emblems-host. Se o conteúdo principal
-     já garante altura, isso pode não ser estritamente necessário. */
-  min-height: 100vh; /* Ou a altura que fizer sentido para seu layout */
-  overflow: hidden; /* Para conter os emblemas se eles se moverem para fora dos limites visíveis do wrapper */
-}
-
-.orbiting-emblems-host {
-  position: absolute; /* Posicionado em relação ao .home-page-wrapper */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none; /* Não interfere com cliques */
-  /* z-index: 0; /* Definido dinamicamente no TS se necessário, ou fixo aqui */
-  /* overflow: hidden;  Já está no home-page-wrapper */
-}
-
-/* Estilo para os emblemas que "orbitam" o conteúdo */
-:host ::ng-deep .orbiting-emblem {
-  position: absolute;
-  object-fit: contain;
-  /* A opacidade será definida via TS na configuração */
-  will-change: transform, opacity;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear; /* Movimento mais constante */
-  animation-direction: normal; /* Para um ciclo contínuo */
-}
-
-/* Novas animações para simular órbita ao redor do .content */
-/* Estas são trajetórias aproximadas e precisarão de ajuste fino */
-
-/* Movimento horizontal no topo e base, e vertical nas laterais */
-/* A ideia é que os emblemas apareçam, cruzem uma borda do .content e desapareçam */
-
-@keyframes orbitPath1 {
-  /* Topo, da esquerda para a direita, e um pouco para baixo */
-  0% {
-    transform: translate(-80px, 10vh) scale(0.8);
-    opacity: 0;
-  } /* Começa fora da tela à esquerda, acima */
-  10% {
-    opacity: 0.4;
-  }
-  40% {
-    transform: translate(50vw, 15vh) scale(1) rotate(10deg);
-    opacity: 0.5;
-  }
-  60% {
-    transform: translate(110vw, 20vh) scale(0.8) rotate(20deg);
-    opacity: 0.4;
-  } /* Sai pela direita */
-  100% {
-    transform: translate(120vw, 25vh) scale(0.7);
-    opacity: 0;
-  }
-}
-
-@keyframes orbitPath2 {
-  /* Direita, de cima para baixo, e um pouco para esquerda */
-  0% {
-    transform: translate(90vw, -5vh) scale(0.8);
-    opacity: 0;
-  } /* Começa fora, acima e à direita */
-  10% {
-    opacity: 0.4;
-  }
-  40% {
-    transform: translate(80vw, 50vh) scale(1) rotate(-15deg);
-    opacity: 0.5;
-  }
-  60% {
-    transform: translate(75vw, 110vh) scale(0.8) rotate(-25deg);
-    opacity: 0.4;
-  } /* Sai por baixo */
-  100% {
-    transform: translate(70vw, 120vh) scale(0.7);
-    opacity: 0;
-  }
-}
-
-@keyframes orbitPath3 {
-  /* Base, da direita para a esquerda, e um pouco para cima */
-  0% {
-    transform: translate(110vw, 80vh) scale(0.9);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.4;
-  }
-  40% {
-    transform: translate(50vw, 75vh) scale(1) rotate(5deg);
-    opacity: 0.5;
-  }
-  60% {
-    transform: translate(-20vw, 70vh) scale(0.9) rotate(15deg);
-    opacity: 0.4;
-  }
-  100% {
-    transform: translate(-30vw, 65vh) scale(0.8);
-    opacity: 0;
-  }
-}
-
-@keyframes orbitPath4 {
-  /* Esquerda, de baixo para cima, e um pouco para direita */
-  0% {
-    transform: translate(10vw, 110vh) scale(0.9);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.4;
-  }
-  40% {
-    transform: translate(15vw, 50vh) scale(1) rotate(-10deg);
-    opacity: 0.5;
-  }
-  60% {
-    transform: translate(20vw, -10vh) scale(0.9) rotate(-20deg);
-    opacity: 0.4;
-  }
-  100% {
-    transform: translate(25vw, -20vh) scale(0.8);
-    opacity: 0;
-  }
-}
-
-/* Animações para movimento mais vertical nas laterais */
-@keyframes orbitPathVertical1 {
-  /* Lateral Esquerda, sobe e desce */
-  0% {
-    transform: translate(5vw, 80vh) scale(0.85);
-    opacity: 0.1;
-  }
-  25% {
-    transform: translate(7vw, 40vh) scale(1) rotate(-5deg);
-    opacity: 0.4;
-  }
-  50% {
-    transform: translate(4vw, 10vh) scale(0.9);
-    opacity: 0.15;
-  }
-  75% {
-    transform: translate(6vw, 60vh) scale(1.05) rotate(5deg);
-    opacity: 0.35;
-  }
-  100% {
-    transform: translate(5vw, 80vh) scale(0.85);
-    opacity: 0.1;
-  }
-}
-
-@keyframes orbitPathVertical2 {
-  /* Lateral Direita, sobe e desce */
-  0% {
-    transform: translate(90vw, 20vh) scale(1);
-    opacity: 0.15;
-  }
-  25% {
-    transform: translate(88vw, 60vh) scale(0.9) rotate(8deg);
-    opacity: 0.4;
-  }
-  50% {
-    transform: translate(92vw, 90vh) scale(1.05);
-    opacity: 0.2;
-  }
-  75% {
-    transform: translate(89vw, 40vh) scale(0.95) rotate(-6deg);
-    opacity: 0.35;
-  }
-  100% {
-    transform: translate(90vw, 20vh) scale(1);
-    opacity: 0.15;
-  }
-}
-
 .content {
-  position: relative;
-  z-index: 10; /* Conteúdo principal bem acima dos emblemas orbitais e da parada */
   align-items: center;
-  background-color: #f8f9fa;
-  border-radius: 15px;
-  padding: 20px;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  background-color: #f8f9fa; /* Cor de fundo suave */
+  border-radius: 15px; /* Bordas arredondadas */
+  padding: 20px; /* Espaçamento interno */
+  max-width: 800px; /* Largura máxima do conteúdo */
+  margin-left: auto; /* Centralizar */
+  margin-right: auto; /* Centralizar */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  position: relative; /* Para z-index, se necessário, mas não crucial agora */
+  z-index: 1; /* Para garantir que esteja acima de qualquer elemento de fundo absoluto/fixo (se houver) */
 }
 
 .logo {
   width: 150px;
   height: 150px;
-  background-image: url("../../../assets/img/logo_bdl.png");
+  background-image: url('../../../assets/img/logo_bdl.png');
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
@@ -286,6 +108,7 @@
   animation-name: slideInLeft;
 }
 
+/* --- ESTILOS PARA A PARADA DOS EMBLEMAS --- */
 .emblem-parade-container {
   width: 100%;
   overflow: hidden;
@@ -295,12 +118,12 @@
   border-bottom: 1px solid #e0e0e0;
   margin-top: 2rem;
   margin-bottom: 2rem;
-  position: relative;
-  z-index: 5; /* Acima dos emblemas orbitais, abaixo do conteúdo principal */
+  position: relative; 
+  z-index: 1;
 }
 
 .emblem-parade-container h5 {
-  font-weight: 500;
+    font-weight: 500;
 }
 
 .emblem-parade-track {
@@ -333,6 +156,73 @@
   }
 }
 
+/* --- ESTILOS PARA A ROLETA DE TIMES --- */
+.team-roulette-section {
+  background-color: #f0f8ff; /* Um azul bem clarinho de fundo */
+  padding: 25px;
+  border-radius: 10px;
+  margin-top: 30px; /* Espaço acima */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.team-roulette-section h4 {
+  font-weight: 600;
+  color: #007bff; /* Azul para o título */
+}
+
+.roulette-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px; /* Altura para acomodar emblema e nome */
+}
+
+.emblem-slot-machine {
+  width: 100px; /* Largura da "janela" da roleta */
+  height: 100px; /* Altura da "janela" da roleta */
+  overflow: hidden; /* Esconde emblemas que não estão no "slot" */
+  border: 3px solid #ddd;
+  background-color: #fff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+}
+
+.roulette-emblem {
+  max-width: 80px; /* Tamanho máximo do emblema dentro do slot */
+  max-height: 80px;
+  object-fit: contain;
+  transition: transform 0.1s ease-out, opacity 0.1s ease-out; /* Transição suave para mudanças */
+}
+
+.roulette-emblem.spinning {
+  opacity: 0.7;
+  transform: scale(0.95); /* Leve encolhida enquanto gira */
+}
+
+.selected-team-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  min-height: 2rem; /* Para evitar pulo de layout */
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.selected-team-name.final-selection {
+  color: #28a745; /* Verde para a seleção final */
+  transform: scale(1.1); /* Destaca o nome final */
+}
+
+.team-roulette-section .btn-success {
+  padding: 10px 25px;
+  font-size: 1.1rem;
+}
+
+/* Responsividade */
 @media (max-width: 768px) {
   .emblem-in-parade {
     height: 30px;
@@ -352,20 +242,18 @@
     }
   }
 
-  :host ::ng-deep .orbiting-emblem {
-    /* Os tamanhos e opacidades já são configuráveis via TS,
-       mas pode-se adicionar overrides aqui se necessário para mobile */
+  .team-roulette-section {
+    padding: 15px;
   }
-}
-
-@media (max-width: 480px) {
-  /* Ajustes para telas muito pequenas, se necessário */
-  :host ::ng-deep .orbiting-emblem {
-    /* Exemplo: esconder alguns emblemas ou reduzir ainda mais */
-    /* display: none; */ /* Descomente para esconder todos em telas pequenas */
+  .emblem-slot-machine {
+    width: 80px;
+    height: 80px;
   }
-  :host ::ng-deep .orbiting-emblem:nth-child(n + 4) {
-    /* Mostra apenas os 3 primeiros, por exemplo */
-    /* display: none; */
+  .roulette-emblem {
+    max-width: 60px;
+    max-height: 60px;
+  }
+  .selected-team-name {
+    font-size: 1rem;
   }
 }
