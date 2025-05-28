@@ -1,5 +1,6 @@
+/* minigame-time-sonhos.component.css */
 .minigame-container {
-  max-width: 900px; /* Maior para acomodar campo e lista */
+  max-width: 1000px; 
   margin: 20px auto;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -9,11 +10,26 @@
   color: #0dcaf0; /* Azul Ciano */
 }
 
+.main-layout {
+  /* Mantém o layout flexível */
+}
+
+.available-teams-column {
+  min-width: 180px; 
+}
+
+.field-and-coach-column {
+  /* Ocupa o espaço restante */
+}
+
 .available-teams-list {
-  min-height: 300px;
-  max-height: 60vh; /* Altura máxima para a lista, com scroll se necessário */
+  min-height: 200px; /* Altura mínima para ainda parecer uma lista */
+  max-height: 70vh; /* Altura máxima padrão para telas maiores */
   overflow-y: auto;
-  background-color: #f8f9fa; /* Fundo levemente diferente */
+  background-color: #f8f9fa;
+  -webkit-overflow-scrolling: touch; /* Para scroll mais suave em iOS */
+  border-radius: 8px; /* Bordas arredondadas para a lista */
+  padding: 8px; /* Pequeno padding interno */
 }
 
 .available-team-item {
@@ -21,6 +37,11 @@
   user-select: none;
   font-size: 0.9rem;
   background-color: #ffffff;
+  display: flex; /* Já estava, mas garantindo */
+  align-items: center; /* Já estava, mas garantindo */
+  /* justify-content: center; Removido para permitir nome à esquerda */
+  padding: 6px 8px; /* Padding ajustado */
+  margin-bottom: 6px !important; /* Espaçamento entre itens */
 }
 .available-team-item:active {
   cursor: grabbing;
@@ -29,55 +50,81 @@
   width: 25px;
   height: 25px;
   object-fit: contain;
+  margin-right: 8px; /* Espaço entre emblema e nome */
 }
 .team-name-available {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex-grow: 1; /* Permite que o nome ocupe o espaço */
+  text-align: left; /* Alinha o nome à esquerda */
 }
 
+.dream-team-field-wrapper {
+  display: flex; 
+  flex-direction: row;
+  align-items: flex-start; 
+}
 
 .dream-team-field {
-  background-image: url('/assets/img/campo_futebol_transparente.png'); /* Imagem de fundo do campo */
+  background-image: url('/assets/img/campo_futebol_transparente.png');
   background-size: contain;
-  background-position: center;
+  background-position: center center;
   background-repeat: no-repeat;
-  min-height: 500px; /* Altura mínima para o campo */
-  position: relative; /* Para posicionamento absoluto de .field-row se necessário */
+  min-height: 520px; 
+  position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-around; /* Distribui as linhas de posições */
+  justify-content: space-around;
   border: 1px solid #ccc;
-  background-color: #e6f2e6; /* Verde claro para o campo */
+  background-color: #d4edda; 
+  flex-grow: 1; 
+  padding: 10px;
 }
 
 .field-row {
   display: flex;
-  justify-content: space-around; /* Espaça as posições na linha */
-  margin-bottom: 10px; /* Espaço entre as linhas de posições */
+  justify-content: space-around;
+  align-items: center; 
   width: 100%;
+  margin-bottom: 8px; 
+}
+.gk-row { margin-top: 5px; margin-bottom: 15px; }
+.defense-row { margin-bottom: 15px; }
+.midfield-row { margin-bottom: 15px; }
+.attack-row { margin-bottom: 10px; }
+
+
+.field-position-wrapper { 
+  width: 90px; 
+  height: 90px;
+  border: 1px dashed #6c757d; 
+  border-radius: 6px;
+  display: flex; 
+  align-items: center;
+  justify-content: center;
+  margin: 2px;
+  background-color: rgba(255, 255, 255, 0.75);
+  box-sizing: border-box;
+  position: relative; 
 }
 
-.field-position {
-  width: 100px; /* Largura da posição */
-  height: 110px; /* Altura da posição */
-  border: 2px dashed #8fbc8f; /* Verde escuro para a borda da posição */
-  border-radius: 8px;
+.field-position-inner { 
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  background-color: rgba(255, 255, 255, 0.6); /* Fundo semi-transparente para as posições */
-  margin: 5px;
-  position: relative; /* Para o botão de limpar */
-  overflow: hidden; /* Para nomes longos */
 }
 
+
 .position-placeholder-text {
-    font-size: 0.75rem;
-    color: #555;
-    font-weight: bold;
+  font-size: 0.65rem;
+  color: #5a6268;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 .team-on-field {
@@ -88,56 +135,86 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 5px;
+  padding: 3px;
   box-sizing: border-box;
+  background-color: #fff; 
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 .team-on-field:active {
     cursor: grabbing;
 }
 
 .team-on-field img {
-  width: 50px; /* Tamanho do emblema no campo */
-  height: 50px;
+  width: 38px; 
+  height: 38px;
   object-fit: contain;
-  margin-bottom: 5px;
+  margin-bottom: 3px;
 }
 
 .team-name-on-field {
   font-weight: 500;
   color: #333;
-  font-size: 0.75rem;
+  font-size: 0.6rem; 
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 90%; /* Para evitar quebra de texto muito grande */
+  width: 90%;
+  line-height: 1.1;
 }
 
 .clear-pos-btn {
   position: absolute;
-  top: 0px;
-  right: 0px;
-  padding: 0px 4px;
+  top: -5px;  
+  right: -5px; 
+  width: 20px; 
+  height: 20px;
+  padding: 0;
   font-size: 0.8rem;
   line-height: 1;
   border-radius: 50%;
-  opacity: 0.5;
+  opacity: 0.3; /* Mais sutil por padrão */
   transition: opacity 0.2s;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 0, 0, 0.7); /* Fundo vermelho semi-transparente */
+  color: white;
+  border: none;
 }
 .team-on-field:hover .clear-pos-btn {
   opacity: 1;
+  background-color: rgba(220, 53, 69, 0.9); /* Vermelho mais forte no hover */
 }
+
 
 .field-drag-handle {
   position: absolute;
-  bottom: 2px;
+  bottom: 1px;
   left: 50%;
   transform: translateX(-50%);
   cursor: grab;
   color: #adb5bd;
-  opacity: 0.3;
+  opacity: 0.1; 
+  font-size: 0.7rem;
 }
 .team-on-field:hover .field-drag-handle {
-  opacity: 0.7;
+  opacity: 0.5;
+}
+
+.coach-area {
+  margin-left: 15px; 
+  padding-top: 20px; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px; 
+}
+.coach-area .field-position-wrapper { 
+    width: 100px;
+    height: 100px;
+    margin-top: 5px; 
 }
 
 
@@ -148,16 +225,24 @@
 
 .cdk-drag-placeholder {
   opacity: 0.4;
-  background: #c8e6c9; /* Verde mais claro para o placeholder */
+  background: #c8e6c9;
   border: 2px dashed #77a079;
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-  border-radius: 8px;
-  /* Mantém o tamanho da posição */
-  width: 100px;
-  height: 110px;
-  margin: 5px; /* Para alinhar com as posições reais */
+  border-radius: 6px;
   box-sizing: border-box;
 }
+.available-teams-list .cdk-drag-placeholder { 
+    height: 45px; /* Aproximadamente a altura de um .available-team-item */
+    margin-bottom: 6px !important; /* Consistente com o item */
+    background: #e9ecef; /* Cinza claro para placeholder na lista */
+    border-style: dashed;
+    border-color: #adb5bd;
+}
+.field-position-wrapper .cdk-drag-placeholder { 
+    width: 100%; 
+    height: 100%;
+}
+
 
 .cdk-drag-animating {
   transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
@@ -167,50 +252,98 @@
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-/* Para a captura com html2canvas */
-.dream-team-field.capturing-dream-team .clear-pos-btn,
-.dream-team-field.capturing-dream-team .field-drag-handle {
-  display: none !important; /* Esconde botões e handles na captura */
+.dream-team-field-wrapper.capturing-dream-team .clear-pos-btn,
+.dream-team-field-wrapper.capturing-dream-team .field-drag-handle {
+  display: none !important;
 }
 
-
-@media (max-width: 768px) {
-  .dream-team-field {
-    min-height: 400px; /* Altura menor para mobile */
-    background-size: cover; /* Pode ser melhor em telas menores */
+/* ================= MEDIA QUERIES PARA MOBILE ================= */
+@media (max-width: 991px) { /* Breakpoint lg para baixo, onde a lista de times vai para baixo */
+  .dream-team-field-wrapper {
+    flex-direction: column; 
+    align-items: center; 
   }
-  .field-position {
-    width: 80px;
-    height: 90px;
+  .coach-area {
+    margin-left: 0;
+    margin-top: 20px; 
+    width: 100%; 
   }
-  .team-on-field img {
-    width: 40px;
-    height: 40px;
+  .available-teams-column {
+    order: 2; /* Garante que a lista de disponíveis fique abaixo */
+    width: 100%; /* Ocupa largura total */
+    margin-top: 20px;
   }
-  .team-name-on-field {
-    font-size: 0.7rem;
+  .field-and-coach-column {
+    order: 1;
+    width: 100%; /* Ocupa largura total */
   }
   .available-teams-list {
-      max-height: 40vh; /* Reduz a altura da lista de disponíveis */
+      max-height: 40vh; /* Reduz altura em telas de tablet/menores */
+      min-height: 150px;
   }
 }
-@media (max-width: 576px) {
+
+@media (max-width: 768px) { /* Telas de tablet e menores */
+  .dream-team-field {
+    min-height: auto; /* Altura se ajusta ao conteúdo */
+    padding: 5px;
+    background-size: cover; /* Pode ser melhor em telas menores */
+  }
+  .field-position-wrapper {
+    width: 75px; 
+    height: 80px; /* Altura um pouco menor */
+    margin: 2px;
+  }
+  .team-on-field img {
+    width: 30px;
+    height: 30px;
+  }
+  .team-name-on-field {
+    font-size: 0.55rem;
+  }
+   .coach-area .field-position-wrapper {
+    width: 80px;
+    height: 80px;
+  }
+  .available-teams-list {
+      max-height: 35vh; /* Ainda menor para mobile */
+  }
+  .available-team-item {
+    padding: 4px 6px;
+    margin-bottom: 4px !important;
+  }
+  .available-emblem {
+    width: 20px;
+    height: 20px;
+  }
+  .team-name-available {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) { /* Telas de celular bem pequenas */
     .field-row {
-        flex-wrap: wrap; /* Permite que as posições quebrem linha se necessário */
+        /* Pode precisar de flex-wrap: wrap; se as posições não couberem */
     }
-    .field-position {
-        width: 70px;
-        height: 80px;
-        margin: 3px;
+    .field-position-wrapper {
+        width: 60px; /* Ainda menor */
+        height: 70px;
+        margin: 1px;
     }
     .team-on-field img {
-        width: 30px;
-        height: 30px;
+        width: 25px;
+        height: 25px;
     }
     .team-name-on-field {
-        font-size: 0.65rem;
+        font-size: 0.5rem;
     }
-     .actions-bar {
+    .actions-bar { /* Já estava no seu CSS original */
         flex-direction: column;
+    }
+    .available-teams-list {
+      max-height: 30vh; /* Menor altura para a lista de times */
+    }
+    .minigame-container h3 {
+      font-size: 1.5rem; /* Título menor */
     }
 }
