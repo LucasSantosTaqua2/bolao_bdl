@@ -72,7 +72,7 @@
             onError="this.src='assets/img/logo_bdl_shield.png'; this.alt='Escudo Indisponível'"
             >
         </div>
-        <div class="selected-team-name mt-3" [class.final-selection]="!isSpinning && currentRouletteDisplayTeamName !== 'Clique em \"Sortear!\"' && currentRouletteDisplayTeamName !== 'Sorteando...'">
+        <div class="selected-team-name mt-3" [class.final-selection]="isFinalSelection">
           {{ currentRouletteDisplayTeamName }}
         </div>
       </div>

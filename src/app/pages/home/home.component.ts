@@ -1,5 +1,5 @@
 // src/app/pages/home/home.component.ts
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core'; // Adicionado ChangeDetectorRef
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -12,7 +12,7 @@ import { TeamNameToFileNamePipe } from '../../utils/team-name-to-file-name.pipe'
   imports: [CommonModule, RouterLink, TeamNameToFileNamePipe],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-  providers: [TeamNameToFileNamePipe] // Adicionar o pipe aos providers para injeção
+  providers: [TeamNameToFileNamePipe]
 })
 export class HomeComponent implements OnInit, OnDestroy {
   username: string | null = null;
@@ -27,17 +27,24 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // --- Propriedades da Roleta de Times ---
   rouletteTeams: string[] = [];
-  currentRouletteDisplayTeamName: string = 'Clique em "Sortear"!';
-  currentRouletteDisplayEmblem: string = 'assets/img/logo_bdl_shield.png'; // Um escudo genérico ou logo
+  currentRouletteDisplayTeamName: string = 'Clique em "Sortear!"'; // Mantém as aspas duplas aqui
+  currentRouletteDisplayEmblem: string = 'assets/img/logo_bdl_shield.png';
   isSpinning: boolean = false;
   private spinTimeout: any;
   // --- Fim das Propriedades da Roleta ---
 
+  // Nova propriedade getter para a classe
+  public get isFinalSelection(): boolean {
+    return !this.isSpinning &&
+           this.currentRouletteDisplayTeamName !== 'Clique em "Sortear!"' &&
+           this.currentRouletteDisplayTeamName !== 'Sorteando...';
+  }
+
   constructor(
     private authService: AuthService,
     private router: Router,
-    private teamNamePipe: TeamNameToFileNamePipe, // Injetar o pipe
-    private cdr: ChangeDetectorRef // Injetar ChangeDetectorRef
+    private teamNamePipe: TeamNameToFileNamePipe,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -50,17 +57,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.isAdmin = role === UserRole.ADMIN;
       })
     );
-
-    // Inicializar times para a roleta
     this.rouletteTeams = [...this.teamNamesForParade];
-    // Definir um emblema inicial visível se logo_bdl_shield.png não existir
-    if (this.rouletteTeams.length > 0 && this.currentRouletteDisplayEmblem === 'assets/img/logo_bdl_shield.png') {
-        // Opcional: usar o primeiro time da lista como placeholder se logo_bdl_shield não for ideal
-        // this.currentRouletteDisplayEmblem = `assets/emblemas/${this.teamNamePipe.transform(this.rouletteTeams[0])}`;
-    }
   }
 
-  // --- Métodos da Roleta de Times ---
   startRoulette(): void {
     if (this.isSpinning || this.rouletteTeams.length === 0) {
       return;
@@ -68,48 +67,45 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.isSpinning = true;
     this.currentRouletteDisplayTeamName = 'Sorteando...';
-    clearTimeout(this.spinTimeout); // Limpar timeout anterior, se houver
+    clearTimeout(this.spinTimeout);
 
     let spinCount = 0;
-    const maxVisualSpins = 20 + Math.floor(Math.random() * 10); // Total de mudanças visuais, com alguma variação
-    const initialDelay = 50; // ms - velocidade inicial
-    const finalDelayMultiplier = 1.5; // Multiplicador para desacelerar
+    const maxVisualSpins = 20 + Math.floor(Math.random() * 10);
+    const initialDelay = 50;
+    const finalDelayMultiplier = 1.5;
 
     const spinEffect = () => {
       spinCount++;
       const randomIndex = Math.floor(Math.random() * this.rouletteTeams.length);
       const randomTeamName = this.rouletteTeams[randomIndex];
       this.currentRouletteDisplayEmblem = `assets/emblemas/${this.teamNamePipe.transform(randomTeamName)}`;
-      this.cdr.detectChanges(); // Forçar detecção de mudanças para atualizar a UI rapidamente
+      // Não precisamos mais forçar a detecção de mudanças para o nome aqui se ele só muda no final
+      this.cdr.detectChanges(); // Para o emblema
 
       if (spinCount < maxVisualSpins) {
-        // Calcula o delay para o próximo passo, aumentando progressivamente
         const progress = spinCount / maxVisualSpins;
         let currentDelay = initialDelay;
-        if (progress > 0.6) { // Começa a desacelerar após 60% dos spins
+        if (progress > 0.6) {
             currentDelay = initialDelay + (initialDelay * finalDelayMultiplier * ((progress - 0.6) / 0.4));
         }
         this.spinTimeout = setTimeout(spinEffect, currentDelay);
       } else {
-        // Sorteio final
         const finalTeamIndex = Math.floor(Math.random() * this.rouletteTeams.length);
         const finalTeamName = this.rouletteTeams[finalTeamIndex];
         this.currentRouletteDisplayEmblem = `assets/emblemas/${this.teamNamePipe.transform(finalTeamName)}`;
-        this.currentRouletteDisplayTeamName = finalTeamName;
+        this.currentRouletteDisplayTeamName = finalTeamName; // Define o nome final
         this.isSpinning = false;
-        this.cdr.detectChanges();
+        this.cdr.detectChanges(); // Para atualizar nome e emblema finais
       }
     };
-
-    spinEffect(); // Inicia o primeiro "giro"
+    spinEffect();
   }
-  // --- Fim dos Métodos da Roleta ---
 
   ngOnDestroy(): void {
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
     }
-    clearTimeout(this.spinTimeout); // Limpar timeout ao destruir componente
+    clearTimeout(this.spinTimeout);
   }
 
   goToApostar(): void {
