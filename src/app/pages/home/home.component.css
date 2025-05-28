@@ -3,7 +3,71 @@
   /* Você pode adicionar estilos específicos para o container se necessário */
 }
 
+/* Wrapper principal para a página, para o contexto de posicionamento dos emblemas flutuantes */
+.home-page-wrapper {
+  position: relative;
+  /* overflow: hidden; Descomente se os emblemas estiverem causando scroll indesejado */
+  /* min-height: 100vh;  Pode não ser necessário dependendo do seu layout geral */
+}
+
+/* Contêiner que hospedará os emblemas flutuantes */
+.floating-emblems-host {
+  position: fixed; /* Ou 'absolute' se .home-page-wrapper tiver altura definida e overflow:hidden */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Para não interferir com cliques no conteúdo abaixo */
+  z-index: 0; /* Mantém no fundo */
+  overflow: hidden; /* Garante que os emblemas não causem scroll no body */
+}
+
+/* Estilo base para os emblemas flutuantes criados dinamicamente */
+/* Usamos :host ::ng-deep para garantir que os estilos se apliquem aos elementos criados pelo Renderer2.
+   Em versões mais recentes do Angular, pode-se tentar sem ::ng-deep se os estilos forem globais
+   ou se o ViewEncapsulation do componente for None (não recomendado geralmente).
+   Uma forma mais moderna é adicionar uma classe global no styles.css e usá-la.
+   Por simplicidade aqui, mantemos o ::ng-deep, mas esteja ciente das implicações. */
+:host ::ng-deep .floating-emblem {
+  position: absolute;
+  object-fit: contain;
+  /* opacity: 0.25;  Controlado via TS agora */
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease-in-out;
+  will-change: transform, opacity; /* Otimização para animações */
+}
+
+
+/* Animações para os emblemas flutuantes */
+@keyframes floatAround1 {
+  0% { transform: translate(0px, 0px) rotate(-5deg) scale(0.95); opacity: 0.15; }
+  25% { transform: translate(2vw, -3vh) rotate(0deg) scale(1); opacity: 0.3; }
+  50% { transform: translate(-1vw, 4vh) rotate(5deg) scale(0.9); opacity: 0.2;}
+  75% { transform: translate(1.5vw, -2vh) rotate(-3deg) scale(1.05); opacity: 0.28; }
+  100% { transform: translate(0px, 0px) rotate(-5deg) scale(0.95); opacity: 0.15; }
+}
+
+@keyframes floatAround2 {
+  0% { transform: translate(0px, 0px) scale(1) rotate(3deg); opacity: 0.2; }
+  25% { transform: translate(-2.5vw, 3.5vh) scale(1.05) rotate(0deg); opacity: 0.28; }
+  50% { transform: translate(1.5vw, -2.5vh) scale(0.95) rotate(-4deg); opacity: 0.18; }
+  75% { transform: translate(-1vw, 1vh) scale(1) rotate(2deg); opacity: 0.3; }
+  100% { transform: translate(0px, 0px) scale(1) rotate(3deg); opacity: 0.2; }
+}
+
+@keyframes floatAround3 {
+  0% { transform: translateY(0px) translateX(0px) rotate(0deg) scale(0.9); opacity: 0.18; }
+  25% { transform: translateY(-3vh) translateX(1.5vw) rotate(6deg) scale(1); opacity: 0.25; }
+  50% { transform: translateY(2vh) translateX(-2vw) rotate(0deg) scale(1.05); opacity: 0.3; }
+  75% { transform: translateY(-1vh) translateX(2.5vw) rotate(-7deg) scale(0.92); opacity: 0.2;}
+  100% { transform: translateY(0px) translateX(0px) rotate(0deg) scale(0.9); opacity: 0.18; }
+}
+
+
 .content {
+  position: relative; /* Para garantir que o z-index funcione */
+  z-index: 1;      /* Conteúdo principal acima dos emblemas flutuantes */
   align-items: center;
   background-color: #f8f9fa; /* Cor de fundo suave */
   border-radius: 15px; /* Bordas arredondadas */
@@ -25,8 +89,6 @@
   display: block; /* Para aplicar margens automáticas */
   margin-left: auto;
   margin-right: auto;
-
-  /* Animação de Pulsar (logo) */
   animation: pulse 2s infinite alternate;
 }
 
@@ -39,7 +101,6 @@
   }
 }
 
-/* Estilo para o título principal (h1) */
 .welcome-title {
   color: #212529; /* Cor preta padrão do Bootstrap */
   font-weight: bold;
@@ -48,32 +109,27 @@
   margin-bottom: 1rem; /* Espaçamento abaixo do título */
 }
 
-/* Estilo para o nome de usuário dentro do título */
 .username-highlight {
   color: #212529; /* Mantém preto ou pode usar uma cor de destaque da sua paleta */
   font-weight: bold;
   font-size: 1.1em; /* Levemente maior que o texto ao redor */
 }
 
-/* Estilo para destacar as regras */
 .rule-highlight {
   font-weight: bold;
   color: #495057; /* Cor para destaque das regras */
 }
 
-/* Estilo para o prazo limite */
 .rule-deadline {
   color: #dc3545; /* Vermelho Bootstrap para prazos */
   font-weight: bold;
 }
 
-/* Animações Globais */
 .animated {
   animation-duration: 1s;
   animation-fill-mode: both;
 }
 
-/* Animação de aparecer e escalar (reutilizada para o título) */
 @keyframes fadeInScale {
   0% {
     opacity: 0;
@@ -85,7 +141,6 @@
   }
 }
 
-/* Animação de Fade In (para o card de Como Funciona) */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -100,7 +155,6 @@
   animation-delay: 0.2s; /* Pequeno atraso para o card aparecer depois do título */
 }
 
-/* Animação de Slide In Left (para os botões) */
 @keyframes slideInLeft {
   from {
     transform: translateX(-80px); /* Começa um pouco mais para a esquerda */
@@ -121,11 +175,13 @@
   width: 100%;
   overflow: hidden; /* Essencial para o efeito de scroll */
   padding: 15px 0;
-  background-color: rgba(255, 255, 255, 0.1); /* Um fundo sutil se o body não tiver cor sólida */
+  background-color: rgba(233, 236, 239, 0.7); /* Um fundo sutil para a faixa da parada */
   border-top: 1px solid #e0e0e0;
   border-bottom: 1px solid #e0e0e0;
   margin-top: 2rem;
   margin-bottom: 2rem;
+  position: relative; /* Garante que fique acima dos emblemas flutuantes (se z-index:0) mas abaixo de modais etc. */
+  z-index: 1;
 }
 
 .emblem-parade-container h5 {
@@ -134,10 +190,8 @@
 
 .emblem-parade-track {
   display: flex; /* Coloca os emblemas em linha */
-  /* A largura será calculada pelo número de emblemas * (largura + margem) */
-  /* Para 15 emblemas + 15 duplicados = 30 * (40px + 20px) = 1800px */
   width: calc(15 * 2 * (40px + 30px)); /* (Número de times * 2) * (largura emblema + margem direita) */
-  animation: scrollEmblems 45s linear infinite; /* Duração baseada no número de emblemas */
+  animation: scrollEmblems 60s linear infinite; /* Duração da animação ajustada */
 }
 
 .emblem-in-parade {
@@ -160,12 +214,11 @@
     transform: translateX(0);
   }
   100% {
-    /* Metade da largura total da track, pois duplicamos os emblemas */
     transform: translateX(calc(-15 * (40px + 30px))); /* -(Número de times) * (largura emblema + margem direita) */
   }
 }
 
-/* Responsividade para a parada de emblemas */
+/* Responsividade */
 @media (max-width: 768px) {
   .emblem-in-parade {
     height: 30px;
@@ -173,9 +226,8 @@
     margin-right: 20px;
   }
   .emblem-parade-track {
-    /* Recalcula a largura baseada no novo tamanho/margem */
     width: calc(15 * 2 * (30px + 20px));
-    animation-duration: 40s; /* Pode ajustar a velocidade para mobile */
+    animation-duration: 50s; 
   }
   @keyframes scrollEmblems {
     0% {
@@ -185,4 +237,25 @@
       transform: translateX(calc(-15 * (30px + 20px)));
     }
   }
+
+  :host ::ng-deep .floating-emblem {
+    /* Ajustar tamanho e opacidade para telas menores se necessário */
+    width: 35px !important; /* Exemplo de ajuste de tamanho */
+    height: 35px !important;
+    opacity: 0.2 !important; /* Exemplo de ajuste de opacidade */
+  }
+
+  .floating-emblems-host {
+     /* Em mobile, pode ser melhor desativar ou simplificar muito os flutuantes se sobrecarregarem */
+  }
+}
+
+@media (max-width: 480px) {
+  :host ::ng-deep .floating-emblem {
+    width: 30px !important;
+    height: 30px !important;
+    opacity: 0.15 !important;
+  }
+  /* Configuração para menos emblemas flutuantes em telas muito pequenas, se necessário */
+  /* Ex: .floating-emblems-host > :nth-child(n+5) { display: none; } */
 }
