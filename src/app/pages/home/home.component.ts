@@ -32,7 +32,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   teamNamesForParade: string[] = [
     'Flamengo', 'Palmeiras', 'Atlético-MG', 'Corinthians', 'São Paulo',
     'Grêmio', 'Internacional', 'Fluminense', 'Santos', 'Botafogo',
-    'Cruzeiro', 'Vasco', 'Athletico-PR', 'Bahia', 'EC Vitória'
+    'Cruzeiro', 'Vasco', 'Mirassol', 'Bahia', 'EC Vitória'
   ];
 
   // Configuração para os emblemas flutuantes
