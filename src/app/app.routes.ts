@@ -51,37 +51,37 @@ export const routes: Routes = [
   {
     path: 'minigames',
     component: MinigameComponent,
-    // canActivate: [authGuard] // <--- Protegido pelo AuthGuard
+    canActivate: [authGuard]
   },
   {
     path: 'minigames/acerte-o-escudo',
     component: MinigameAcerteEscudoComponent,
-    // canActivate: [authGuard] // <--- Protegido pelo AuthGuard
+    canActivate: [authGuard]
   },
   {
     path: 'minigames/memoria',
     component: MinigameMemoriaComponent,
-    // canActivate: [authGuard] // <--- Protegido pelo AuthGuard
+    canActivate: [authGuard]
   },
   {
     path: 'minigames/adivinhe-time',
     component: MinigameAdivinheTimeComponent,
-    // canActivate: [authGuard] // <--- Protegido pelo AuthGuard
+    canActivate: [authGuard]
   },
   {
     path: 'minigames/monte-ranking',
     component: MinigameMonteRankingComponent,
-    // canActivate: [authGuard] // <--- Protegido pelo AuthGuard
+    canActivate: [authGuard]
   },
   {
     path: 'minigames/caca-emblemas',
     component: MinigameCacaEmblemasComponent,
-    // canActivate: [authGuard] // <--- Protegido pelo AuthGuard
+    canActivate: [authGuard]
   },
   {
     path: 'minigames/time-sonhos',
     component: MinigameTimeSonhosComponent,
-    // canActivate: [authGuard] // <--- Protegido pelo AuthGuard
+    canActivate: [authGuard]
   },
   {
     path: 'profile', // <--- Nova rota para o perfil
