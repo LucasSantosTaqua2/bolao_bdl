@@ -114,5 +114,75 @@
 
 .slideInLeft {
   animation-name: slideInLeft;
-  /* visibility: visible !important;  Não é estritamente necessário com opacity */
+}
+
+/* --- ESTILOS PARA A PARADA DOS EMBLEMAS --- */
+.emblem-parade-container {
+  width: 100%;
+  overflow: hidden; /* Essencial para o efeito de scroll */
+  padding: 15px 0;
+  background-color: rgba(255, 255, 255, 0.1); /* Um fundo sutil se o body não tiver cor sólida */
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.emblem-parade-container h5 {
+    font-weight: 500;
+}
+
+.emblem-parade-track {
+  display: flex; /* Coloca os emblemas em linha */
+  /* A largura será calculada pelo número de emblemas * (largura + margem) */
+  /* Para 15 emblemas + 15 duplicados = 30 * (40px + 20px) = 1800px */
+  width: calc(15 * 2 * (40px + 30px)); /* (Número de times * 2) * (largura emblema + margem direita) */
+  animation: scrollEmblems 45s linear infinite; /* Duração baseada no número de emblemas */
+}
+
+.emblem-in-parade {
+  height: 40px; /* Tamanho do emblema */
+  width: 40px;
+  object-fit: contain;
+  margin-right: 30px; /* Espaço entre os emblemas */
+  flex-shrink: 0; /* Evita que os emblemas encolham */
+  filter: grayscale(30%); /* Efeito sutil para não sobrecarregar */
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.emblem-in-parade:hover {
+  filter: grayscale(0%);
+  transform: scale(1.1);
+}
+
+@keyframes scrollEmblems {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    /* Metade da largura total da track, pois duplicamos os emblemas */
+    transform: translateX(calc(-15 * (40px + 30px))); /* -(Número de times) * (largura emblema + margem direita) */
+  }
+}
+
+/* Responsividade para a parada de emblemas */
+@media (max-width: 768px) {
+  .emblem-in-parade {
+    height: 30px;
+    width: 30px;
+    margin-right: 20px;
+  }
+  .emblem-parade-track {
+    /* Recalcula a largura baseada no novo tamanho/margem */
+    width: calc(15 * 2 * (30px + 20px));
+    animation-duration: 40s; /* Pode ajustar a velocidade para mobile */
+  }
+  @keyframes scrollEmblems {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(calc(-15 * (30px + 20px)));
+    }
+  }
 }
