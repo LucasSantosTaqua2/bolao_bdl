@@ -1,5 +1,5 @@
 // src/app/pages/home/home.component.ts
-import { Component, OnInit, OnDestroy, AfterViewInit, Renderer2, ElementRef, ViewChild, HostListener } from '@angular/core'; // Adicionado AfterViewInit, Renderer2, ElementRef, ViewChild, HostListener
+import { Component, OnInit, OnDestroy, AfterViewInit, Renderer2, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -8,12 +8,14 @@ import { TeamNameToFileNamePipe } from '../../utils/team-name-to-file-name.pipe'
 
 interface FloatingEmblemConfig {
   teamName: string;
-  initialTop: string; // ex: '10%'
-  initialLeft: string; // ex: '5%'
-  animationName: string; // Nome da animação CSS
-  animationDuration: string; // ex: '15s'
-  animationDelay?: string; // ex: '2s'
-  size: string; // ex: '50px'
+  initialTop: string; // Ex: '10%', 'calc(50% - 25px)'
+  initialLeft: string; // Ex: '5%', 'calc(100% - 55px)'
+  animationName: string;
+  animationDuration: string;
+  animationDelay?: string;
+  size: string; // Ex: '50px'
+  opacity?: number;
+  zIndex?: number;
 }
 
 @Component({
@@ -22,7 +24,7 @@ interface FloatingEmblemConfig {
   imports: [CommonModule, RouterLink, TeamNameToFileNamePipe],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
-  providers: [TeamNameToFileNamePipe] // Adicionar o pipe aos providers se for usá-lo programaticamente
+  providers: [TeamNameToFileNamePipe]
 })
 export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   username: string | null = null;
@@ -35,32 +37,34 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     'Cruzeiro', 'Vasco', 'Mirassol', 'Bahia', 'EC Vitória'
   ];
 
-  // Configuração para os emblemas flutuantes
-  floatingEmblems: FloatingEmblemConfig[] = [
-    { teamName: 'Flamengo', initialTop: '15%', initialLeft: '8%', animationName: 'floatSimple1', animationDuration: '20s', size: '45px', animationDelay: '0s' },
-    { teamName: 'Palmeiras', initialTop: '30%', initialLeft: '90%', animationName: 'floatSimple2', animationDuration: '25s', size: '50px', animationDelay: '3s' },
-    { teamName: 'Corinthians', initialTop: '65%', initialLeft: '12%', animationName: 'floatSimple3', animationDuration: '18s', size: '40px', animationDelay: '1s' },
-    { teamName: 'São Paulo', initialTop: '80%', initialLeft: '85%', animationName: 'floatSimple1', animationDuration: '22s', size: '55px', animationDelay: '2.5s' },
-    { teamName: 'Internacional', initialTop: '5%', initialLeft: '50%', animationName: 'floatSimple2', animationDuration: '28s', size: '48px', animationDelay: '1.5s' },
-    { teamName: 'Vasco', initialTop: '90%', initialLeft: '40%', animationName: 'floatSimple3', animationDuration: '20s', size: '42px', animationDelay: '4s' }
+  // Configuração para os emblemas flutuantes/orbitais
+  // As posições são relativas ao '.home-page-wrapper'
+  // Ajuste 'initialTop' e 'initialLeft' para posicionar "ao redor" do .content
+  // Idealmente, isso seria mais dinâmico com base nas dimensões do .content
+  orbitingEmblemsConfig: FloatingEmblemConfig[] = [
+    // Emblemas acima do .content (aproximado)
+    { teamName: 'Internacional', initialTop: 'calc(25% - 60px)', initialLeft: '30%', animationName: 'orbitPath1', animationDuration: '20s', size: '40px', animationDelay: '0s', opacity: 0.3, zIndex: 0 },
+    { teamName: 'Grêmio', initialTop: 'calc(25% - 70px)', initialLeft: '70%', animationName: 'orbitPath2', animationDuration: '22s', size: '45px', animationDelay: '2s', opacity: 0.3, zIndex: 0 },
+
+    // Emblemas abaixo do .content (aproximado) - Ajustar 'top' conforme altura do .content
+    // Essas posições 'top' para baixo precisarão de ajuste fino visual ou cálculo dinâmico.
+    // Por ora, valores fixos para demonstração.
+    { teamName: 'Santos', initialTop: 'calc(75% + 50px)', initialLeft: '20%', animationName: 'orbitPath3', animationDuration: '24s', size: '38px', animationDelay: '1s', opacity: 0.3, zIndex: 0 },
+    { teamName: 'Mirassol', initialTop: 'calc(75% + 60px)', initialLeft: '80%', animationName: 'orbitPath4', animationDuration: '26s', size: '42px', animationDelay: '3s', opacity: 0.3, zIndex: 0 },
+
+    // Emblemas nas laterais (aproximado)
+    { teamName: 'Fluminense', initialTop: '50%', initialLeft: 'calc(15% - 50px)', animationName: 'orbitPathVertical1', animationDuration: '18s', size: '40px', animationDelay: '0.5s', opacity: 0.3, zIndex: 0 },
+    { teamName: 'Botafogo', initialTop: '60%', initialLeft: 'calc(85% + 50px)', animationName: 'orbitPathVertical2', animationDuration: '20s', size: '43px', animationDelay: '1.5s', opacity: 0.3, zIndex: 0 },
   ];
 
-  // Referência ao contêiner onde os emblemas serão adicionados
-  @ViewChild('floatingEmblemsContainer', { static: false }) floatingEmblemsContainerRef!: ElementRef;
-  private contentElementRef!: ElementRef;
-  @ViewChild('contentContainer', {read: ElementRef, static: false}) set contentContainer(elRef: ElementRef) {
-    if(elRef) {
-      this.contentElementRef = elRef;
-      this.adjustFloatingEmblemPositions();
-    }
-  }
-
+  @ViewChild('orbitingEmblemsHost', { static: false }) orbitingEmblemsHostRef!: ElementRef;
+  private createdOrbitingEmblems: HTMLElement[] = [];
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private renderer: Renderer2, // Injetar Renderer2
-    private teamNameToFileName: TeamNameToFileNamePipe // Injetar o pipe
+    private renderer: Renderer2,
+    private teamNameToFileName: TeamNameToFileNamePipe
   ) { }
 
   ngOnInit(): void {
@@ -76,75 +80,59 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // A criação dos emblemas agora depende do contentContainer estar disponível
-    // e será chamada pelo setter de contentContainer ou pelo HostListener de resize.
+    if (this.orbitingEmblemsHostRef) {
+      this.generateOrbitingEmblems();
+    }
   }
 
-  private createAndAppendFloatingEmblems(): void {
-    if (!this.floatingEmblemsContainerRef || !this.floatingEmblemsContainerRef.nativeElement) {
-        // console.warn('Floating emblems container not available yet.');
-        return;
+  private generateOrbitingEmblems(): void {
+    if (!this.orbitingEmblemsHostRef || !this.orbitingEmblemsHostRef.nativeElement) {
+      return;
     }
-    // Limpar emblemas anteriores se houver (para o caso de re-renderização ou resize)
-    this.floatingEmblemsContainerRef.nativeElement.innerHTML = '';
 
+    this.createdOrbitingEmblems.forEach(emblem => {
+        if (emblem.parentNode) {
+            this.renderer.removeChild(emblem.parentNode, emblem);
+        }
+    });
+    this.createdOrbitingEmblems = [];
 
-    this.floatingEmblems.forEach(config => {
+    this.orbitingEmblemsConfig.forEach(config => {
       const imgElement = this.renderer.createElement('img');
       const fileName = this.teamNameToFileName.transform(config.teamName);
+
       this.renderer.setAttribute(imgElement, 'src', `assets/emblemas/${fileName}`);
       this.renderer.setAttribute(imgElement, 'alt', config.teamName);
-      this.renderer.addClass(imgElement, 'floating-emblem');
+      this.renderer.addClass(imgElement, 'orbiting-emblem');
 
-      // Estilos dinâmicos
       this.renderer.setStyle(imgElement, 'top', config.initialTop);
       this.renderer.setStyle(imgElement, 'left', config.initialLeft);
       this.renderer.setStyle(imgElement, 'width', config.size);
       this.renderer.setStyle(imgElement, 'height', config.size);
+      this.renderer.setStyle(imgElement, 'opacity', (config.opacity || 0.3).toString());
       this.renderer.setStyle(imgElement, 'animation-name', config.animationName);
       this.renderer.setStyle(imgElement, 'animation-duration', config.animationDuration);
-      if (config.animationDelay) {
-        this.renderer.setStyle(imgElement, 'animation-delay', config.animationDelay);
+      this.renderer.setStyle(imgElement, 'animation-delay', config.animationDelay || '0s');
+      if (config.zIndex !== undefined) {
+        this.renderer.setStyle(imgElement, 'z-index', config.zIndex.toString());
       }
 
-      this.renderer.appendChild(this.floatingEmblemsContainerRef.nativeElement, imgElement);
+
+      this.renderer.appendChild(this.orbitingEmblemsHostRef.nativeElement, imgElement);
+      this.createdOrbitingEmblems.push(imgElement);
     });
   }
-
-  private adjustFloatingEmblemPositions(): void {
-    if (!this.contentElementRef || !this.contentElementRef.nativeElement || !this.floatingEmblemsContainerRef) {
-      return;
-    }
-
-    const contentRect = this.contentElementRef.nativeElement.getBoundingClientRect();
-    const bodyRect = document.body.getBoundingClientRect(); // Para referência de scroll
-
-    // O contêiner dos emblemas flutuantes deve ser posicionado corretamente
-    // Aqui, assumimos que floatingEmblemsContainerRef é um filho direto do body ou de um wrapper principal.
-    // Se for um filho do host do componente app-home, o posicionamento já deve estar ok.
-
-    // Reposicionar/Recriar emblemas para garantir que eles fiquem "ao redor" do .content
-    // A lógica de posicionamento exato (initialTop, initialLeft) precisaria ser mais dinâmica
-    // se quisermos que eles orbitem precisamente o .content.
-    // Por agora, a configuração estática é usada, e eles flutuarão no viewport.
-    // Para fazer ao redor do .content, as posições teriam que ser relativas ao .content.
-
-    // Chamamos createAndAppend para recriar com base na configuração,
-    // assumindo que o CSS vai lidar com o posicionamento relativo ao seu contêiner.
-     this.createAndAppendFloatingEmblems();
-  }
-
-
-  @HostListener('window:resize')
-  onWindowResize(): void {
-    this.adjustFloatingEmblemPositions();
-  }
-
 
   ngOnDestroy(): void {
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
     }
+    this.createdOrbitingEmblems.forEach(emblem => {
+      if (emblem.parentNode) {
+        this.renderer.removeChild(emblem.parentNode, emblem);
+      }
+    });
+    this.createdOrbitingEmblems = [];
   }
 
   goToApostar(): void {

@@ -1,11 +1,11 @@
 <div class="home-page-wrapper">
-  <div #floatingEmblemsContainer class="floating-emblems-host">
+  <div #orbitingEmblemsHost class="orbiting-emblems-host">
     </div>
 
   <div class="container py-5">
     <div #contentContainer class="content text-center p-4 bg-white shadow rounded">
       <div class="logo mb-4">
-        </div>
+      </div>
 
       <h1 class="mb-3 welcome-title">
         <ng-container *ngIf="username; else defaultWelcome">
@@ -37,16 +37,16 @@
         <h5 class="text-muted mb-3">Times do Brasileirão</h5>
         <div class="emblem-parade-track">
           <ng-container *ngFor="let teamName of teamNamesForParade">
-            <img 
-              [src]="'assets/emblemas/' + (teamName | teamNameToFileName)" 
-              [alt]="teamName" 
+            <img
+              [src]="'assets/emblemas/' + (teamName | teamNameToFileName)"
+              [alt]="teamName"
               class="emblem-in-parade"
             />
           </ng-container>
           <ng-container *ngFor="let teamName of teamNamesForParade">
-              <img 
-                [src]="'assets/emblemas/' + (teamName | teamNameToFileName)" 
-                [alt]="teamName" 
+              <img
+                [src]="'assets/emblemas/' + (teamName | teamNameToFileName)"
+                [alt]="teamName"
                 class="emblem-in-parade"
               />
             </ng-container>

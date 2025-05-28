@@ -3,90 +3,206 @@
   /* Você pode adicionar estilos específicos para o container se necessário */
 }
 
-/* Wrapper principal para a página, para o contexto de posicionamento dos emblemas flutuantes */
 .home-page-wrapper {
   position: relative;
-  /* overflow: hidden; Descomente se os emblemas estiverem causando scroll indesejado */
-  /* min-height: 100vh;  Pode não ser necessário dependendo do seu layout geral */
+  /* Garante que o wrapper tenha alguma altura para que o posicionamento absoluto funcione,
+     ou use position:fixed para o orbiting-emblems-host. Se o conteúdo principal
+     já garante altura, isso pode não ser estritamente necessário. */
+  min-height: 100vh; /* Ou a altura que fizer sentido para seu layout */
+  overflow: hidden; /* Para conter os emblemas se eles se moverem para fora dos limites visíveis do wrapper */
 }
 
-/* Contêiner que hospedará os emblemas flutuantes */
-.floating-emblems-host {
-  position: fixed; /* Ou 'absolute' se .home-page-wrapper tiver altura definida e overflow:hidden */
+.orbiting-emblems-host {
+  position: absolute; /* Posicionado em relação ao .home-page-wrapper */
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none; /* Para não interferir com cliques no conteúdo abaixo */
-  z-index: 0; /* Mantém no fundo */
-  overflow: hidden; /* Garante que os emblemas não causem scroll no body */
+  pointer-events: none; /* Não interfere com cliques */
+  /* z-index: 0; /* Definido dinamicamente no TS se necessário, ou fixo aqui */
+  /* overflow: hidden;  Já está no home-page-wrapper */
 }
 
-/* Estilo base para os emblemas flutuantes criados dinamicamente */
-/* Usamos :host ::ng-deep para garantir que os estilos se apliquem aos elementos criados pelo Renderer2.
-   Em versões mais recentes do Angular, pode-se tentar sem ::ng-deep se os estilos forem globais
-   ou se o ViewEncapsulation do componente for None (não recomendado geralmente).
-   Uma forma mais moderna é adicionar uma classe global no styles.css e usá-la.
-   Por simplicidade aqui, mantemos o ::ng-deep, mas esteja ciente das implicações. */
-:host ::ng-deep .floating-emblem {
+/* Estilo para os emblemas que "orbitam" o conteúdo */
+:host ::ng-deep .orbiting-emblem {
   position: absolute;
   object-fit: contain;
-  /* opacity: 0.25;  Controlado via TS agora */
+  /* A opacidade será definida via TS na configuração */
+  will-change: transform, opacity;
   animation-iteration-count: infinite;
-  animation-direction: alternate;
-  animation-timing-function: ease-in-out;
-  will-change: transform, opacity; /* Otimização para animações */
+  animation-timing-function: linear; /* Movimento mais constante */
+  animation-direction: normal; /* Para um ciclo contínuo */
 }
 
+/* Novas animações para simular órbita ao redor do .content */
+/* Estas são trajetórias aproximadas e precisarão de ajuste fino */
 
-/* Animações para os emblemas flutuantes */
-@keyframes floatAround1 {
-  0% { transform: translate(0px, 0px) rotate(-5deg) scale(0.95); opacity: 0.15; }
-  25% { transform: translate(2vw, -3vh) rotate(0deg) scale(1); opacity: 0.3; }
-  50% { transform: translate(-1vw, 4vh) rotate(5deg) scale(0.9); opacity: 0.2;}
-  75% { transform: translate(1.5vw, -2vh) rotate(-3deg) scale(1.05); opacity: 0.28; }
-  100% { transform: translate(0px, 0px) rotate(-5deg) scale(0.95); opacity: 0.15; }
+/* Movimento horizontal no topo e base, e vertical nas laterais */
+/* A ideia é que os emblemas apareçam, cruzem uma borda do .content e desapareçam */
+
+@keyframes orbitPath1 {
+  /* Topo, da esquerda para a direita, e um pouco para baixo */
+  0% {
+    transform: translate(-80px, 10vh) scale(0.8);
+    opacity: 0;
+  } /* Começa fora da tela à esquerda, acima */
+  10% {
+    opacity: 0.4;
+  }
+  40% {
+    transform: translate(50vw, 15vh) scale(1) rotate(10deg);
+    opacity: 0.5;
+  }
+  60% {
+    transform: translate(110vw, 20vh) scale(0.8) rotate(20deg);
+    opacity: 0.4;
+  } /* Sai pela direita */
+  100% {
+    transform: translate(120vw, 25vh) scale(0.7);
+    opacity: 0;
+  }
 }
 
-@keyframes floatAround2 {
-  0% { transform: translate(0px, 0px) scale(1) rotate(3deg); opacity: 0.2; }
-  25% { transform: translate(-2.5vw, 3.5vh) scale(1.05) rotate(0deg); opacity: 0.28; }
-  50% { transform: translate(1.5vw, -2.5vh) scale(0.95) rotate(-4deg); opacity: 0.18; }
-  75% { transform: translate(-1vw, 1vh) scale(1) rotate(2deg); opacity: 0.3; }
-  100% { transform: translate(0px, 0px) scale(1) rotate(3deg); opacity: 0.2; }
+@keyframes orbitPath2 {
+  /* Direita, de cima para baixo, e um pouco para esquerda */
+  0% {
+    transform: translate(90vw, -5vh) scale(0.8);
+    opacity: 0;
+  } /* Começa fora, acima e à direita */
+  10% {
+    opacity: 0.4;
+  }
+  40% {
+    transform: translate(80vw, 50vh) scale(1) rotate(-15deg);
+    opacity: 0.5;
+  }
+  60% {
+    transform: translate(75vw, 110vh) scale(0.8) rotate(-25deg);
+    opacity: 0.4;
+  } /* Sai por baixo */
+  100% {
+    transform: translate(70vw, 120vh) scale(0.7);
+    opacity: 0;
+  }
 }
 
-@keyframes floatAround3 {
-  0% { transform: translateY(0px) translateX(0px) rotate(0deg) scale(0.9); opacity: 0.18; }
-  25% { transform: translateY(-3vh) translateX(1.5vw) rotate(6deg) scale(1); opacity: 0.25; }
-  50% { transform: translateY(2vh) translateX(-2vw) rotate(0deg) scale(1.05); opacity: 0.3; }
-  75% { transform: translateY(-1vh) translateX(2.5vw) rotate(-7deg) scale(0.92); opacity: 0.2;}
-  100% { transform: translateY(0px) translateX(0px) rotate(0deg) scale(0.9); opacity: 0.18; }
+@keyframes orbitPath3 {
+  /* Base, da direita para a esquerda, e um pouco para cima */
+  0% {
+    transform: translate(110vw, 80vh) scale(0.9);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.4;
+  }
+  40% {
+    transform: translate(50vw, 75vh) scale(1) rotate(5deg);
+    opacity: 0.5;
+  }
+  60% {
+    transform: translate(-20vw, 70vh) scale(0.9) rotate(15deg);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(-30vw, 65vh) scale(0.8);
+    opacity: 0;
+  }
 }
 
+@keyframes orbitPath4 {
+  /* Esquerda, de baixo para cima, e um pouco para direita */
+  0% {
+    transform: translate(10vw, 110vh) scale(0.9);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.4;
+  }
+  40% {
+    transform: translate(15vw, 50vh) scale(1) rotate(-10deg);
+    opacity: 0.5;
+  }
+  60% {
+    transform: translate(20vw, -10vh) scale(0.9) rotate(-20deg);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(25vw, -20vh) scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* Animações para movimento mais vertical nas laterais */
+@keyframes orbitPathVertical1 {
+  /* Lateral Esquerda, sobe e desce */
+  0% {
+    transform: translate(5vw, 80vh) scale(0.85);
+    opacity: 0.1;
+  }
+  25% {
+    transform: translate(7vw, 40vh) scale(1) rotate(-5deg);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(4vw, 10vh) scale(0.9);
+    opacity: 0.15;
+  }
+  75% {
+    transform: translate(6vw, 60vh) scale(1.05) rotate(5deg);
+    opacity: 0.35;
+  }
+  100% {
+    transform: translate(5vw, 80vh) scale(0.85);
+    opacity: 0.1;
+  }
+}
+
+@keyframes orbitPathVertical2 {
+  /* Lateral Direita, sobe e desce */
+  0% {
+    transform: translate(90vw, 20vh) scale(1);
+    opacity: 0.15;
+  }
+  25% {
+    transform: translate(88vw, 60vh) scale(0.9) rotate(8deg);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate(92vw, 90vh) scale(1.05);
+    opacity: 0.2;
+  }
+  75% {
+    transform: translate(89vw, 40vh) scale(0.95) rotate(-6deg);
+    opacity: 0.35;
+  }
+  100% {
+    transform: translate(90vw, 20vh) scale(1);
+    opacity: 0.15;
+  }
+}
 
 .content {
-  position: relative; /* Para garantir que o z-index funcione */
-  z-index: 1;      /* Conteúdo principal acima dos emblemas flutuantes */
+  position: relative;
+  z-index: 10; /* Conteúdo principal bem acima dos emblemas orbitais e da parada */
   align-items: center;
-  background-color: #f8f9fa; /* Cor de fundo suave */
-  border-radius: 15px; /* Bordas arredondadas */
-  padding: 20px; /* Espaçamento interno */
-  max-width: 800px; /* Largura máxima do conteúdo */
-  margin-left: auto; /* Centralizar */
-  margin-right: auto; /* Centralizar */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  background-color: #f8f9fa;
+  border-radius: 15px;
+  padding: 20px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
   width: 150px;
   height: 150px;
-  background-image: url('../../../assets/img/logo_bdl.png'); /* Caminho para sua logo */
+  background-image: url("../../../assets/img/logo_bdl.png");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  margin-bottom: 20px; /* Espaço abaixo do logo */
-  display: block; /* Para aplicar margens automáticas */
+  margin-bottom: 20px;
+  display: block;
   margin-left: auto;
   margin-right: auto;
   animation: pulse 2s infinite alternate;
@@ -97,31 +213,31 @@
     transform: scale(1);
   }
   100% {
-    transform: scale(1.08); /* Leve aumento para o efeito de pulsar */
+    transform: scale(1.08);
   }
 }
 
 .welcome-title {
-  color: #212529; /* Cor preta padrão do Bootstrap */
+  color: #212529;
   font-weight: bold;
   animation: fadeInScale 1s ease-out forwards;
-  display: inline-block; /* Necessário para aplicar transform */
-  margin-bottom: 1rem; /* Espaçamento abaixo do título */
+  display: inline-block;
+  margin-bottom: 1rem;
 }
 
 .username-highlight {
-  color: #212529; /* Mantém preto ou pode usar uma cor de destaque da sua paleta */
+  color: #212529;
   font-weight: bold;
-  font-size: 1.1em; /* Levemente maior que o texto ao redor */
+  font-size: 1.1em;
 }
 
 .rule-highlight {
   font-weight: bold;
-  color: #495057; /* Cor para destaque das regras */
+  color: #495057;
 }
 
 .rule-deadline {
-  color: #dc3545; /* Vermelho Bootstrap para prazos */
+  color: #dc3545;
   font-weight: bold;
 }
 
@@ -133,7 +249,7 @@
 @keyframes fadeInScale {
   0% {
     opacity: 0;
-    transform: scale(0.9); /* Começa um pouco menor */
+    transform: scale(0.9);
   }
   100% {
     opacity: 1;
@@ -152,17 +268,17 @@
 
 .fadeIn {
   animation-name: fadeIn;
-  animation-delay: 0.2s; /* Pequeno atraso para o card aparecer depois do título */
+  animation-delay: 0.2s;
 }
 
 @keyframes slideInLeft {
   from {
-    transform: translateX(-80px); /* Começa um pouco mais para a esquerda */
-    opacity: 0; /* Começa invisível */
+    transform: translateX(-80px);
+    opacity: 0;
   }
   to {
     transform: translateX(0);
-    opacity: 1; /* Termina visível */
+    opacity: 1;
   }
 }
 
@@ -170,37 +286,36 @@
   animation-name: slideInLeft;
 }
 
-/* --- ESTILOS PARA A PARADA DOS EMBLEMAS --- */
 .emblem-parade-container {
   width: 100%;
-  overflow: hidden; /* Essencial para o efeito de scroll */
+  overflow: hidden;
   padding: 15px 0;
-  background-color: rgba(233, 236, 239, 0.7); /* Um fundo sutil para a faixa da parada */
+  background-color: rgba(233, 236, 239, 0.7);
   border-top: 1px solid #e0e0e0;
   border-bottom: 1px solid #e0e0e0;
   margin-top: 2rem;
   margin-bottom: 2rem;
-  position: relative; /* Garante que fique acima dos emblemas flutuantes (se z-index:0) mas abaixo de modais etc. */
-  z-index: 1;
+  position: relative;
+  z-index: 5; /* Acima dos emblemas orbitais, abaixo do conteúdo principal */
 }
 
 .emblem-parade-container h5 {
-    font-weight: 500;
+  font-weight: 500;
 }
 
 .emblem-parade-track {
-  display: flex; /* Coloca os emblemas em linha */
-  width: calc(15 * 2 * (40px + 30px)); /* (Número de times * 2) * (largura emblema + margem direita) */
-  animation: scrollEmblems 60s linear infinite; /* Duração da animação ajustada */
+  display: flex;
+  width: calc(15 * 2 * (40px + 30px));
+  animation: scrollEmblems 60s linear infinite;
 }
 
 .emblem-in-parade {
-  height: 40px; /* Tamanho do emblema */
+  height: 40px;
   width: 40px;
   object-fit: contain;
-  margin-right: 30px; /* Espaço entre os emblemas */
-  flex-shrink: 0; /* Evita que os emblemas encolham */
-  filter: grayscale(30%); /* Efeito sutil para não sobrecarregar */
+  margin-right: 30px;
+  flex-shrink: 0;
+  filter: grayscale(30%);
   transition: filter 0.3s ease, transform 0.3s ease;
 }
 
@@ -214,11 +329,10 @@
     transform: translateX(0);
   }
   100% {
-    transform: translateX(calc(-15 * (40px + 30px))); /* -(Número de times) * (largura emblema + margem direita) */
+    transform: translateX(calc(-15 * (40px + 30px)));
   }
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
   .emblem-in-parade {
     height: 30px;
@@ -227,7 +341,7 @@
   }
   .emblem-parade-track {
     width: calc(15 * 2 * (30px + 20px));
-    animation-duration: 50s; 
+    animation-duration: 50s;
   }
   @keyframes scrollEmblems {
     0% {
@@ -238,24 +352,20 @@
     }
   }
 
-  :host ::ng-deep .floating-emblem {
-    /* Ajustar tamanho e opacidade para telas menores se necessário */
-    width: 35px !important; /* Exemplo de ajuste de tamanho */
-    height: 35px !important;
-    opacity: 0.2 !important; /* Exemplo de ajuste de opacidade */
-  }
-
-  .floating-emblems-host {
-     /* Em mobile, pode ser melhor desativar ou simplificar muito os flutuantes se sobrecarregarem */
+  :host ::ng-deep .orbiting-emblem {
+    /* Os tamanhos e opacidades já são configuráveis via TS,
+       mas pode-se adicionar overrides aqui se necessário para mobile */
   }
 }
 
 @media (max-width: 480px) {
-  :host ::ng-deep .floating-emblem {
-    width: 30px !important;
-    height: 30px !important;
-    opacity: 0.15 !important;
+  /* Ajustes para telas muito pequenas, se necessário */
+  :host ::ng-deep .orbiting-emblem {
+    /* Exemplo: esconder alguns emblemas ou reduzir ainda mais */
+    /* display: none; */ /* Descomente para esconder todos em telas pequenas */
   }
-  /* Configuração para menos emblemas flutuantes em telas muito pequenas, se necessário */
-  /* Ex: .floating-emblems-host > :nth-child(n+5) { display: none; } */
+  :host ::ng-deep .orbiting-emblem:nth-child(n + 4) {
+    /* Mostra apenas os 3 primeiros, por exemplo */
+    /* display: none; */
+  }
 }
