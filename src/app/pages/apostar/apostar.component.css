@@ -1,113 +1,116 @@
 /* src/app/pages/apostar/apostar.component.css */
 
 .apostar-container {
-  padding-top: 100px;
-  padding-bottom: 20px;
+  padding-top: 100px; /* */
+  padding-bottom: 20px; /* */
 }
 
 .apostar-title {
   position: relative;
   z-index: 1;
-  margin-bottom: 20px;
+  margin-bottom: 20px; /* */
 }
 
-.escudo-icon-apostar {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-  flex-shrink: 0; /* Impede que o escudo encolha se o nome do time for longo */
+/* --- Estilos da Tabela --- */
+.table {
+  /* Garante que a tabela em si não tenha um fundo transparente se o container tiver imagem */
+  background-color: var(--bs-table-bg, #fff); /* Cor de fundo padrão da tabela Bootstrap */
 }
 
-td.text-end .escudo-icon-apostar {
-  margin-right: 5px;
+.table th,
+.table td {
+  vertical-align: middle !important; /* Força o alinhamento vertical para todas as células */
+  /* O padding padrão do Bootstrap para .table td é geralmente 0.5rem ou 0.75rem */
 }
 
-td.text-start .escudo-icon-apostar {
-  margin-left: 5px;
-}
-
-/* Estilos gerais para células da tabela */
-.table > tbody > tr > td {
-  vertical-align: middle;
-}
-
-/* Células específicas dos times */
-.table > tbody > tr > td.text-end.fw-bold,
-.table > tbody > tr > td.text-start.fw-bold {
+/* Células específicas dos times (Mandante e Visitante) */
+.table td.team-cell {
   display: flex;
   align-items: center;
+  /* Removido height: 100% pois pode causar problemas; o padding e align-items devem bastar */
 }
 
-.table > tbody > tr > td.text-end.fw-bold {
+.table td.team-cell.text-end {
   justify-content: flex-end;
 }
 
-.table > tbody > tr > td.text-start.fw-bold {
+.table td.team-cell.text-start {
   justify-content: flex-start;
 }
 
+.escudo-icon-apostar {
+  width: 20px; /* Aumentei um pouco para melhor visualização */
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+td.team-cell.text-end .escudo-icon-apostar {
+  margin-right: 0.5rem; /* Espaçamento padrão */
+}
+
+td.team-cell.text-start .escudo-icon-apostar {
+  margin-left: 0.5rem; /* Espaçamento padrão */
+}
+
 /*
-  Garante que as células dos times tenham o fundo listrado correto.
-  Estas regras assumem um tema claro do Bootstrap.
-  Se você tiver um tema escuro, precisará de variáveis ou cores diferentes.
+  Garante que TODAS as células de dados (<td>) em uma linha listrada
+  tenham a cor de fundo correta, incluindo as células dos times.
+  Isso sobrescreve qualquer transparência indesejada.
 */
-.table-striped > tbody > tr:nth-of-type(odd) > td.text-end.fw-bold,
-.table-striped > tbody > tr:nth-of-type(odd) > td.text-start.fw-bold {
-  background-color: var(--bs-table-striped-bg, #f2f2f2); /* Cor listrada padrão do Bootstrap claro */
+.table-striped > tbody > tr:nth-of-type(odd) > td {
+  background-color: var(--bs-table-striped-bg, #f2f2f2) !important;
 }
 
-.table-striped > tbody > tr:nth-of-type(even) > td.text-end.fw-bold,
-.table-striped > tbody > tr:nth-of-type(even) > td.text-start.fw-bold {
-  background-color: var(--bs-table-bg, #fff); /* Cor normal padrão do Bootstrap claro */
+.table-striped > tbody > tr:nth-of-type(even) > td {
+  background-color: var(--bs-table-bg, #fff) !important;
 }
+/* Se você tiver um tema escuro, o Bootstrap geralmente lida com isso
+   automaticamente se a classe de tema escuro estiver no elemento <html> ou <body>.
+   Se não, você precisaria de regras específicas para o tema escuro aqui. */
 
-/* Responsividade da Tabela */
+
+/* --- Responsividade da Tabela --- */
 @media (max-width: 767.98px) {
   .table-responsive-mobile {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    margin-top: 20px;
-    border: 1px solid #dee2e6;
-    border-radius: 0.25rem;
+    overflow-x: auto; /* */
+    -webkit-overflow-scrolling: touch; /* */
+    margin-top: 20px; /* */
+    border: 1px solid #dee2e6; /* */
+    border-radius: 0.25rem; /* */
   }
 
   .table-responsive-mobile table {
-    width: 100%;
-    min-width: 700px;
+    width: 100%; /* */
+    min-width: 700px; /* */
   }
 
   .table-responsive-mobile table th,
   .table-responsive-mobile table td {
-    font-size: 0.85em;
-    padding: 0.5rem 0.4rem; /* Padding vertical para alinhar com inputs */
-    white-space: nowrap;
+    font-size: 0.85em; /* */
+    padding: 0.5rem 0.4rem; /* Padding consistente para todas as células em mobile */ /* */
+    white-space: nowrap; /* */
+    /* vertical-align: middle !important; /* Já coberto pela regra mais geral acima */
   }
 
-  .table-responsive-mobile table td.text-end.fw-bold,
-  .table-responsive-mobile table td.text-start.fw-bold {
-    display: flex;
-    align-items: center;
-  }
-
-  .table-responsive-mobile table td.text-end.fw-bold {
-    justify-content: flex-end;
-  }
-
-  .table-responsive-mobile table td.text-start.fw-bold {
-    justify-content: flex-start;
+  /* Células dos times em mobile */
+  .table-responsive-mobile table td.team-cell {
+    /* display: flex; e align-items: center; já herdados da regra não responsiva */
+    /* padding já definido acima para todas as td em mobile */
   }
 
   .table-responsive-mobile table input[type="number"] {
-    width: 50px;
-    padding: 0.3rem 0.2rem;
+    width: 50px; /* */
+    padding: 0.3rem 0.2rem; /* */
     font-size: 0.9em;
-    height: auto; /* Permite que o padding defina a altura, para melhor correspondência com o padding da célula */
-    line-height: normal; /* Garante que a altura do texto do input seja considerada */
+    height: auto;
+    line-height: normal; /* Ajuda a controlar a altura baseada no texto e padding */
   }
 
-  .table-responsive-mobile table td.text-center.fw-bold { /* Célula do "X" */
-    padding: 0.5rem 0.2rem;
-    width: auto;
+  /* Célula do "X" entre os placares */
+  .table-responsive-mobile table td.text-center.fw-bold {
+    padding: 0.5rem 0.2rem; /* Mesmo padding vertical que outras células */
+    width: auto; /* */
   }
 
   .table-responsive-mobile .escudo-icon-apostar {
