@@ -13,19 +13,19 @@
   <div class="desktop-center-content" *ngIf="!isMobile">
     <ng-container *ngIf="isLoggedIn$ | async">
       <a routerLink="/home" class="nav-item">
-        <i class="bi bi-house-fill me-2"></i> Página Inicial
+        <i class="bi bi-house me-2"></i> Página Inicial
       </a>
       <a routerLink="/apostar" class="nav-item">
         <i class="bi bi-controller me-2"></i> Apostar
       </a>
       <a routerLink="/ranking" class="nav-item">
-        <i class="bi bi-trophy-fill me-2"></i> Classificação
+        <i class="bi bi-trophy me-2"></i> Classificação
       </a>
       <a routerLink="/minigames" class="nav-item">
         <i class="bi bi-joystick me-2"></i> Minigames
       </a>
       <a routerLink="/profile" class="nav-item">
-        <i class="bi bi-person-fill me-2"></i> Perfil ({{ currentUserUsername$ | async }})
+        <i class="bi bi-person me-2"></i> Perfil ({{ currentUserUsername$ | async }})
       </a>
     </ng-container>
     <ng-container *ngIf="!(isLoggedIn$ | async)">
