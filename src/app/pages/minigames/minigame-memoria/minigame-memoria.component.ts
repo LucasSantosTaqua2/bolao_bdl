@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TeamNameToFileNamePipe } from '../../../utils/team-name-to-file-name.pipe'; // Ajuste o caminho se necessário
+import { RouterLink } from '@angular/router';
 
 interface Card {
   id: number; // Identificador único para a carta no grid
@@ -14,7 +15,7 @@ interface Card {
 @Component({
   selector: 'app-minigame-memoria',
   standalone: true,
-  imports: [CommonModule, TeamNameToFileNamePipe],
+  imports: [CommonModule, TeamNameToFileNamePipe, RouterLink],
   templateUrl: './minigame-memoria.component.html',
   styleUrls: ['./minigame-memoria.component.css'],
   providers: [TeamNameToFileNamePipe]

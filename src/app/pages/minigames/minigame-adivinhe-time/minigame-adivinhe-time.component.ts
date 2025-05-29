@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TeamNameToFileNamePipe } from '../../../utils/team-name-to-file-name.pipe'; // Ajuste o caminho
+import { RouterLink } from '@angular/router';
 
 interface NameOption {
   name: string;
@@ -14,7 +15,7 @@ interface NameOption {
 @Component({
   selector: 'app-minigame-adivinhe-time',
   standalone: true,
-  imports: [CommonModule, FormsModule, TeamNameToFileNamePipe],
+  imports: [CommonModule, FormsModule, TeamNameToFileNamePipe, RouterLink],
   templateUrl: './minigame-adivinhe-time.component.html',
   styleUrls: ['./minigame-adivinhe-time.component.css'],
   providers: [TeamNameToFileNamePipe]

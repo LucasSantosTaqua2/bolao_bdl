@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDropList, CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { TeamNameToFileNamePipe } from '../../../utils/team-name-to-file-name.pipe'; // Ajuste o caminho
 import html2canvas from 'html2canvas';
+import { RouterLink } from '@angular/router';
 
 interface TeamForSelection {
   id: string;
@@ -25,7 +26,8 @@ interface FieldPosition {
     CdkDropList,
     CdkDrag,
     CdkDragHandle,
-    TeamNameToFileNamePipe
+    TeamNameToFileNamePipe,
+    RouterLink
   ],
   templateUrl: './minigame-time-sonhos.component.html',
   styleUrls: ['./minigame-time-sonhos.component.css'],

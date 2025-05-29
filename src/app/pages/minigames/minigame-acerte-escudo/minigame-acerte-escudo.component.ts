@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TeamNameToFileNamePipe } from '../../../utils/team-name-to-file-name.pipe';
+import { RouterLink } from '@angular/router';
 // Ajuste o caminho se necessário
 
 interface EmblemOption {
@@ -12,7 +13,7 @@ interface EmblemOption {
 @Component({
   selector: 'app-minigame-acerte-escudo',
   standalone: true,
-  imports: [CommonModule, TeamNameToFileNamePipe],
+  imports: [CommonModule, TeamNameToFileNamePipe, RouterLink],
   templateUrl: './minigame-acerte-escudo.component.html',
   styleUrls: ['./minigame-acerte-escudo.component.css'],
   providers: [TeamNameToFileNamePipe]

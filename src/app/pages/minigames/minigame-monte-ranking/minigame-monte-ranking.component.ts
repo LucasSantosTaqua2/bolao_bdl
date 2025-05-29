@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragHandle } from '@angular/cdk/drag-drop';
 import { TeamNameToFileNamePipe } from '../../../utils/team-name-to-file-name.pipe'; // Ajuste o caminho se necessário
 import html2canvas from 'html2canvas';
+import { RouterLink } from '@angular/router';
 
 interface DraggableTeam {
   id: string;
@@ -19,7 +20,8 @@ interface DraggableTeam {
     CdkDropList,
     CdkDrag,
     CdkDragHandle,
-    TeamNameToFileNamePipe
+    TeamNameToFileNamePipe,
+    RouterLink
   ],
   templateUrl: './minigame-monte-ranking.component.html',
   styleUrls: ['./minigame-monte-ranking.component.css'],

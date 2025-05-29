@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, Renderer2, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TeamNameToFileNamePipe } from '../../../utils/team-name-to-file-name.pipe'; // Ajuste o caminho
+import { RouterLink } from '@angular/router';
 
 interface TargetEmblem {
   teamName: string;
@@ -18,7 +19,7 @@ interface TargetEmblem {
 @Component({
   selector: 'app-minigame-caca-emblemas',
   standalone: true,
-  imports: [CommonModule, TeamNameToFileNamePipe],
+  imports: [CommonModule, TeamNameToFileNamePipe, RouterLink],
   templateUrl: './minigame-caca-emblemas.component.html',
   styleUrls: ['./minigame-caca-emblemas.component.css'],
   providers: [TeamNameToFileNamePipe]
@@ -38,7 +39,7 @@ export class MinigameCacaEmblemasComponent implements OnInit, OnDestroy {
   timeLeftInRound: number = 0; // Opcional: timer para cada "caçada"
   roundInterval: any;
   roundDuration: number = 5000; // 5 segundos para encontrar o emblema
-  maxEmblemsOnScreen: number = 7; // Quantos emblemas aparecem por vez (1 alvo + 6 distratores)
+  maxEmblemsOnScreen: number = 14; // Quantos emblemas aparecem por vez (1 alvo + 6 distratores)
   gameMessage: string = 'Clique em "Iniciar" para começar!';
   gameInProgress: boolean = false;
   gameOver: boolean = false;
