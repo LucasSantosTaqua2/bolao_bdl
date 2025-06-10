@@ -35,11 +35,11 @@ export class MinigameCacaEmblemasComponent implements OnInit, OnDestroy {
   activeEmblems: TargetEmblem[] = [];
   currentTargetTeamName: string = '';
   score: number = 0;
-  lives: number = 3; // Opcional: sistema de vidas
+  lives: number = 2; // Opcional: sistema de vidas
   timeLeftInRound: number = 0; // Opcional: timer para cada "caçada"
   roundInterval: any;
-  roundDuration: number = 5000; // 5 segundos para encontrar o emblema
-  maxEmblemsOnScreen: number = 14; // Quantos emblemas aparecem por vez (1 alvo + 6 distratores)
+  roundDuration: number = 4000; // 5 segundos para encontrar o emblema
+  maxEmblemsOnScreen: number = 20; // Quantos emblemas aparecem por vez (1 alvo + 6 distratores)
   gameMessage: string = 'Clique em "Iniciar" para começar!';
   gameInProgress: boolean = false;
   gameOver: boolean = false;
@@ -73,7 +73,7 @@ export class MinigameCacaEmblemasComponent implements OnInit, OnDestroy {
 
   startGame(): void {
     this.score = 0;
-    this.lives = 3;
+    this.lives = 2;
     this.gameInProgress = true;
     this.gameOver = false;
     this.gameMessage = '';
