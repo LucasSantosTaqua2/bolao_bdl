@@ -9,6 +9,32 @@
   color: #0056b3; /* Azul mais escuro */
 }
 
+.emblem-option {
+  border: 3px solid transparent;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, border-color 0.2s ease;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emblem-option:hover {
+  transform: scale(1.1);
+  border-color: #007bff;
+}
+
+.emblem-option img {
+  width: 100%;
+  height: auto;
+  display: block;
+  /* Adiciona uma transição suave para a propriedade clip-path */
+  transition: clip-path 0.3s ease-in-out;
+}
+
+
 .current-team-name {
   font-size: 1.8rem;
   font-weight: bold;
