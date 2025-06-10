@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { TeamNameToFileNamePipe } from '../../../../utils/team-name-to-file-name.pipe';
+// Importe o novo FileNameService que contém a lógica
+import { FileNameService } from '../../../services/file-name.service';
 
-// ... (interface continua a mesma)
 interface EmblemOption {
   teamName: string;
   emblemUrl: string;
@@ -14,17 +14,12 @@ interface EmblemOption {
 @Component({
   selector: 'app-minigame-acerte-escudo',
   standalone: true,
-  // Apenas remova o 'TeamNameToFileNamePipe' deste array de imports
   imports: [CommonModule, RouterModule],
   templateUrl: './minigame-acerte-escudo.component.html',
   styleUrls: ['./minigame-acerte-escudo.component.css']
 })
 export class MinigameAcerteEscudoComponent implements OnInit {
 
-  // A injeção no construtor continua funcionando perfeitamente
-  constructor(private teamNameToFileName: TeamNameToFileNamePipe) { }
-
-  // ... (todo o resto do seu código permanece exatamente igual)
   allTeamNames = [
     'América-MG', 'Athletico-PR', 'Atlético-GO', 'Atlético-MG', 'Bahia',
     'Botafogo', 'Corinthians', 'Criciúma', 'Cruzeiro', 'Cuiabá',
@@ -40,6 +35,9 @@ export class MinigameAcerteEscudoComponent implements OnInit {
   gameLocked = false;
   feedbackMessage = '';
   isCorrectAnswer?: boolean;
+
+  // Injete o FileNameService no construtor para usar sua lógica
+  constructor(private fileNameService: FileNameService) { }
 
   ngOnInit(): void {
     this.startGame();
@@ -70,10 +68,11 @@ export class MinigameAcerteEscudoComponent implements OnInit {
     const incorrectTeamNames = this.getIncorrectAnswers(correctTeamName);
 
     const optionsWithObfuscation = [
-      { teamName: correctTeamName, emblemUrl: this.teamNameToFileName.transform(correctTeamName), isCorrect: true },
+      // Use o método do serviço para transformar o nome do time em nome de arquivo
+      { teamName: correctTeamName, emblemUrl: this.fileNameService.transform(correctTeamName), isCorrect: true },
       ...incorrectTeamNames.map(name => ({
         teamName: name,
-        emblemUrl: this.teamNameToFileName.transform(name),
+        emblemUrl: this.fileNameService.transform(name),
         isCorrect: false
       }))
     ].map(option => {
