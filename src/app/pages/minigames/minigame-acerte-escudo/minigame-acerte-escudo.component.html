@@ -1,48 +1,39 @@
-<div class="minigame-container p-4 bg-light rounded shadow-sm text-center">
+<div class="minigame-container">
+  <ng-container *ngIf="gameInProgress; else gameFinished">
+    <div class="header">
+      <h1>Acerte o Escudo</h1>
+      <p>O escudo de qual time é este?</p>
+      <h2 class="team-name-question">{{ currentQuestionTeamName }}</h2>
+    </div>
 
-  <a routerLink="/minigames" class="link-danger">Voltar</a>
-
-  <h3 class="mb-4 text-primary">Acerte o Escudo!</h3>
-
-  <div *ngIf="gameInProgress; else gameFinished">
-    <p class="lead mb-3">Qual é o escudo do time abaixo?</p>
-    <h4 class="current-team-name mb-4 p-2 bg-white border rounded">{{ currentQuestionTeamName }}</h4>
-
-    <div class="emblem-options-grid mb-4">
+    <div class="emblem-options-grid">
       <div *ngFor="let option of emblemOptions"
-           class="emblem-option card"
-           (click)="selectEmblem(option)"
-           [class.disabled]="showFeedback">
-        <img [src]="option.emblemUrl"
-             [alt]="'Opção ' + option.teamName"
-             class="img-fluid rounded"
-             onError="this.src='assets/img/logo_bdl_shield.png'; this.alt='Escudo não disponível'">
+           class="emblem-option"
+           [class.disabled]="gameLocked"
+           (click)="!gameLocked && selectEmblem(option)">
+        <img [src]="'assets/images/emblems/' + option.emblemUrl"
+             [alt]="option.teamName"
+             [style.clip-path]="option.clipPathStyle"
+             onError="this.src='assets/images/emblems/default.png'">
       </div>
     </div>
 
-    <div *ngIf="showFeedback"
-         class="feedback-message alert mt-3"
-         [ngClass]="{'alert-success': isCorrectAttempt, 'alert-danger': !isCorrectAttempt}">
+    <div class="stats">
+      <span>Pontuação: {{ score }}</span>
+      <span>Tentativas: {{ attempts }}</span>
+    </div>
+
+    <div *ngIf="feedbackMessage" class="feedback-message" [ngClass]="{'alert-success': isCorrectAnswer, 'alert-danger': !isCorrectAnswer}">
       {{ feedbackMessage }}
     </div>
-
-    <div class="score-board mt-4">
-      <h5>Pontuação: {{ score }} / {{ attempts }}</h5>
-    </div>
-  </div>
+  </ng-container>
 
   <ng-template #gameFinished>
-    <div class="game-over-message alert alert-info">
-      <p class="mb-2">{{ feedbackMessage || 'Jogo finalizado!' }}</p>
-      <p>Sua pontuação final foi: {{ score }} de {{ attempts }} tentativas.</p>
-      <button class="btn btn-lg btn-success mt-3" (click)="restartGame()">
-        <i class="bi bi-arrow-clockwise me-2"></i>Jogar Novamente
-      </button>
+    <div class="game-over-container">
+      <h2>Fim de Jogo!</h2>
+      <p>Sua pontuação final foi: <strong>{{ score }}</strong> em <strong>{{ attempts }}</strong> tentativas.</p>
+      <button (click)="restartGame()" class="btn-restart">Jogar Novamente</button>
+      <a routerLink="/minigames" class="btn-back">Voltar</a>
     </div>
   </ng-template>
-
-  <button *ngIf="!gameInProgress && attempts > 0 && feedbackMessage !== 'Não há times suficientes para continuar o jogo.'"
-          class="btn btn-primary mt-3" (click)="restartGame()">
-    <i class="bi bi-play-fill me-2"></i>Reiniciar Jogo
-  </button>
 </div>
