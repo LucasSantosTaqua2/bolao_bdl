@@ -3,23 +3,24 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TeamNameToFileNamePipe } from '../../../../utils/team-name-to-file-name.pipe';
 
-// Interface atualizada para incluir o estilo de ofuscamento
 interface EmblemOption {
   teamName: string;
   emblemUrl: string;
   isCorrect: boolean;
-  clipPathStyle: string; // Nova propriedade para o estilo CSS
+  clipPathStyle: string;
 }
 
 @Component({
   selector: 'app-minigame-acerte-escudo',
   standalone: true,
+  // O Pipe continua nos imports para o caso de ser usado no template no futuro
   imports: [CommonModule, RouterModule, TeamNameToFileNamePipe],
   templateUrl: './minigame-acerte-escudo.component.html',
   styleUrls: ['./minigame-acerte-escudo.component.css'],
-  providers: [TeamNameToFileNamePipe]
+  // providers: [TeamNameToFileNamePipe] // 1. Remova a linha de providers
 })
 export class MinigameAcerteEscudoComponent implements OnInit {
+  // ... (outras propriedades como allTeamNames, score, etc. continuam aqui)
   allTeamNames = [
     'América-MG', 'Athletico-PR', 'Atlético-GO', 'Atlético-MG', 'Bahia',
     'Botafogo', 'Corinthians', 'Criciúma', 'Cruzeiro', 'Cuiabá',
@@ -37,7 +38,12 @@ export class MinigameAcerteEscudoComponent implements OnInit {
   feedbackMessage = '';
   isCorrectAnswer?: boolean;
 
-  constructor(private teamNameToFileName: TeamNameToFileNamePipe) { }
+
+  // 2. Instancie o Pipe diretamente como uma propriedade da classe
+  private teamNameToFileName = new TeamNameToFileNamePipe();
+
+  // 3. Deixe o construtor vazio, sem injeção
+  constructor() { }
 
   ngOnInit(): void {
     this.startGame();
@@ -67,8 +73,8 @@ export class MinigameAcerteEscudoComponent implements OnInit {
 
     const incorrectTeamNames = this.getIncorrectAnswers(correctTeamName);
 
-    // Lógica para gerar as opções e aplicar o ofuscamento
     const optionsWithObfuscation = [
+      // A chamada para `this.teamNameToFileName.transform` agora usa a instância local
       { teamName: correctTeamName, emblemUrl: this.teamNameToFileName.transform(correctTeamName), isCorrect: true },
       ...incorrectTeamNames.map(name => ({
         teamName: name,
@@ -76,17 +82,15 @@ export class MinigameAcerteEscudoComponent implements OnInit {
         isCorrect: false
       }))
     ].map(option => {
-      // 70% de chance de ofuscar o escudo
       const shouldObfuscate = Math.random() <= 0.7;
       let clipPathStyle = 'none';
 
       if (shouldObfuscate) {
-        const radius = Math.floor(Math.random() * 15) + 30; // Raio entre 30% e 45%
-        const posX = Math.floor(Math.random() * 50) + 25;   // Posição X entre 25% e 75%
-        const posY = Math.floor(Math.random() * 50) + 25;   // Posição Y entre 25% e 75%
+        const radius = Math.floor(Math.random() * 15) + 30;
+        const posX = Math.floor(Math.random() * 50) + 25;
+        const posY = Math.floor(Math.random() * 50) + 25;
         clipPathStyle = `circle(${radius}% at ${posX}% ${posY}%)`;
       }
-      // Retorna o objeto da opção com a propriedade de estilo adicionada
       return { ...option, clipPathStyle };
     });
 
