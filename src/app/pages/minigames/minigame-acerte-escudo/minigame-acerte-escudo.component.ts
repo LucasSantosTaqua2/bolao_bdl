@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TeamNameToFileNamePipe } from '../../../../utils/team-name-to-file-name.pipe';
 
+// ... (interface continua a mesma)
 interface EmblemOption {
   teamName: string;
   emblemUrl: string;
@@ -13,14 +14,17 @@ interface EmblemOption {
 @Component({
   selector: 'app-minigame-acerte-escudo',
   standalone: true,
-  // O Pipe continua nos imports para o caso de ser usado no template no futuro
-  imports: [CommonModule, RouterModule, TeamNameToFileNamePipe],
+  // Apenas remova o 'TeamNameToFileNamePipe' deste array de imports
+  imports: [CommonModule, RouterModule],
   templateUrl: './minigame-acerte-escudo.component.html',
-  styleUrls: ['./minigame-acerte-escudo.component.css'],
-  // providers: [TeamNameToFileNamePipe] // 1. Remova a linha de providers
+  styleUrls: ['./minigame-acerte-escudo.component.css']
 })
 export class MinigameAcerteEscudoComponent implements OnInit {
-  // ... (outras propriedades como allTeamNames, score, etc. continuam aqui)
+
+  // A injeção no construtor continua funcionando perfeitamente
+  constructor(private teamNameToFileName: TeamNameToFileNamePipe) { }
+
+  // ... (todo o resto do seu código permanece exatamente igual)
   allTeamNames = [
     'América-MG', 'Athletico-PR', 'Atlético-GO', 'Atlético-MG', 'Bahia',
     'Botafogo', 'Corinthians', 'Criciúma', 'Cruzeiro', 'Cuiabá',
@@ -30,20 +34,12 @@ export class MinigameAcerteEscudoComponent implements OnInit {
   availableTeamNames: string[] = [];
   emblemOptions: EmblemOption[] = [];
   currentQuestionTeamName: string = '';
-
   score = 0;
   attempts = 0;
   gameInProgress = true;
   gameLocked = false;
   feedbackMessage = '';
   isCorrectAnswer?: boolean;
-
-
-  // 2. Instancie o Pipe diretamente como uma propriedade da classe
-  private teamNameToFileName = new TeamNameToFileNamePipe();
-
-  // 3. Deixe o construtor vazio, sem injeção
-  constructor() { }
 
   ngOnInit(): void {
     this.startGame();
@@ -74,7 +70,6 @@ export class MinigameAcerteEscudoComponent implements OnInit {
     const incorrectTeamNames = this.getIncorrectAnswers(correctTeamName);
 
     const optionsWithObfuscation = [
-      // A chamada para `this.teamNameToFileName.transform` agora usa a instância local
       { teamName: correctTeamName, emblemUrl: this.teamNameToFileName.transform(correctTeamName), isCorrect: true },
       ...incorrectTeamNames.map(name => ({
         teamName: name,
