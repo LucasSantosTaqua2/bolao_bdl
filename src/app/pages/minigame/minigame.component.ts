@@ -24,12 +24,12 @@ export class MinigameComponent implements OnInit {
 
   ngOnInit(): void {
     this.minigameList = [
-      {
+     /* {
         name: 'Acerte o Escudo',
         route: '/minigames/acerte-o-escudo',
         iconClass: 'bi-shield-check', // Ícone de escudo com check
         description: 'Teste seus conhecimentos sobre os emblemas dos times!'
-      },
+      },*/
       {
         name: 'Jogo da Memória',
         route: '/minigames/memoria',
