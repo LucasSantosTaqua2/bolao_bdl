@@ -1,136 +1,141 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TeamNameToFileNamePipe } from '../../../utils/team-name-to-file-name.pipe';
-import { RouterLink } from '@angular/router';
-// Ajuste o caminho se necessário
+import { RouterModule } from '@angular/router';
+import { TeamNameToFileNamePipe } from '../../../../utils/team-name-to-file-name.pipe';
 
+// Interface atualizada para incluir o estilo de ofuscamento
 interface EmblemOption {
   teamName: string;
   emblemUrl: string;
   isCorrect: boolean;
+  clipPathStyle: string; // Nova propriedade para o estilo CSS
 }
 
 @Component({
   selector: 'app-minigame-acerte-escudo',
   standalone: true,
-  imports: [CommonModule, TeamNameToFileNamePipe, RouterLink],
+  imports: [CommonModule, RouterModule, TeamNameToFileNamePipe],
   templateUrl: './minigame-acerte-escudo.component.html',
   styleUrls: ['./minigame-acerte-escudo.component.css'],
   providers: [TeamNameToFileNamePipe]
 })
 export class MinigameAcerteEscudoComponent implements OnInit {
-  // Lista de times fornecida por você
-  allTeamNames: string[] = [
-    'Palmeiras', 'Flamengo', 'Cruzeiro', 'Bragantino', 'Ceará', 'Bahia',
-    'Fluminense', 'Corinthians', 'Atlético-MG', 'Botafogo', 'São Paulo',
-    'Mirassol', 'Vasco', 'Fortaleza', 'Internacional', 'EC Vitória',
-    'Grêmio', 'Juventude', 'Santos', 'Sport'
+  allTeamNames = [
+    'América-MG', 'Athletico-PR', 'Atlético-GO', 'Atlético-MG', 'Bahia',
+    'Botafogo', 'Corinthians', 'Criciúma', 'Cruzeiro', 'Cuiabá',
+    'Flamengo', 'Fluminense', 'Fortaleza', 'Grêmio', 'Internacional',
+    'Juventude', 'Palmeiras', 'Red Bull Bragantino', 'São Paulo', 'Vasco da Gama'
   ];
-
-  currentQuestionTeamName: string = '';
+  availableTeamNames: string[] = [];
   emblemOptions: EmblemOption[] = [];
-  feedbackMessage: string = '';
-  score: number = 0;
-  attempts: number = 0;
-  gameInProgress: boolean = false;
-  showFeedback: boolean = false;
-  isCorrectAttempt: boolean = false;
+  currentQuestionTeamName: string = '';
 
-  readonly numberOfOptions = 4; // Quantos emblemas mostrar (1 correto + 3 errados)
+  score = 0;
+  attempts = 0;
+  gameInProgress = true;
+  gameLocked = false;
+  feedbackMessage = '';
+  isCorrectAnswer?: boolean;
 
-  constructor(
-    private teamNamePipe: TeamNameToFileNamePipe,
-    private cdr: ChangeDetectorRef
-  ) {}
+  constructor(private teamNameToFileName: TeamNameToFileNamePipe) { }
 
   ngOnInit(): void {
     this.startGame();
   }
 
   startGame(): void {
-    this.gameInProgress = true;
     this.score = 0;
     this.attempts = 0;
+    this.gameInProgress = true;
+    this.availableTeamNames = [...this.allTeamNames];
     this.nextQuestion();
   }
 
   nextQuestion(): void {
-    this.showFeedback = false;
-    this.feedbackMessage = '';
-    this.emblemOptions = [];
-
-    if (this.allTeamNames.length < this.numberOfOptions) {
-      this.feedbackMessage = "Não há times suficientes para continuar o jogo.";
-      this.gameInProgress = false;
+    if (this.availableTeamNames.length < 4) {
+      this.endGame();
       return;
     }
 
-    // 1. Escolher o time correto aleatoriamente
-    const correctAnswerIndex = Math.floor(Math.random() * this.allTeamNames.length);
-    this.currentQuestionTeamName = this.allTeamNames[correctAnswerIndex];
+    this.feedbackMessage = '';
+    this.isCorrectAnswer = undefined;
+    this.gameLocked = false;
 
-    // 2. Adicionar o time correto às opções
-    this.emblemOptions.push({
-      teamName: this.currentQuestionTeamName,
-      emblemUrl: `assets/emblemas/${this.teamNamePipe.transform(this.currentQuestionTeamName)}`,
-      isCorrect: true
+    const correctTeamIndex = Math.floor(Math.random() * this.availableTeamNames.length);
+    const correctTeamName = this.availableTeamNames.splice(correctTeamIndex, 1)[0];
+    this.currentQuestionTeamName = correctTeamName;
+
+    const incorrectTeamNames = this.getIncorrectAnswers(correctTeamName);
+
+    // Lógica para gerar as opções e aplicar o ofuscamento
+    const optionsWithObfuscation = [
+      { teamName: correctTeamName, emblemUrl: this.teamNameToFileName.transform(correctTeamName), isCorrect: true },
+      ...incorrectTeamNames.map(name => ({
+        teamName: name,
+        emblemUrl: this.teamNameToFileName.transform(name),
+        isCorrect: false
+      }))
+    ].map(option => {
+      // 70% de chance de ofuscar o escudo
+      const shouldObfuscate = Math.random() <= 0.7;
+      let clipPathStyle = 'none';
+
+      if (shouldObfuscate) {
+        const radius = Math.floor(Math.random() * 15) + 30; // Raio entre 30% e 45%
+        const posX = Math.floor(Math.random() * 50) + 25;   // Posição X entre 25% e 75%
+        const posY = Math.floor(Math.random() * 50) + 25;   // Posição Y entre 25% e 75%
+        clipPathStyle = `circle(${radius}% at ${posX}% ${posY}%)`;
+      }
+      // Retorna o objeto da opção com a propriedade de estilo adicionada
+      return { ...option, clipPathStyle };
     });
 
-    // 3. Escolher times errados (distratores)
-    const tempTeamList = [...this.allTeamNames];
-    tempTeamList.splice(correctAnswerIndex, 1); // Remove o time correto da lista temporária
+    this.emblemOptions = this.shuffleArray(optionsWithObfuscation);
+  }
 
-    for (let i = 0; i < this.numberOfOptions - 1; i++) {
-      if (tempTeamList.length === 0) break; // Não há mais times únicos para escolher
+  getIncorrectAnswers(correctTeamName: string): string[] {
+    const incorrectOptions: string[] = [];
+    const tempAvailableNames = this.allTeamNames.filter(name => name !== correctTeamName);
 
-      const distractorIndex = Math.floor(Math.random() * tempTeamList.length);
-      const distractorTeamName = tempTeamList[distractorIndex];
-      this.emblemOptions.push({
-        teamName: distractorTeamName,
-        emblemUrl: `assets/emblemas/${this.teamNamePipe.transform(distractorTeamName)}`,
-        isCorrect: false
-      });
-      tempTeamList.splice(distractorIndex, 1); // Remove o distrator escolhido para não repetir
+    while (incorrectOptions.length < 3) {
+      const randomIndex = Math.floor(Math.random() * tempAvailableNames.length);
+      const selectedName = tempAvailableNames.splice(randomIndex, 1)[0];
+      incorrectOptions.push(selectedName);
     }
-
-    // 4. Embaralhar as opções
-    this.shuffleArray(this.emblemOptions);
-    this.cdr.detectChanges();
+    return incorrectOptions;
   }
 
   selectEmblem(selectedOption: EmblemOption): void {
-    if (!this.gameInProgress || this.showFeedback) {
-      return;
-    }
+    if (this.gameLocked) return;
 
+    this.gameLocked = true;
     this.attempts++;
-    this.showFeedback = true;
+    this.isCorrectAnswer = selectedOption.isCorrect;
 
-    if (selectedOption.isCorrect) {
+    if (this.isCorrectAnswer) {
       this.score++;
-      this.feedbackMessage = 'Correto! 🎉';
-      this.isCorrectAttempt = true;
+      this.feedbackMessage = 'Parabéns, você acertou!';
     } else {
-      this.feedbackMessage = `Errado! O time era ${this.currentQuestionTeamName}. 😢`;
-      this.isCorrectAttempt = false;
+      this.feedbackMessage = 'Que pena, você errou!';
     }
 
-    // Prepara para a próxima pergunta após um pequeno delay
     setTimeout(() => {
-      if (this.gameInProgress) { // Verifica se o jogo ainda deve continuar
-        this.nextQuestion();
-      }
-    }, 2000); // Delay de 2 segundos para mostrar o feedback
+      this.nextQuestion();
+    }, 2000);
   }
 
-  private shuffleArray(array: any[]): void {
+  shuffleArray<T>(array: T[]): T[] {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]]; // Troca de elementos
+      [array[i], array[j]] = [array[j], array[i]];
     }
+    return array;
   }
 
-  // Função para reiniciar o jogo (pode ser chamada por um botão "Jogar Novamente")
+  endGame(): void {
+    this.gameInProgress = false;
+  }
+
   restartGame(): void {
     this.startGame();
   }
